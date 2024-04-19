@@ -16,8 +16,7 @@ class Student {
     private String lastName;
     private String className;
     private String email;
-    private String course_class;
-    private List<Book> books_borrowed;
+    // private List<Book> books_borrowed;
 
     public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
             List<Book> books_borrowed) {
@@ -26,8 +25,7 @@ class Student {
         this.lastName = lastName;
         this.className = className;
         this.email = email;
-        this.course_class = course_class;
-        this.books_borrowed = books_borrowed;
+        // this.books_borrowed = books_borrowed;
     }
 
     Student() {
@@ -74,21 +72,13 @@ class Student {
         this.email = email;
     }
 
-    public String getCourse_class() {
-        return course_class;
-    }
+    // public List<Book> getBooks_borrowed() {
+    //     return books_borrowed;
+    // }
 
-    public void setCourse_class(String course_class) {
-        this.course_class = course_class;
-    }
-
-    public List<Book> getBooks_borrowed() {
-        return books_borrowed;
-    }
-
-    public void setBooks_borrowed(List<Book> books_borrowed) {
-        this.books_borrowed = books_borrowed;
-    }
+    // public void setBooks_borrowed(List<Book> books_borrowed) {
+    //     this.books_borrowed = books_borrowed;
+    // }
 
     @Override
     public int hashCode() {
@@ -99,8 +89,7 @@ class Student {
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((className == null) ? 0 : className.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((course_class == null) ? 0 : course_class.hashCode());
-        result = prime * result + ((books_borrowed == null) ? 0 : books_borrowed.hashCode());
+        // result = prime * result + ((books_borrowed == null) ? 0 : books_borrowed.hashCode());
         return result;
     }
 
@@ -138,23 +127,18 @@ class Student {
                 return false;
         } else if (!email.equals(other.email))
             return false;
-        if (course_class == null) {
-            if (other.course_class != null)
-                return false;
-        } else if (!course_class.equals(other.course_class))
-            return false;
-        if (books_borrowed == null) {
-            if (other.books_borrowed != null)
-                return false;
-        } else if (!books_borrowed.equals(other.books_borrowed))
-            return false;
+        // if (books_borrowed == null) {
+        //     if (other.books_borrowed != null)
+        //         return false;
+        // } else if (!books_borrowed.equals(other.books_borrowed))
+            // return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "Student [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", className=" + className
-                + ", email=" + email + ", course_class=" + course_class + ", books_borrowed=" + books_borrowed + "]";
+                + ", email=" + email + ", books_borrowed="  + "]";
     }
 
 }

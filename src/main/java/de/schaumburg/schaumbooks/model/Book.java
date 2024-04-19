@@ -1,18 +1,20 @@
 package de.schaumburg.schaumbooks.model;
 
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+
 
 
 @Entity
 public record Book(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id,
-    String title,
-    String author
-) {
-    
+        @Id
+        Long id,
+        @NotEmpty String title,
+        @NotEmpty String author) {
+
 }
