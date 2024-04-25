@@ -1,4 +1,4 @@
-package de.schaumburg.schaumbooks.model;
+package de.schaumburg.schaumbooks.book;
 
 import org.springframework.stereotype.Component;
 

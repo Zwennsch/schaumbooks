@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Production ###
+application-mariadb.properties
+
+### private data ###
+.school-data/
