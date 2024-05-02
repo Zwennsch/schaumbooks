@@ -1,6 +1,5 @@
 package de.schaumburg.schaumbooks.student;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.schaumburg.schaumbooks.book.Book;
@@ -17,7 +16,6 @@ public class Student {
     private String lastName;
     private String className;
     private String email;
-    // private List<Book> books_borrowed = new ArrayList<>();
 
     public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
             List<Book> books_borrowed) {
@@ -26,7 +24,6 @@ public class Student {
         this.lastName = lastName;
         this.className = className;
         this.email = email;
-        // this.books_borrowed = books_borrowed;
     }
 
     Student() {
@@ -73,14 +70,6 @@ public class Student {
         this.email = email;
     }
 
-    // public List<Book> getBooks_borrowed() {
-    // return books_borrowed;
-    // }
-
-    // public void setBooks_borrowed(List<Book> books_borrowed) {
-    // this.books_borrowed = books_borrowed;
-    // }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -90,8 +79,6 @@ public class Student {
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((className == null) ? 0 : className.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
-        // result = prime * result + ((books_borrowed == null) ? 0 :
-        // books_borrowed.hashCode());
         return result;
     }
 
@@ -129,18 +116,13 @@ public class Student {
                 return false;
         } else if (!email.equals(other.email))
             return false;
-        // if (books_borrowed == null) {
-        // if (other.books_borrowed != null)
-        // return false;
-        // } else if (!books_borrowed.equals(other.books_borrowed))
-        // return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "Student [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", className=" + className
-                + ", email=" + email + ", books_borrowed=" + "]";
+                + ", email=" + email + "]";
     }
 
 }
