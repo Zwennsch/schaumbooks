@@ -1,9 +1,12 @@
 package de.schaumburg.schaumbooks.book;
 
+import de.schaumburg.schaumbooks.student.Student;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotEmpty;
 
 
@@ -14,17 +17,23 @@ public class Book{
         private @NotEmpty String title;
         private @NotEmpty String author;
         private BookStatus status;
+        @ManyToOne
+        @JoinColumn(name= "student_id")
+        private Student student;
 
+        
+        
         Book(){
-
+                
         }
 
 
-        public Book(Long id, @NotEmpty String title, @NotEmpty String author, BookStatus status) {
+        public Book(Long id, @NotEmpty String title, @NotEmpty String author, BookStatus status, Student student) {
                 this.id = id;
                 this.title = title;
                 this.author = author;
                 this.status = status;
+                this.student = student;
         }
 
 
@@ -37,18 +46,18 @@ public class Book{
         public Long getId() {
                 return id;
         }
-
-
+        
+        
         public void setId(Long id) {
                 this.id = id;
         }
-
-
+        
+        
         public String getTitle() {
                 return title;
         }
-
-
+        
+        
         public void setTitle(String title) {
                 this.title = title;
         }
@@ -74,6 +83,15 @@ public class Book{
         }
 
 
+        public void setStudent(Student student) {
+                this.student = student;
+        }
+
+
+        public Student getStudent() {
+                return student;
+        }
+        
         @Override
         public int hashCode() {
                 final int prime = 31;
@@ -82,6 +100,7 @@ public class Book{
                 result = prime * result + ((title == null) ? 0 : title.hashCode());
                 result = prime * result + ((author == null) ? 0 : author.hashCode());
                 result = prime * result + ((status == null) ? 0 : status.hashCode());
+                result = prime * result + ((student == null) ? 0 : student.hashCode());
                 return result;
         }
 
@@ -118,6 +137,6 @@ public class Book{
 
         @Override
         public String toString() {
-                return "Book [id=" + id + ", title=" + title + ", author=" + author + ", status=" + status + "]";
+                return "Book [id=" + id + ", title=" + title + ", author=" + author + ", status=" + status + ", student=" + student + "]";
         }
 }

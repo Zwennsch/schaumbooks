@@ -1,5 +1,6 @@
 package de.schaumburg.schaumbooks.student;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.schaumburg.schaumbooks.book.Book;
@@ -16,7 +17,7 @@ public class Student {
     private String lastName;
     private String className;
     private String email;
-    // private List<Book> books_borrowed;
+    // private List<Book> books_borrowed = new ArrayList<>();
 
     public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
             List<Book> books_borrowed) {
