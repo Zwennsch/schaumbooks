@@ -1,7 +1,7 @@
 package de.schaumburg.schaumbooks.book;
 
 public enum BookStatus {
-    AVAIlABLE,
+    AVAILABLE,
     LENT,
     MISSING,
     DAMAGED,

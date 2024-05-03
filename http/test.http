@@ -1,0 +1,23 @@
+### Add a new book:
+POST http://localhost:8080/api/book HTTP/1.1
+content-type: application/json
+
+{
+    "id": null,
+    "title": "My first Test Book",
+    "author": "The best author",
+    "status": "AVAILABLE",
+    "student": null
+}
+
+### Add a second book with different status
+POST http://localhost:8080/api/book HTTP/1.1
+content-type: application/json
+
+{
+    "id": null,
+    "title": "My missing Test Book",
+    "author": "The missing author",
+    "status": "MISSING",
+    "student": null
+}

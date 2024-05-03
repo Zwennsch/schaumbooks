@@ -1,6 +1,7 @@
 package de.schaumburg.schaumbooks.book;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,18 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    // TODO: Create BookNotFundExcpetion
     public Book findById(Long id) {
         return bookRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Could not find Book with id of " + id));
+                .orElseThrow(() -> new BookNotFoundException());
     }
+
+    public Book save(Book book){
+        return bookRepository.save(book);
+    }
+
+    public void deleteById(Long id){
+        bookRepository.deleteById(id);
+    }
+
 
 }
