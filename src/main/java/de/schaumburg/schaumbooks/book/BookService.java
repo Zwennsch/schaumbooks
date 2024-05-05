@@ -1,11 +1,11 @@
 package de.schaumburg.schaumbooks.book;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import de.schaumburg.schaumbooks.student.StudentRepository;
 
@@ -19,6 +19,28 @@ public class BookService {
     public BookService(BookRepository bookRepository, StudentRepository studentRepository) {
         this.bookRepository = bookRepository;
         this.studentRepository = studentRepository;
+    }
+
+    public void readDataFromCsvAndSave(String csvFilePath) throws IOException{
+        try (BufferedReader reader =  new BufferedReader(new FileReader(csvFilePath))) {
+            String line;
+            // Skip first line:
+            reader.readLine();
+            while((line = reader.readLine())!= null){
+                String[] parts = line.split(",");
+                String title = parts[0].trim();
+                String author = parts[1].trim();
+                int numOfBooks = Integer.parseInt(parts[2].trim());
+                for (int i = 0; i < numOfBooks; i++){
+                    Book book = new Book();
+                    book.setTitle(title);
+                    book.setAuthor(author);
+                    bookRepository.save(book);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Could not find csv-file " + e.getMessage());
+        }
     }
 
     public List<Book> findAll() {
