@@ -21,20 +21,22 @@ public class BookService {
         this.studentRepository = studentRepository;
     }
 
-    public void readDataFromCsvAndSave(String csvFilePath) throws IOException{
-        try (BufferedReader reader =  new BufferedReader(new FileReader(csvFilePath))) {
+    public void readDataFromCsvAndSave(String csvFilePath) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
             // Skip first line:
             reader.readLine();
-            while((line = reader.readLine())!= null){
+            while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 String title = parts[0].trim();
-                String author = parts[1].trim();
-                int numOfBooks = Integer.parseInt(parts[2].trim());
-                for (int i = 0; i < numOfBooks; i++){
+                String verlag = parts[1].trim();
+                String isbn = parts[2].trim();
+                int numOfBooks = Integer.parseInt(parts[3].trim());
+                for (int i = 0; i < numOfBooks; i++) {
                     Book book = new Book();
                     book.setTitle(title);
-                    book.setAuthor(author);
+                    book.setVerlag(verlag);
+                    book.setIsbn(isbn);
                     bookRepository.save(book);
                 }
             }
@@ -52,13 +54,12 @@ public class BookService {
                 .orElseThrow(() -> new BookNotFoundException());
     }
 
-    public Book save(Book book){
+    public Book save(Book book) {
         return bookRepository.save(book);
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         bookRepository.deleteById(id);
     }
-
 
 }

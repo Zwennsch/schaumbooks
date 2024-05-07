@@ -9,101 +9,98 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotEmpty;
 
-
-
 @Entity
-public class Book{
-        private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;        
+public class Book {
+        private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
         private @NotEmpty String title;
-        private @NotEmpty String author;
+        private @NotEmpty String verlag;
+        private @NotEmpty String isbn;
         private BookStatus status;
         @ManyToOne
-        @JoinColumn(name= "student_id")
+        @JoinColumn(name = "student_id")
         private Student student;
 
-        
-        
-        Book(){
-                
-        }
-
-
-        public Book(Long id, @NotEmpty String title, @NotEmpty String author, BookStatus status, Student student) {
+        public Book(Long id, @NotEmpty String title, @NotEmpty String verlag, @NotEmpty String isbn, BookStatus status,
+                        Student student) {
                 this.id = id;
                 this.title = title;
-                this.author = author;
+                this.verlag = verlag;
+                this.isbn = isbn;
                 this.status = status;
                 this.student = student;
         }
 
+        Book() {
 
-        public Boolean isLend(){
-                if (this.status == BookStatus.LENT) return true;
-                return false;
         }
 
+        public Boolean isLend() {
+                if (this.status == BookStatus.LENT)
+                        return true;
+                return false;
+        }
 
         public Long getId() {
                 return id;
         }
-        
-        
+
         public void setId(Long id) {
                 this.id = id;
+
         }
-        
-        
+
         public String getTitle() {
                 return title;
         }
-        
-        
+
         public void setTitle(String title) {
                 this.title = title;
         }
 
-
-        public String getAuthor() {
-                return author;
+        public String getIsbn() {
+                return isbn;
         }
 
-
-        public void setAuthor(String author) {
-                this.author = author;
+        public void setIsbn(String isbn) {
+                this.isbn = isbn;
         }
-
 
         public BookStatus getStatus() {
                 return status;
         }
 
-
         public void setStatus(BookStatus status) {
                 this.status = status;
         }
-
 
         public void setStudent(Student student) {
                 this.student = student;
         }
 
-
         public Student getStudent() {
                 return student;
         }
-        
+
+        public String getVerlag() {
+                return verlag;
+        }
+
+        public void setVerlag(String verlag) {
+                this.verlag = verlag;
+        }
+
         @Override
         public int hashCode() {
                 final int prime = 31;
                 int result = 1;
                 result = prime * result + ((id == null) ? 0 : id.hashCode());
                 result = prime * result + ((title == null) ? 0 : title.hashCode());
-                result = prime * result + ((author == null) ? 0 : author.hashCode());
+                result = prime * result + ((verlag == null) ? 0 : verlag.hashCode());
+                result = prime * result + ((isbn == null) ? 0 : isbn.hashCode());
                 result = prime * result + ((status == null) ? 0 : status.hashCode());
                 result = prime * result + ((student == null) ? 0 : student.hashCode());
                 return result;
         }
-
 
         @Override
         public boolean equals(Object obj) {
@@ -124,19 +121,30 @@ public class Book{
                                 return false;
                 } else if (!title.equals(other.title))
                         return false;
-                if (author == null) {
-                        if (other.author != null)
+                if (verlag == null) {
+                        if (other.verlag != null)
                                 return false;
-                } else if (!author.equals(other.author))
+                } else if (!verlag.equals(other.verlag))
+                        return false;
+                if (isbn == null) {
+                        if (other.isbn != null)
+                                return false;
+                } else if (!isbn.equals(other.isbn))
                         return false;
                 if (status != other.status)
+                        return false;
+                if (student == null) {
+                        if (other.student != null)
+                                return false;
+                } else if (!student.equals(other.student))
                         return false;
                 return true;
         }
 
-
         @Override
         public String toString() {
-                return "Book [id=" + id + ", title=" + title + ", author=" + author + ", status=" + status + ", student=" + student + "]";
+                return "Book [id=" + id + ", title=" + title + ", verlag=" + verlag + ", isbn=" + isbn + ", status="
+                                + status + ", student=" + student + "]";
         }
+
 }

@@ -37,3 +37,4 @@ application-mariadb.properties
 
 ### private data ###
 .school-data/
+.personal/
