@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,22 @@ public class BookService {
             }
         } catch (Exception e) {
             System.out.println("Could not find csv-file " + e.getMessage());
+        }
+    }
+
+    public Optional<Book> updateBook(Long id, Book updatedBook){
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if(optionalBook.isPresent()){
+            Book existingBook = optionalBook.get();
+            // Update Book with new data
+            existingBook.setIsbn(updatedBook.getIsbn());
+            existingBook.setStatus(updatedBook.getStatus());
+            existingBook.setStudent(null);
+            existingBook.setTitle(updatedBook.getTitle());
+            existingBook.setVerlag(updatedBook.getVerlag());
+            return Optional.of(bookRepository.save(existingBook));
+        }else{
+            return Optional.empty();
         }
     }
 
