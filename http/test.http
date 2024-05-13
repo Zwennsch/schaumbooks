@@ -16,8 +16,9 @@ content-type: application/json
 
 {
     "id": null,
-    "title": "My missing Test Book",
-    "author": "The missing author",
+    "title": "Lighthouse English 8",
+    "isbn": "73649-8632-97942-9",
+    "verlag": "klett",
     "status": "MISSING",
     "student": null
 }
