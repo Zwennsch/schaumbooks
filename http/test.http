@@ -3,11 +3,12 @@ POST http://localhost:8080/api/book HTTP/1.1
 content-type: application/json
 
 {
-    "id": null,
-    "title": "My first Test Book",
-    "author": "The best author",
-    "status": "AVAILABLE",
-    "student": null
+    "id" : null,
+    "title" : "my added title",
+    "verlag" : "new verlag posted",
+    "isbn" : "2423-123-12551-123",
+    "status" : "LENT",
+    "student" : null
 }
 
 ### Add a second book with different status
@@ -21,4 +22,17 @@ content-type: application/json
     "verlag": "klett",
     "status": "MISSING",
     "student": null
+}
+
+###
+PUT http://localhost:8080/api/book/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "id" : "1",
+    "title" : "new title",
+    "verlag" : "new verlag",
+    "isbn" : "2423-123-12551-123",
+    "status" : "LENT",
+    "student" : null
 }
