@@ -1,6 +1,5 @@
 package de.schaumburg.schaumbooks.book;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -9,15 +8,16 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,9 +62,67 @@ public class BookControllerTest {
                 """;
         when(bookService.findAll()).thenReturn(books);
 
-        mockMvc.perform(get("/api/books/"))
+        mockMvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
+        verify(bookService, times(1)).findAll();
+    }
+
+    @Test
+    void shouldFindBookByGivenValidId() throws Exception {
+        String jsonResponse = """
+                    {
+                        "id":1,
+                        "title":"first book",
+                        "verlag":"first verlag",
+                        "isbn":"123456",
+                        "status":"AVAILABLE",
+                        "student":null
+                    }
+                """;
+        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+
+        mockMvc.perform(get("/api/books/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonResponse));
+    }
+
+    @Test
+    void shouldReturnNotFoundForId999() throws Exception{
+        when(bookService.findById(999L)).thenThrow(BookNotFoundException.class);
+        mockMvc.perform(get("/api/books/999"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldAddNewBookWhenBookIsValid() throws Exception{
+        Book book = new Book(3L, "new Book", "new Verlag", "123-45", BookStatus.AVAILABLE, null);
+        // String jsonObject = asJsonString(book);
+        when(bookService.save(book)).thenReturn(book);
+
+        mockMvc.perform(post("/api/books")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(book)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(3L))
+            .andExpect(jsonPath("$.title").value("new Book"));
+            
+            
+
+
+
+
+        // System.out.println(jsonObject);
+    }
+
+
+    private static String asJsonString(final Object obj){
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // @InjectMocks

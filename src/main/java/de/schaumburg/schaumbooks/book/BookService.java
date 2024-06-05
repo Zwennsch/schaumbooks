@@ -66,9 +66,11 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Book findById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException());
+    public Optional<Book> findById(Long id) {
+        return Optional.ofNullable(bookRepository.findById(id).orElseThrow(BookNotFoundException::new));
+        
+        // return bookRepository.findById(id)
+        //         .orElseThrow(() -> new BookNotFoundException());
     }
 
     public Book save(Book book) {

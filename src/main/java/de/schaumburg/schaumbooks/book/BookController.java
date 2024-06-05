@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping(path = "/api/books/")
+@RequestMapping(path = "/api/books")
 public class BookController {
 
     private final BookService bookService;
@@ -34,7 +34,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Book findByIdBook(@RequestParam Long id) {
+    public Optional<Book> findByIdBook(@PathVariable Long id) {
         return bookService.findById(id);
     }
 
