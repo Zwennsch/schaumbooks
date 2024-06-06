@@ -107,15 +107,32 @@ public class BookControllerTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(3L))
             .andExpect(jsonPath("$.title").value("new Book"));
-            
-            
-
-
-
-
-        // System.out.println(jsonObject);
     }
 
+    @Test
+    public void testAddNewBookWithInvalidInformation() throws Exception {
+        Book invalidBook = new Book();
+        invalidBook.setTitle("");  // Invalid because title is empty
+        invalidBook.setVerlag("Verlag One");
+        invalidBook.setIsbn("");   // Invalid because ISBN is empty
+        invalidBook.setStatus(BookStatus.AVAILABLE);
+
+        mockMvc.perform(post("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(invalidBook)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testAddNewBookWithMissingInformation() throws Exception {
+        Book missingBook = new Book();
+        // Missing title, verlag, and ISBN
+
+        mockMvc.perform(post("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(missingBook)))
+                .andExpect(status().isBadRequest());
+    }
 
     private static String asJsonString(final Object obj){
         try {
