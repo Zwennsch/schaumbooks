@@ -15,6 +15,29 @@ content-type: application/json
     "student" : null
 }
 
+
+### Add a new book without status and id:
+POST http://localhost:8080/api/books HTTP/1.1
+content-type: application/json
+
+{
+    "title" : "title without status, id",
+    "verlag" : "new verlag posted",
+    "isbn" : "2423-123-12551-123",
+    "student" : null
+}
+
+
+### Add a new book without status and student_id:
+POST http://localhost:8080/api/books HTTP/1.1
+content-type: application/json
+
+{
+    "title" : "title without status, student_id",
+    "verlag" : "new verlag posted",
+    "isbn" : "2423-123-12551-123"
+}
+
 ### Add a second book with different status
 POST http://localhost:8080/api/book HTTP/1.1
 content-type: application/json

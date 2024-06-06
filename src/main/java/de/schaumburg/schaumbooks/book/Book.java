@@ -2,6 +2,8 @@ package de.schaumburg.schaumbooks.book;
 
 import de.schaumburg.schaumbooks.student.Student;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,7 +17,8 @@ public class Book {
         private @NotEmpty String title;
         private @NotEmpty String verlag;
         private @NotEmpty String isbn;
-        private BookStatus status;
+        @Enumerated(EnumType.STRING)
+        private BookStatus status = BookStatus.AVAILABLE;
         @ManyToOne
         @JoinColumn(name = "student_id")
         private Student student;
