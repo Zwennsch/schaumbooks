@@ -47,13 +47,9 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
         Optional<Book> updatedBook = bookService.updateBook(id, book);
+        return updatedBook.map(ResponseEntity::ok).orElseGet(()-> ResponseEntity.notFound().build());
         // check if the book was found and updated
-        if (updatedBook.isPresent()) {
-            return ResponseEntity.ok(updatedBook.get());
-        } else {
-            // else return 404 Not Found
-            return ResponseEntity.notFound().build();
-        }
+        
     }
 
 }

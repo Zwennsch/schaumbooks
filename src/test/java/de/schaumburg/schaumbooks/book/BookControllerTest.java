@@ -1,6 +1,7 @@
 package de.schaumburg.schaumbooks.book;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.schaumburg.schaumbooks.student.Student;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -89,32 +92,32 @@ public class BookControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundForId999() throws Exception{
+    void shouldReturnNotFoundForId999() throws Exception {
         when(bookService.findById(999L)).thenThrow(BookNotFoundException.class);
         mockMvc.perform(get("/api/books/999"))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void shouldAddNewBookWhenBookIsValid() throws Exception{
+    void shouldAddNewBookWhenBookIsValid() throws Exception {
         Book book = new Book(3L, "new Book", "new Verlag", "123-45", BookStatus.AVAILABLE, null);
         // String jsonObject = asJsonString(book);
         when(bookService.save(book)).thenReturn(book);
 
         mockMvc.perform(post("/api/books")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(book)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(3L))
-            .andExpect(jsonPath("$.title").value("new Book"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(book)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3L))
+                .andExpect(jsonPath("$.title").value("new Book"));
     }
 
     @Test
     public void testAddNewBookWithInvalidInformation() throws Exception {
         Book invalidBook = new Book();
-        invalidBook.setTitle("");  // Invalid because title is empty
+        invalidBook.setTitle(""); // Invalid because title is empty
         invalidBook.setVerlag("Verlag One");
-        invalidBook.setIsbn("");   // Invalid because ISBN is empty
+        invalidBook.setIsbn(""); // Invalid because ISBN is empty
         invalidBook.setStatus(BookStatus.AVAILABLE);
 
         mockMvc.perform(post("/api/books")
@@ -134,14 +137,37 @@ public class BookControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private static String asJsonString(final Object obj){
+    @Test
+    void testUpdateBookValidInput() throws Exception {
+        Book book = new Book(1L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
+
+        when(bookService.updateBook(1L, book)).thenReturn(Optional.of(book));
+
+        mockMvc.perform(put("/api/books/1")
+                .contentType("application/json")
+                .content(asJsonString(book)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("updated title"));
+    }
+
+    @Test
+    void testShouldGetIsNotFoundIfBookIsInvalidWhenUpdating() throws Exception {
+        Book book = new Book(99L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
+        when(bookService.updateBook(99L, book)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/books/99")
+                .contentType("application/json")
+                .content(asJsonString(book)))
+                .andExpect(status().isNotFound());
+    }
+
+    private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
     // @InjectMocks
     // private BookController bookController;
 

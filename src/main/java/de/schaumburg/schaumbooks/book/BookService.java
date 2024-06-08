@@ -7,10 +7,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import de.schaumburg.schaumbooks.student.StudentRepository;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Service
+@Validated
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -45,21 +51,19 @@ public class BookService {
             System.out.println("Could not find csv-file " + e.getMessage());
         }
     }
-
-    public Optional<Book> updateBook(Long id, Book updatedBook){
+    @Transactional
+    public Optional<Book> updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook){
         Optional<Book> optionalBook = bookRepository.findById(id);
-        if(optionalBook.isPresent()){
-            Book existingBook = optionalBook.get();
-            // Update Book with new data
-            existingBook.setIsbn(updatedBook.getIsbn());
-            existingBook.setStatus(updatedBook.getStatus());
-            existingBook.setStudent(null);
+
+        return optionalBook.map(existingBook -> {
             existingBook.setTitle(updatedBook.getTitle());
             existingBook.setVerlag(updatedBook.getVerlag());
-            return Optional.of(bookRepository.save(existingBook));
-        }else{
-            return Optional.empty();
-        }
+            existingBook.setIsbn(updatedBook.getIsbn());
+            existingBook.setStatus(updatedBook.getStatus());
+            existingBook.setStudent(updatedBook.getStudent());
+            return bookRepository.save(existingBook);
+        });
+        
     }
 
     public List<Book> findAll() {
@@ -68,12 +72,10 @@ public class BookService {
 
     public Optional<Book> findById(Long id) {
         return Optional.ofNullable(bookRepository.findById(id).orElseThrow(BookNotFoundException::new));
-        
-        // return bookRepository.findById(id)
-        //         .orElseThrow(() -> new BookNotFoundException());
     }
 
-    public Book save(Book book) {
+    @Transactional
+    public Book save(@Valid Book book) {
         return bookRepository.save(book);
     }
 
