@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,8 +49,13 @@ public class BookController {
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
         Optional<Book> updatedBook = bookService.updateBook(id, book);
         return updatedBook.map(ResponseEntity::ok).orElseGet(()-> ResponseEntity.notFound().build());
-        // check if the book was found and updated
         
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteBookById(@PathVariable Long id){
+         bookService.deleteBookById(id);
+         return ResponseEntity.noContent().build();
     }
 
 }

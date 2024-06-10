@@ -51,8 +51,9 @@ public class BookService {
             System.out.println("Could not find csv-file " + e.getMessage());
         }
     }
+
     @Transactional
-    public Optional<Book> updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook){
+    public Optional<Book> updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
 
         return optionalBook.map(existingBook -> {
@@ -63,7 +64,7 @@ public class BookService {
             existingBook.setStudent(updatedBook.getStudent());
             return bookRepository.save(existingBook);
         });
-        
+
     }
 
     public List<Book> findAll() {
@@ -71,7 +72,7 @@ public class BookService {
     }
 
     public Optional<Book> findById(Long id) {
-        return Optional.ofNullable(bookRepository.findById(id).orElseThrow(BookNotFoundException::new));
+        return Optional.ofNullable(bookRepository.findById(id)).orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @Transactional
@@ -79,8 +80,13 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public void deleteById(Long id) {
-        bookRepository.deleteById(id);
+    public void deleteBookById(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()){
+            bookRepository.deleteById(id);
+        }else {
+            throw new BookNotFoundException(id);
+        }
     }
 
 }

@@ -161,6 +161,22 @@ public class BookControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldDeleteBookWithValidId() throws Exception {
+        doNothing().when(bookService).deleteBookById(1l);
+
+        mockMvc.perform(delete("/api/books/1"))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingNonExistentBook() throws Exception {
+        doThrow(new BookNotFoundException(999L)).when(bookService).deleteBookById(999L);
+
+        mockMvc.perform(delete("/api/books/999"))
+            .andExpect(status().isNotFound());
+    }
+
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -168,34 +184,5 @@ public class BookControllerTest {
             throw new RuntimeException(e);
         }
     }
-    // @InjectMocks
-    // private BookController bookController;
 
-    // @Test
-    // public void testUpdateBook() {
-    // // Mock data
-    // Long bookId = 1L;
-    // Book updatedBookData = new Book();
-    // updatedBookData.setTitle("Updated Title");
-    // updatedBookData.setVerlag("Updated Verlag");
-    // updatedBookData.setIsbn("Updated ISBN");
-    // updatedBookData.setStatus(BookStatus.AVAILABLE);
-
-    // // Mock service behavior
-    // Book existingBook = new Book();
-    // existingBook.setId(bookId);
-    // when(bookService.updateBook(eq(bookId),
-    // any())).thenReturn(Optional.of(existingBook));
-
-    // // Call the controller method
-    // ResponseEntity<Book> response = bookController.updateBook(bookId,
-    // updatedBookData);
-
-    // // Verify the response
-    // assertEquals(HttpStatus.OK, response.getStatusCode());
-    // assertEquals(existingBook, response.getBody());
-    // }
-
-    // // @Test
-    // // public void test
 }

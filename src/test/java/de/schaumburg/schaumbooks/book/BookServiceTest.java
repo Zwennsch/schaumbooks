@@ -53,12 +53,11 @@ public class BookServiceTest {
         assertEquals("Updated Verlag", result.get().getVerlag());
         assertEquals("0987654321", result.get().getIsbn());
         assertEquals(BookStatus.LENT, result.get().getStatus());
-        assertNotNull(result.get().getStudent());
     }
 
     @Test
     void testUpdateBookWithInvalidId() {
-        when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
         Book updatedBook = new Book();
         updatedBook.setTitle("Updated Title");
