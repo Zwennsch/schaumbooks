@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
@@ -16,10 +18,11 @@ public class Student {
     private @NotEmpty String firstName;
     private @NotEmpty String lastName;
     private @NotEmpty String className;
-    private @NotEmpty String email;
+    private @NotEmpty @Email String email;
+    private @OneToMany(mappedBy = "student") List<Book> booksBorrowed;
 
     public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
-            List<Book> books_borrowed) {
+            List<Book> booksBorrowed) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -63,6 +66,14 @@ public class Student {
         this.className = className;
     }
 
+    public void setBooksBorrowed(List<Book> booksBorrowed) {
+        this.booksBorrowed = booksBorrowed;
+    }
+
+    public List<Book> getBooksBorrowed() {
+        return booksBorrowed;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -71,6 +82,8 @@ public class Student {
         this.email = email;
     }
 
+
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -80,6 +93,7 @@ public class Student {
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((className == null) ? 0 : className.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((booksBorrowed == null) ? 0 : booksBorrowed.hashCode());
         return result;
     }
 
@@ -117,13 +131,18 @@ public class Student {
                 return false;
         } else if (!email.equals(other.email))
             return false;
+        if (booksBorrowed == null) {
+            if (other.booksBorrowed != null)
+                return false;
+        } else if (!booksBorrowed.equals(other.booksBorrowed))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "Student [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", className=" + className
-                + ", email=" + email + "]";
+                + ", email=" + email + ", booksBorrowed=" + booksBorrowed + "]";
     }
 
 }
