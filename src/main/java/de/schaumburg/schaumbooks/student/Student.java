@@ -7,15 +7,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class Student {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
-    private String firstName;
-    private String lastName;
-    private String className;
-    private String email;
+    private @NotEmpty String firstName;
+    private @NotEmpty String lastName;
+    private @NotEmpty String className;
+    private @NotEmpty String email;
 
     public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
             List<Book> books_borrowed) {

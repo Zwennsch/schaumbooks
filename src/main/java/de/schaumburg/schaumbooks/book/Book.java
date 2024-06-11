@@ -23,7 +23,7 @@ public class Book {
         @JoinColumn(name = "student_id")
         private Student student;
 
-        public Book(Long id, @NotEmpty String title, @NotEmpty String verlag, @NotEmpty String isbn, BookStatus status,
+        public Book(Long id, String title, String verlag, String isbn, BookStatus status,
                         Student student) {
                 this.id = id;
                 this.title = title;
