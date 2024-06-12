@@ -35,8 +35,10 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Book> findByIdBook(@PathVariable Long id) {
-        return bookService.findById(id);
+    public ResponseEntity<Book> findBookById(@PathVariable Long id) {
+        return bookService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElseThrow(()-> new BookNotFoundException(id));
     }
 
     @ResponseStatus(HttpStatus.CREATED)

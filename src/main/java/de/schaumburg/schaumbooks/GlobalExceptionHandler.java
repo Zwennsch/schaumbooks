@@ -11,8 +11,8 @@ import de.schaumburg.schaumbooks.book.BookNotFoundException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException exception){
+    public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException exception) {
         return new ResponseEntity<String>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
-    
+
 }
