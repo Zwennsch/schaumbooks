@@ -92,7 +92,7 @@ Content-Type: application/json
     "title" : "wrong status",
     "verlag" : "new verlag",
     "isbn" : "2423-123-12551-123",
-    "status" : "LENT",
+    "status" : "NotAStatus",
     "student" : null
 }
 
@@ -108,3 +108,11 @@ Content-Type: application/json
     "status" : "LENT",
     "student" : null
 }
+
+###DELETE
+### should deletebook
+DELETE  http://localhost:8080/api/books/1 HTTP/1.1
+
+
+### should throw BookNotFoundException on deletebook
+DELETE  http://localhost:8080/api/books/9999 HTTP/1.1
