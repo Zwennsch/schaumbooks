@@ -70,10 +70,9 @@ public class BookServiceTest {
     @Test
     void shouldCallFind0AllCorrectly(){
         when(bookRepository.findAll()).thenReturn(books);
-
         List<Book> allBooks = bookService.findAll();
 
-        assertEquals("Sample Book", books.get(0).getTitle());
+        assertEquals("Sample Book", allBooks.get(0).getTitle());
         verify(bookRepository, times(1)).findAll();
     }
 
