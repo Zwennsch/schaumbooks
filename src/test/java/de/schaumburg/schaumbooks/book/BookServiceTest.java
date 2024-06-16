@@ -1,6 +1,7 @@
 package de.schaumburg.schaumbooks.book;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.List;
 
 // import de.schaumburg.schaumbooks.student.Student;
 
@@ -21,23 +24,32 @@ public class BookServiceTest {
     @InjectMocks
     private BookService bookService;
 
-    private Book book;
+    private List<Book> books;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        book = new Book();
-        book.setTitle("Sample Book");
-        book.setVerlag("Sample Verlag");
-        book.setIsbn("1234567890");
-        book.setStatus(BookStatus.AVAILABLE);
-        book.setStudent(null);
+        Book book1 = new Book();
+        book1.setTitle("Sample Book");
+        book1.setVerlag("Sample Verlag");
+        book1.setIsbn("1234567890");
+        book1.setStatus(BookStatus.AVAILABLE);
+        book1.setStudent(null);
+
+        Book book2 = new Book();
+        book2.setTitle("Sample Book2");
+        book2.setVerlag("Sample Verlag2");
+        book2.setIsbn("1234567890-2");
+        book2.setStatus(BookStatus.LENT);
+        book2.setStudent(null);
+
+        books = List.of(book1, book2);
     }
 
     @Test
     void testUpdateBookWithValidData() {
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookRepository.save(any(Book.class))).thenReturn(books.get(0));
 
         Book updatedBook = new Book();
         updatedBook.setTitle("Updated Title");
@@ -53,6 +65,16 @@ public class BookServiceTest {
         assertEquals("Updated Verlag", result.get().getVerlag());
         assertEquals("0987654321", result.get().getIsbn());
         assertEquals(BookStatus.LENT, result.get().getStatus());
+    }
+
+    @Test
+    void shouldCallFind0AllCorrectly(){
+        when(bookRepository.findAll()).thenReturn(books);
+
+        List<Book> allBooks = bookService.findAll();
+
+        assertEquals("Sample Book", books.get(0).getTitle());
+        verify(bookRepository, times(1)).findAll();
     }
 
     @Test
