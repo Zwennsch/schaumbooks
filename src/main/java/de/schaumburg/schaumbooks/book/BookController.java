@@ -30,34 +30,36 @@ public class BookController {
     }
 
     @GetMapping("")
-    public List<Book> findAll() {
-        return bookService.findAll();
+    public ResponseEntity<List<Book>> findAll() {
+        List<Book> allBooks = bookService.findAll();
+        return ResponseEntity.ok(allBooks);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> findBookById(@PathVariable Long id) {
         return bookService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElseThrow(()-> new BookNotFoundException(id));
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public Book addBook(@Valid @RequestBody Book book) {
-        return bookService.save(book);
+    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
+        Book savedBook = bookService.save(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
         Optional<Book> updatedBook = bookService.updateBook(id, book);
-        return updatedBook.map(ResponseEntity::ok).orElseGet(()-> ResponseEntity.notFound().build());
-        
+        return updatedBook.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteBookById(@PathVariable Long id){
-         bookService.deleteBookById(id);
-         return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteBookById(@PathVariable Long id) {
+        bookService.deleteBookById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

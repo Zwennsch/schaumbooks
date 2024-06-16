@@ -35,6 +35,18 @@ content-type: application/json
 }
 
 
+### Add invalid new book without title:
+POST http://localhost:8080/api/books HTTP/1.1
+content-type: application/json
+
+{
+    "title" : "",
+    "verlag" : "new verlag posted",
+    "isbn" : "2423-123-12551-123",
+    "student" : null
+}
+
+
 ### Add a new book without status and student_id:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json

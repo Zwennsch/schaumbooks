@@ -20,14 +20,14 @@ import jakarta.validation.constraints.NotNull;
 public class BookService {
 
     private final BookRepository bookRepository;
-
+    
     private final StudentRepository studentRepository;
-
+    
     public BookService(BookRepository bookRepository, StudentRepository studentRepository) {
         this.bookRepository = bookRepository;
         this.studentRepository = studentRepository;
     }
-
+    
     public void readDataFromCsvAndSave(String csvFilePath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
@@ -52,6 +52,20 @@ public class BookService {
         }
     }
 
+    public List<Book> findAll() {
+        return bookRepository.findAll();
+    }
+
+    public Optional<Book> findById(Long id) {
+        return bookRepository.findById(id);
+        // return Optional.ofNullable(bookRepository.findById(id)).orElseThrow(() -> new BookNotFoundException(id));
+    }
+
+    @Transactional
+    public Book save(@Valid Book book) {
+        return bookRepository.save(book);
+    }
+
     @Transactional
     public Optional<Book> updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
@@ -64,21 +78,9 @@ public class BookService {
             existingBook.setStudent(updatedBook.getStudent());
             return bookRepository.save(existingBook);
         });
-
     }
 
-    public List<Book> findAll() {
-        return bookRepository.findAll();
-    }
 
-    public Optional<Book> findById(Long id) {
-        return Optional.ofNullable(bookRepository.findById(id)).orElseThrow(() -> new BookNotFoundException(id));
-    }
-
-    @Transactional
-    public Book save(@Valid Book book) {
-        return bookRepository.save(book);
-    }
 
     public void deleteBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
