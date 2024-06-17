@@ -93,7 +93,7 @@ public class BookControllerTest {
 
     @Test
     void shouldReturnNotFoundForId999() throws Exception {
-        when(bookService.findById(999L)).thenThrow(BookNotFoundException.class);
+        when(bookService.findById(999L)).thenReturn(Optional.empty());
         mockMvc.perform(get("/api/books/999"))
                 .andExpect(status().isNotFound());
     }

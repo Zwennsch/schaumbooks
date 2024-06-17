@@ -68,13 +68,23 @@ public class BookServiceTest {
     }
 
     @Test
-    void shouldCallFind0AllCorrectly(){
+    void shouldCallFindAllCorrectly(){
         when(bookRepository.findAll()).thenReturn(books);
         List<Book> allBooks = bookService.findAll();
 
         assertEquals("Sample Book", allBooks.get(0).getTitle());
         verify(bookRepository, times(1)).findAll();
     }
+
+    @Test
+    void shouldFindBookById(){
+        when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
+        Optional<Book> book = bookService.findById(1l);
+
+        assertEquals(books.get(0).getTitle(), book.get().getTitle());
+        verify(bookRepository, times(1)).findById(1l);
+    }
+
 
     @Test
     void testUpdateBookWithInvalidId() {
