@@ -27,30 +27,6 @@ public class BookService {
         this.bookRepository = bookRepository;
         this.studentRepository = studentRepository;
     }
-    
-    public void readDataFromCsvAndSave(String csvFilePath) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
-            String line;
-            // Skip first line:
-            reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                String title = parts[0].trim();
-                String verlag = parts[1].trim();
-                String isbn = parts[2].trim();
-                int numOfBooks = Integer.parseInt(parts[3].trim());
-                for (int i = 0; i < numOfBooks; i++) {
-                    Book book = new Book();
-                    book.setTitle(title);
-                    book.setVerlag(verlag);
-                    book.setIsbn(isbn);
-                    bookRepository.save(book);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Could not find csv-file " + e.getMessage());
-        }
-    }
 
     public List<Book> findAll() {
         return bookRepository.findAll();
