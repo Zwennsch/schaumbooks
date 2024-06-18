@@ -21,7 +21,7 @@ public class Student {
     private @NotEmpty @Email String email;
     private @OneToMany(mappedBy = "student") List<Book> booksBorrowed;
 
-    public Student(Long id, String firstName, String lastName, String className, String email, String course_class,
+    public Student(Long id, String firstName, String lastName, String className, String email,
             List<Book> booksBorrowed) {
         this.id = id;
         this.firstName = firstName;
@@ -82,8 +82,6 @@ public class Student {
         this.email = email;
     }
 
-
-    
     @Override
     public int hashCode() {
         final int prime = 31;
