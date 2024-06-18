@@ -1,8 +1,5 @@
 package de.schaumburg.schaumbooks.book;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +31,6 @@ public class BookService {
 
     public Optional<Book> findById(Long id) {
         return bookRepository.findById(id);
-        // return Optional.ofNullable(bookRepository.findById(id)).orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @Transactional
