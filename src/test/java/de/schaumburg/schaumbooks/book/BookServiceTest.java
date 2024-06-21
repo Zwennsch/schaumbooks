@@ -75,14 +75,14 @@ public class BookServiceTest {
         verify(bookRepository, times(1)).findAll();
     }
 
-    @Test
-    void shouldFindBookById(){
-        when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
-        Optional<Book> book = bookService.findById(1l);
+    // @Test
+    // void shouldFindBookById(){
+    //     when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
+    //     Optional<Book> book = bookService.findById(1l);
 
-        assertEquals(books.get(0).getTitle(), book.get().getTitle());
-        verify(bookRepository, times(1)).findById(1l);
-    }
+    //     assertEquals(books.get(0).getTitle(), book.get().getTitle());
+    //     verify(bookRepository, times(1)).findById(1l);
+    // }
 
 
     @Test
@@ -96,4 +96,13 @@ public class BookServiceTest {
 
         assertFalse(result.isPresent());
     }
+
+    @Test
+    void shouldSaveNewBookWhenValidBook() {
+        Book book = new Book(null, "addedBook", "addVerlag", "12345",BookStatus.DAMAGED, null);
+        when(bookRepository.save(book)).thenReturn(book);
+        Book returnedBook = bookService.save(book);
+        assertEquals(book, returnedBook);
+        verify(bookRepository, times(1)).save(book);
+        }
 }

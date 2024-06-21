@@ -29,8 +29,10 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Optional<Book> findById(Long id) {
-        return bookRepository.findById(id);
+
+    public Book findById(Long id) {
+        return bookRepository.findById(id)
+            .orElseThrow(()-> new BookNotFoundException(id));
     }
 
     @Transactional

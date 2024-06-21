@@ -80,7 +80,7 @@ public class BookControllerTest {
                         "student":null
                     }
                 """;
-        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookService.findById(1L)).thenReturn(books.get(0));
 
         mockMvc.perform(get("/api/books/1"))
                 .andExpect(status().isOk())
@@ -89,7 +89,7 @@ public class BookControllerTest {
 
     @Test
     void shouldReturnNotFoundForId999() throws Exception {
-        when(bookService.findById(999L)).thenReturn(Optional.empty());
+        when(bookService.findById(999L)).thenThrow(new BookNotFoundException(999L));
         mockMvc.perform(get("/api/books/999"))
                 .andExpect(status().isNotFound());
     }
