@@ -90,7 +90,14 @@ public class BookControllerTest {
     @Test
     void shouldReturnNotFoundForId999() throws Exception {
         when(bookService.findById(999L)).thenThrow(new BookNotFoundException(999L));
+        String jsonResponse = """
+                {
+                    "statusCode" : 404,
+                    "message": "Book not found with id: 999"
+                }
+                """;
         mockMvc.perform(get("/api/books/999"))
+                .andExpect(content().json(jsonResponse))
                 .andExpect(status().isNotFound());
     }
 
@@ -137,7 +144,7 @@ public class BookControllerTest {
     void testUpdateBookValidInput() throws Exception {
         Book book = new Book(1L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
 
-        when(bookService.updateBook(1L, book)).thenReturn(Optional.of(book));
+        when(bookService.updateBook(1L, book)).thenReturn(book);
 
         mockMvc.perform(put("/api/books/1")
                 .contentType("application/json")
@@ -149,7 +156,7 @@ public class BookControllerTest {
     @Test
     void testShouldGetIsNotFoundIfBookIsInvalidWhenUpdating() throws Exception {
         Book book = new Book(99L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
-        when(bookService.updateBook(99L, book)).thenReturn(Optional.empty());
+        when(bookService.updateBook(99L, book)).thenThrow(BookNotFoundException.class);
 
         mockMvc.perform(put("/api/books/99")
                 .contentType("application/json")

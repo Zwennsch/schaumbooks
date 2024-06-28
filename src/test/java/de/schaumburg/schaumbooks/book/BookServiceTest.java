@@ -57,14 +57,24 @@ public class BookServiceTest {
         updatedBook.setStatus(BookStatus.LENT);
         updatedBook.setStudent(null);
 
-        Optional<Book> result = bookService.updateBook(1L, updatedBook);
+        Book result = bookService.updateBook(1L, updatedBook);
 
-        assertTrue(result.isPresent());
-        assertEquals("Updated Title", result.get().getTitle());
-        assertEquals("Updated Verlag", result.get().getVerlag());
-        assertEquals("0987654321", result.get().getIsbn());
-        assertEquals(BookStatus.LENT, result.get().getStatus());
+        // assertTrue(result.isPresent());
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Updated Verlag", result.getVerlag());
+        assertEquals("0987654321", result.getIsbn());
+        assertEquals(BookStatus.LENT, result.getStatus());
     }
+
+    @Test
+    void testShouldThrowExceptionWhenUpdateBookWithInvalidId() {
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Book updatedBook = new Book();
+        updatedBook.setTitle("Updated Title");
+        assertThrows(BookNotFoundException.class,() ->  bookService.updateBook(999L, updatedBook));
+    }
+
 
     @Test
     void shouldCallFindAllCorrectly(){
@@ -75,27 +85,22 @@ public class BookServiceTest {
         verify(bookRepository, times(1)).findAll();
     }
 
-    // @Test
-    // void shouldFindBookById(){
-    //     when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
-    //     Optional<Book> book = bookService.findById(1l);
-
-    //     assertEquals(books.get(0).getTitle(), book.get().getTitle());
-    //     verify(bookRepository, times(1)).findById(1l);
-    // }
-
-
     @Test
-    void testUpdateBookWithInvalidId() {
+    void shouldFindBookById(){
+        when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
+        Book book = bookService.findById(1l);
+
+        assertEquals(books.get(0).getTitle(), book.getTitle());
+        verify(bookRepository, times(1)).findById(1l);
+    }
+    @Test
+    void shouldThrowExceptionWhenFindByIdWithInvalidId(){
         when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Book updatedBook = new Book();
-        updatedBook.setTitle("Updated Title");
-
-        Optional<Book> result = bookService.updateBook(999L, updatedBook);
-
-        assertFalse(result.isPresent());
+        assertThrows(BookNotFoundException.class, () -> bookService.findById(999L));
     }
+
+
 
     @Test
     void shouldSaveNewBookWhenValidBook() {

@@ -41,7 +41,7 @@ public class BookService {
     }
 
     @Transactional
-    public Optional<Book> updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
+    public Book updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
 
         return optionalBook.map(existingBook -> {
@@ -51,7 +51,7 @@ public class BookService {
             existingBook.setStatus(updatedBook.getStatus());
             existingBook.setStudent(updatedBook.getStudent());
             return bookRepository.save(existingBook);
-        });
+        }).orElseThrow(()-> new BookNotFoundException(id));
     }
 
 

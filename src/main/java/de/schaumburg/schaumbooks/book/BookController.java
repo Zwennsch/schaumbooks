@@ -49,9 +49,8 @@ public class BookController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
-        Optional<Book> updatedBook = bookService.updateBook(id, book);
-        return updatedBook.map(ResponseEntity::ok).orElseThrow(() -> new BookNotFoundException(id));
-
+        Book updatedBook = bookService.updateBook(id, book);
+        return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
