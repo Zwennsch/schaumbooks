@@ -100,6 +100,26 @@ public class BookServiceTest {
         assertThrows(BookNotFoundException.class, () -> bookService.findById(999L));
     }
 
+    @Test 
+    void shouldDeleteBookGivenValidId(){
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        doNothing().when(bookRepository).deleteById(1L);
+
+        bookService.deleteBookById(1L);
+
+        verify(bookRepository, times(1)).findById(1L);
+        verify(bookRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void shouldThrowExceptionGivenInvalidIdWhenDeleteBook(){
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(BookNotFoundException.class, () -> bookService.deleteBookById(999L));
+
+        verify(bookRepository, times(1)).findById(999L);
+    }
+
 
 
     @Test
