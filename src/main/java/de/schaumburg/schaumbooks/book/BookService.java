@@ -18,11 +18,11 @@ public class BookService {
 
     private final BookRepository bookRepository;
     
-    private final StudentRepository studentRepository;
+    // private final StudentRepository studentRepository;
     
     public BookService(BookRepository bookRepository, StudentRepository studentRepository) {
         this.bookRepository = bookRepository;
-        this.studentRepository = studentRepository;
+        // this.studentRepository = studentRepository;
     }
 
     public List<Book> findAll() {

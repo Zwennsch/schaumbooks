@@ -15,30 +15,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(path = "api/student")
+@RequestMapping(path = "/api/students")
 public class StudentController {
 
-    private final StudentRepository studentRepository;
+    private final StudentService StudentService;
 
-    public StudentController(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentController(StudentService StudentService) {
+        this.StudentService = StudentService;
     }
 
     @GetMapping("")
     public List<Student> findAll() {
-        return studentRepository.findAll();
+        return StudentService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Student findById(@PathVariable Long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No student found with id"));
-    }
+    // @GetMapping("/{id}")
+    // public Student findById(@PathVariable Long id) {
+    //     return StudentService.findById(id)
+    //             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No student found with id"));
+    // }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")
-    public void create(@Valid @RequestBody Student student) {
-        studentRepository.save(student);
-    }
+    // @ResponseStatus(HttpStatus.CREATED)
+    // @PostMapping("")
+    // public void create(@Valid @RequestBody Student student) {
+    //     StudentService.save(student);
+    // }
 
 }
