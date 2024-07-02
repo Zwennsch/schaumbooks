@@ -11,15 +11,15 @@ import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
 
 @Component
-public class CsvLoader {
+public class CsvBookLoader {
 
     private BookRepository bookRepository;
 
-    public CsvLoader(BookRepository bookRepository) {
+    public CsvBookLoader(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
-    public void readDataFromCsvAndSave(String csvFilePath) throws IOException {
+    public void readBookDataFromCsvAndSave(String csvFilePath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
             // Skip first line:
@@ -31,7 +31,7 @@ public class CsvLoader {
                 String isbn = parts[2].trim();
                 int numOfBooks = Integer.parseInt(parts[3].trim());
                 for (int i = 0; i < numOfBooks; i++) {
-                    Book book = new Book(null,title,verlag,isbn,BookStatus.AVAILABLE,null);
+                    Book book = new Book(null, title, verlag, isbn, BookStatus.AVAILABLE, null);
                     this.bookRepository.save(book);
                 }
             }
@@ -39,5 +39,5 @@ public class CsvLoader {
             System.out.println("Could not find csv-file " + e.getMessage());
         }
     }
-    
+
 }

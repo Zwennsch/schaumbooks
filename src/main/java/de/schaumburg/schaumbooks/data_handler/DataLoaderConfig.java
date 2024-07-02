@@ -9,9 +9,9 @@ import java.io.IOException;
 @Configuration
 public class DataLoaderConfig {
 
-    private final CsvLoader csvLoader;
+    private final CsvBookLoader csvLoader;
 
-    public DataLoaderConfig(CsvLoader csvLoader) {
+    public DataLoaderConfig(CsvBookLoader csvLoader) {
         this.csvLoader = csvLoader;
     }
 
@@ -20,7 +20,7 @@ public class DataLoaderConfig {
         return args -> {
             String csvFilePath = ".school-data/books_test.csv";
             try {
-                csvLoader.readDataFromCsvAndSave(csvFilePath);
+                csvLoader.readBookDataFromCsvAndSave(csvFilePath);
                 System.out.println("Successfully loaded data from csv file");
             } catch (IOException e) {
                 System.out.println("Error while loading data from csv file: " + e.getMessage());
