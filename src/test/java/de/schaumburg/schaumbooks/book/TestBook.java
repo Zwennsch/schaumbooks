@@ -10,7 +10,7 @@ import de.schaumburg.schaumbooks.student.Student;
 
 public class TestBook {
 
-    Student s1 = new Student(1L, "hans", "meier", "9a", "mail@test", null);
+    Student s1 = new Student(1L, "hans", "meier", "9a", "mail@test");
     
     @Test
     void shouldBeEqualWhenComparingIdenticalBooks(){

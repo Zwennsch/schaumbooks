@@ -30,7 +30,7 @@ public class CsvStudentLoader {
                 String vorname = parts[2].trim();
                 // String login = parts[3].trim();
                 String email = parts[4].trim();
-                this.studentRepository.save(new Student(null, vorname, nachname, klasse, email, null));
+                this.studentRepository.save(new Student(null, vorname, nachname, klasse, email));
             }
         } catch (Exception e) {
             System.out.println("Could not find csv-file " + e.getMessage());
