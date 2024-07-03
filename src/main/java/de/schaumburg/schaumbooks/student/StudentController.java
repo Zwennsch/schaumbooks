@@ -3,6 +3,7 @@ package de.schaumburg.schaumbooks.student;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,15 +19,16 @@ import jakarta.validation.Valid;
 @RequestMapping(path = "/api/students")
 public class StudentController {
 
-    private final StudentService StudentService;
+    private final StudentService studentService;
 
-    public StudentController(StudentService StudentService) {
-        this.StudentService = StudentService;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @GetMapping("")
-    public List<Student> findAll() {
-        return StudentService.findAll();
+    public ResponseEntity<List<Student>> findAll() {
+        List<Student> allStudents = studentService.findAll();
+        return ResponseEntity.ok(allStudents);
     }
 
     // @GetMapping("/{id}")
