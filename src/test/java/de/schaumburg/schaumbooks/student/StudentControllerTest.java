@@ -27,21 +27,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StudentControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    StudentService studentService;
+    private StudentService studentService;
 
-    @InjectMocks
-    private StudentController studentController;
 
     List<Student> students = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setup(){
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(studentController).build();
+    public void setup(){
 
         students = List.of(new Student(1l, "Test1", "Test1", "8a", "test@email.com"),
         new Student(2l, "Test2", "Test2", "8b", "test2@email.com"));
