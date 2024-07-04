@@ -20,5 +20,17 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+
+    Student findStudentById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+
+    public Student save(Student student) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
+    }
+
     
 }

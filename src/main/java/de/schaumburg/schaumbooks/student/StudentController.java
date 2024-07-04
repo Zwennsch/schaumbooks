@@ -31,16 +31,15 @@ public class StudentController {
         return ResponseEntity.ok(allStudents);
     }
 
-    // @GetMapping("/{id}")
-    // public Student findById(@PathVariable Long id) {
-    //     return StudentService.findById(id)
-    //             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No student found with id"));
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> findStudentById(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.findStudentById(id));
+    }
 
-    // @ResponseStatus(HttpStatus.CREATED)
-    // @PostMapping("")
-    // public void create(@Valid @RequestBody Student student) {
-    //     StudentService.save(student);
-    // }
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping()
+    public ResponseEntity<Student> addStudent(@Valid @RequestBody Student student) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.save(student));
+    }
 
 }
