@@ -32,5 +32,16 @@ public class StudentService {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
+
+    public Student updateStudent(long id, Student student) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateStudent'");
+    }
+    
+    public void deleteStudentById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateStudent'");
+    }
+
     
 }
