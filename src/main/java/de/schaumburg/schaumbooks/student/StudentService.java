@@ -28,8 +28,7 @@ public class StudentService {
 
 
     public Student save(Student student) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        return studentRepository.save(student);
     }
 
 

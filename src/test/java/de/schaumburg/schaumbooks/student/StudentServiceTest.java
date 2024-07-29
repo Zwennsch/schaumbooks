@@ -87,5 +87,14 @@ public class StudentServiceTest {
         verify(studentRepository).findById(99L);
     }
 
-    // 
+    // save
+    @Test
+    void shouldAddNewStudentGivenValidInput(){
+        Student student = new Student(3L, "Hans", "Meier", "10a", "hans@mail.com");
+        when(studentRepository.save(student)).thenReturn(student);
+
+        Student savedStudent = studentService.save(student);
+        assertEquals(student, savedStudent);
+        verify(studentRepository).save(student);
+    }
 }
