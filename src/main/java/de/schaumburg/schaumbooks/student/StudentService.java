@@ -21,9 +21,9 @@ public class StudentService {
     }
 
 
-    Student findStudentById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    public Student findStudentById(Long id) {
+        return studentRepository.findById(id)
+            .orElseThrow(() -> new StudentNotFoundException(id));
     }
 
 
