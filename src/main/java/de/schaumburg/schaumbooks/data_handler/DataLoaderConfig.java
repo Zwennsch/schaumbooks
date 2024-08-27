@@ -18,12 +18,12 @@ public class DataLoaderConfig {
     }
 
     @Bean
-    public CommandLineRunner initBooksData() {
+    CommandLineRunner initBooksData() {
         return args -> {
             String csvFilePath = ".school-data/books_test.csv";
             try {
                 csvBookLoader.readBookDataFromCsvAndSave(csvFilePath);
-                System.out.println("Successfully loaded data from csv file");
+                System.out.println("Successfully loaded book data from csv file");
             } catch (IOException e) {
                 System.out.println("Error while loading data from csv file: " + e.getMessage());
             }
@@ -31,7 +31,7 @@ public class DataLoaderConfig {
     }
 
     @Bean
-    public CommandLineRunner initStudentsData() {
+    CommandLineRunner initStudentsData() {
         return args -> {
             String csvFilePath = ".school-data/schuelerliste_test.csv";
             try {
