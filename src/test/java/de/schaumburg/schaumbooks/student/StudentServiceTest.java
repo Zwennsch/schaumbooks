@@ -2,6 +2,7 @@ package de.schaumburg.schaumbooks.student;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,28 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class StudentServiceTest {
 
-    // TODO: This should be tested by the service and not by the controller:
-
-    // @Test
-    // void shouldAddNewStudentWithId3WhenNoIdIsGiven() throws
-    // JsonProcessingException, Exception{
-    // // Student studentNoId = new Student(null, "Hans", "Meier", "10a",
-    // "test@mail.com");
-    // String jsonStringNoId = """
-    // {
-    // "firstName" : "Hans",
-    // "lastName" : "Meier",
-    // "className" : "10a",
-    // "email" : "test@email.com"
-    // }
-    // """;
-    // mockMvc.perform(post("/api/students")
-    // .contentType(MediaType.APPLICATION_JSON)
-    // .content(jsonStringNoId))
-    // .andExpect(status().isCreated())
-    // .andExpect(jsonPath("$.id").value(3L))
-    // .andExpect(jsonPath("$.firstName").value("Hans"));
-    // }
 
     @Mock
     private StudentRepository studentRepository;
@@ -132,6 +111,25 @@ public class StudentServiceTest {
         assertEquals(existingStudent.getFirstName(), result.getFirstName());
         assertEquals(existingStudent.getLastName(), result.getLastName());
         verify(studentRepository).save(existingStudent);
+    }
+
+    // Delete
+    @Test
+    void shouldDeleteStudentGivenValidId() {
+        when(studentRepository.findById(1l)).thenReturn(Optional.of(students.get(0)));
+
+        studentService.deleteStudentById(1l);
+
+        verify(studentRepository).deleteById(1l);
+    }
+
+    @Test
+    void shouldThrowStudentNotFoundExceptionGivenNoStudentWithIdFOund() {
+        when(studentRepository.findById(99l)).thenReturn(Optional.empty());
+
+        assertThrows(StudentNotFoundException.class, () -> studentService.deleteStudentById(99l));
+
+        verify(studentRepository, never()).deleteById(99l);
     }
 
 }

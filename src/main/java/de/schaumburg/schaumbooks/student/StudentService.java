@@ -43,10 +43,12 @@ public class StudentService {
         }).orElseThrow(() -> new StudentNotFoundException(id));
 
     }
-
+    
+    @Transactional
     public void deleteStudentById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateStudent'");
+        Student student = studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
+        studentRepository.deleteById(student.getId());
+        
     }
 
 }
