@@ -131,47 +131,64 @@ public class StudentControllerTest {
     @Test
     void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
         Student student = new Student(1L, "updatedName", "Test", "8b", "Hans@email.com");
-        
+
         when(studentService.updateStudent(1l, student)).thenReturn(student);
-        
+
         mockMvc.perform(put("/api/students/1")
-        .contentType("application/json")
-        .content(new ObjectMapper().writeValueAsString(student)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.firstName").value("updatedName"));
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(student)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("updatedName"));
     }
-    
+
     @Test
-    void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception{
+    void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
         Student student = new Student(999L, "updatedName", "Test", "8b", "Hans@email.com");
-        
+
         when(studentService.updateStudent(999L, student)).thenThrow(StudentNotFoundException.class);
-        
+
         mockMvc.perform(put("/api/students/999")
-        .contentType("application/json")
-        .content(new ObjectMapper().writeValueAsString(student)))
-        .andExpect(status().isNotFound());
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(student)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenUpdatingStudentWithInvalidData() throws Exception {
+        // Create a Student object with invalid data (e.g., missing required fields)
+        Student invalidStudent = new Student();
+        invalidStudent.setId(1L); // Assuming ID is set for an update, but fields are empty
+        invalidStudent.setFirstName(""); // Invalid because @NotEmpty should trigger validation error
+        invalidStudent.setLastName(""); // Invalid because @NotEmpty should trigger validation error
+        invalidStudent.setClassName(""); // Invalid because @NotEmpty should trigger validation error
+        invalidStudent.setEmail("invalidEmail"); // Invalid because it doesn't match the email pattern
+
+        // Perform a PUT request with invalid data
+        mockMvc.perform(put("/api/students/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidStudent)))
+                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
+                .andExpect(jsonPath("$.firstName").value("must not be empty"))
+                .andExpect(jsonPath("$.lastName").value("must not be empty"))
+                .andExpect(jsonPath("$.className").value("must not be empty"))
+                .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
     }
 
     // DELETE: deleteStudentById()
     @Test
-    void shouldDeleteStudentWhenGivenValidId() throws Exception{
+    void shouldDeleteStudentWhenGivenValidId() throws Exception {
         doNothing().when(studentService).deleteStudentById(1L);
 
         mockMvc.perform(delete("/api/students/1"))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
-    void shouldReturn404WhenDeletingNonExistingStudent() throws Exception{
+    void shouldReturn404WhenDeletingNonExistingStudent() throws Exception {
         doThrow(new StudentNotFoundException(999L)).when(studentService).deleteStudentById(999L);
 
         mockMvc.perform(delete("/api/students/999"))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
-
-
-
-
 
 }

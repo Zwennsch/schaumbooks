@@ -112,10 +112,26 @@ public class StudentServiceTest {
     }
 
     @Test
-    void shouldThrowStudentNotFoundException(){
+    void shouldThrowStudentNotFoundExceptionWhenUpdatingWithInvalidId() {
         Student updatedStudent = new Student(99L, "newName", "newLastName", "10a", "newMail@mail.com");
         when(studentRepository.findById(99L)).thenReturn(Optional.empty());
-        // when(studentRepository.save(updatedStudent)).thenReturn(updatedStudent);
-        Student result = studentService.updateStudent(99L, updatedStudent);
+        assertThrows(StudentNotFoundException.class, () -> studentService.updateStudent(99L, updatedStudent));
     }
+
+    @Test
+    void shouldUpdateOnlySpecifiedFields() {
+        Student existingStudent = new Student(1L, "John", "Doe", "10a", "john.doe@mail.com");
+        Student updatedStudent = new Student(1L, "John", "Doe", "10a", "newMail@mail.com");
+
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
+        when(studentRepository.save(existingStudent)).thenReturn(updatedStudent);
+
+        Student result = studentService.updateStudent(1L, updatedStudent);
+
+        assertEquals(updatedStudent.getEmail(), result.getEmail());
+        assertEquals(existingStudent.getFirstName(), result.getFirstName());
+        assertEquals(existingStudent.getLastName(), result.getLastName());
+        verify(studentRepository).save(existingStudent);
+    }
+
 }
