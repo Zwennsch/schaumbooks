@@ -29,11 +29,11 @@ public class CsvStudentLoader {
             while ((line = reader.readLine()) != null) {
                 try {
                     String[] parts = line.split(",");
-                    String firstName = parts[0].trim();
+                    String className = parts[0].trim();
                     String lastName = parts[1].trim();
-                    String className = parts[2].trim();
-                    String email = parts[3].trim();
-                    
+                    String firstName = parts[2].trim();
+                    String email = parts[4].trim();
+
                     // Create a new Student object and save it to the repository
                     Student student = new Student(null, firstName, lastName, className, email);
                     this.studentRepository.save(student);
