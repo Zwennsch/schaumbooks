@@ -1,5 +1,6 @@
 package de.schaumburg.schaumbooks.book;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,12 +29,16 @@ public class BookControllerTest {
     @MockBean
     BookService bookService;
 
+    Book updatedBook;
+
     List<Book> books = new ArrayList<>();
 
     @BeforeEach
     void setup() {
         books = List.of(new Book(1L, "first book", "first verlag", "123456", BookStatus.AVAILABLE, null),
                 new Book(2L, "second book", "second verlag", "654321", BookStatus.MISSING, null));
+
+        updatedBook = new Book(1L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
     }
 
     @Test
@@ -152,6 +157,18 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.title").value("updated title"));
     }
 
+    // @Test
+    // @WithMockUser(username = "admin", roles = { "ADMIN" })
+    // void shouldAllowAdminToUpdateBook() throws Exception {
+    //     when(bookService.updateBook(any(Long.class), any(Book.class))).thenReturn(books.get(0));
+
+    //     mockMvc.perform(put("/books/1")
+    //             .contentType("application/json")
+    //             .content(asJsonString(updatedBook)))
+    //             .andExpect(status().isOk())
+    //             .andExpect(jsonPath("$.title").value("Title"));
+    // }
+
     @Test
     void testShouldGetIsNotFoundIfBookIsInvalidWhenUpdating() throws Exception {
         Book book = new Book(99L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
@@ -168,7 +185,7 @@ public class BookControllerTest {
         doNothing().when(bookService).deleteBookById(1l);
 
         mockMvc.perform(delete("/api/books/1"))
-            .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -176,7 +193,7 @@ public class BookControllerTest {
         doThrow(new BookNotFoundException(999L)).when(bookService).deleteBookById(999L);
 
         mockMvc.perform(delete("/api/books/999"))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     private static String asJsonString(final Object obj) {

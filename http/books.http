@@ -7,12 +7,12 @@ GET http://localhost:8080/api/books/1 HTTP/1.1
 
 ### try to get book with with anvialid id 99999:
 GET http://localhost:8080/api/books/99999 HTTP/1.1
+Authorization: sven:1234
 
 
 ### Add a new book:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
-
 {
     "id" : null,
     "title" : "my added title",
