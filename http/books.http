@@ -1,13 +1,14 @@
 ### get all books:
 GET http://localhost:8080/api/books HTTP/1.1
+Authorization: Basic sven:1234
 
 ### get book with id 1:
 GET http://localhost:8080/api/books/1 HTTP/1.1
-
+Authorization: Basic sven:1234
 
 ### try to get book with with anvialid id 99999:
 GET http://localhost:8080/api/books/99999 HTTP/1.1
-Authorization: sven:1234
+Authorization: Basic sven:1234
 
 
 ### Add a new book:
@@ -26,6 +27,7 @@ content-type: application/json
 ### Add a new book without status and id:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
+Authorization: Basic sven:1234
 
 {
     "title" : "title without status, id",
