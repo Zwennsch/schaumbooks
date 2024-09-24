@@ -36,5 +36,5 @@ build/
 application-mariadb.properties
 
 ### private data ###
-.school-data/
+.school-data/schuelerliste_8*.csv
 .personal/
