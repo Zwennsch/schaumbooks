@@ -10,10 +10,17 @@ Authorization: Basic sven:1234
 GET http://localhost:8080/api/books/99999 HTTP/1.1
 Authorization: Basic sven:1234
 
+### get a csrf-token
+GET http://localhost:8080/api/books/csrf-token
+Authorization: Basic sven 1234
+
 
 ### Add a new book:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
+Authorization: Basic sven:1234
+X-CSRF-TOKEN: cFoYubnlrqxbNSg4fpGz5oHNHP1mlw5byFC3Lmz4TndGCSc5Qjh82oiGmp92UU1cSryH1uOrMcVXpzh2q2LUFlTJLUAkOkZY
+
 {
     "id" : null,
     "title" : "my added title",
@@ -28,6 +35,7 @@ content-type: application/json
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
 Authorization: Basic sven:1234
+X-CSRF-TOKEN: cFoYubnlrqxbNSg4fpGz5oHNHP1mlw5byFC3Lmz4TndGCSc5Qjh82oiGmp92UU1cSryH1uOrMcVXpzh2q2LUFlTJLUAkOkZY
 
 {
     "title" : "title without status, id",
