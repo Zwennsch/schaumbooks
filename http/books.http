@@ -19,7 +19,7 @@ Authorization: Basic sven 1234
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
 Authorization: Basic sven:1234
-X-CSRF-TOKEN: cFoYubnlrqxbNSg4fpGz5oHNHP1mlw5byFC3Lmz4TndGCSc5Qjh82oiGmp92UU1cSryH1uOrMcVXpzh2q2LUFlTJLUAkOkZY
+X-CSRF-TOKEN: RykPYY-PrCiOQFfOJAJlWWZFXmEELHmYC22GDR8K_0_dRZ9zch0-BL_pzUqjcWX2HS9RbF51cwA9HEi1OVjlP346z3e-J69D
 
 {
     "id" : null,
