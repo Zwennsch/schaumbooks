@@ -14,7 +14,7 @@ public class TestSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(customizer -> customizer.disable());
         // this means every request for every url has to be authenticated
-        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+        http.authorizeHttpRequests(request -> request.anyRequest().permitAll());
 
         // http.csrf(customizer -> customizer.disable())
         // .authorizeHttpRequests(registry -> {
