@@ -2,6 +2,7 @@ package de.schaumburg.schaumbooks.book;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+// import static org.mockito.BDDMockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,8 @@ public class BookServiceTest {
     void testUpdateBookWithValidData() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
         when(bookRepository.save(any(Book.class))).thenReturn(books.get(0));
+
+    // given(null)
 
         Book updatedBook = new Book();
         updatedBook.setTitle("Updated Title");
