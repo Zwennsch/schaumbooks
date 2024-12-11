@@ -41,6 +41,7 @@ public class BookControllerTest {
         updatedBook = new Book(1L, "updated title", "updated verlag", "123-123", BookStatus.AVAILABLE, null);
     }
 
+    // @WithMockUser(username = "sven", roles = "ADMIN")
     @Test
     void shouldFindAllBooks() throws Exception {
         String jsonResponse = """
@@ -160,13 +161,14 @@ public class BookControllerTest {
     // @Test
     // @WithMockUser(username = "admin", roles = { "ADMIN" })
     // void shouldAllowAdminToUpdateBook() throws Exception {
-    //     when(bookService.updateBook(any(Long.class), any(Book.class))).thenReturn(books.get(0));
+    // when(bookService.updateBook(any(Long.class),
+    // any(Book.class))).thenReturn(books.get(0));
 
-    //     mockMvc.perform(put("/books/1")
-    //             .contentType("application/json")
-    //             .content(asJsonString(updatedBook)))
-    //             .andExpect(status().isOk())
-    //             .andExpect(jsonPath("$.title").value("Title"));
+    // mockMvc.perform(put("/books/1")
+    // .contentType("application/json")
+    // .content(asJsonString(updatedBook)))
+    // .andExpect(status().isOk())
+    // .andExpect(jsonPath("$.title").value("Title"));
     // }
 
     @Test

@@ -12,6 +12,15 @@ public class TestSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(customizer -> customizer.disable());
+        // this means every request for every url has to be authenticated
+        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+
+        // http.csrf(customizer -> customizer.disable())
+        // .authorizeHttpRequests(registry -> {
+        // registry.requestMatchers("/api/books").permitAll();
+        // });
+
         return http.build();
     }
 }
