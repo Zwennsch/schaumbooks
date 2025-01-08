@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -15,7 +16,7 @@ import java.util.List;
 // import de.schaumburg.schaumbooks.student.Student;
 
 import java.util.Optional;
-
+// @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 public class BookServiceTest {
 
     @Mock

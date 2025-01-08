@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,8 @@ public class StudentControllerTest {
         when(studentService.findAll()).thenReturn(students);
 
         mockMvc.perform(get("/api/students")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonString));
 
@@ -76,7 +78,8 @@ public class StudentControllerTest {
 
         when(studentService.findStudentById(1L)).thenReturn(students.get(0));
 
-        mockMvc.perform(get("/api/students/1"))
+        mockMvc.perform(get("/api/students/1")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
     }
@@ -92,7 +95,8 @@ public class StudentControllerTest {
                 }
                 """;
 
-        mockMvc.perform(get("/api/students/999"))
+        mockMvc.perform(get("/api/students/999")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json(jsonResponse));
     }
@@ -106,7 +110,8 @@ public class StudentControllerTest {
 
         mockMvc.perform(post("/api/students")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(student)))
+                .content(objectMapper.writeValueAsString(student))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(3L))
                 .andExpect(jsonPath("$.firstName").value("Hans"));
@@ -117,7 +122,8 @@ public class StudentControllerTest {
     public void shouldReturnBadRequestForInvalidStudents(Student invalidStudent) throws Exception {
         mockMvc.perform(post("/api/students")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(invalidStudent)))
+                .content(new ObjectMapper().writeValueAsString(invalidStudent))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -140,7 +146,8 @@ public class StudentControllerTest {
 
         mockMvc.perform(put("/api/students/1")
                 .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(student)))
+                .content(new ObjectMapper().writeValueAsString(student))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("updatedName"));
     }
@@ -153,7 +160,8 @@ public class StudentControllerTest {
 
         mockMvc.perform(put("/api/students/999")
                 .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(student)))
+                .content(new ObjectMapper().writeValueAsString(student))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNotFound());
     }
 
@@ -170,7 +178,8 @@ public class StudentControllerTest {
         // Perform a PUT request with invalid data
         mockMvc.perform(put("/api/students/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidStudent)))
+                .content(objectMapper.writeValueAsString(invalidStudent))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
                 .andExpect(jsonPath("$.firstName").value("must not be empty"))
                 .andExpect(jsonPath("$.lastName").value("must not be empty"))
@@ -183,7 +192,8 @@ public class StudentControllerTest {
     void shouldDeleteStudentWhenGivenValidId() throws Exception {
         doNothing().when(studentService).deleteStudentById(1L);
 
-        mockMvc.perform(delete("/api/students/1"))
+        mockMvc.perform(delete("/api/students/1")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNoContent());
     }
 
@@ -191,7 +201,8 @@ public class StudentControllerTest {
     void shouldReturn404WhenDeletingNonExistingStudent() throws Exception {
         doThrow(new StudentNotFoundException(999L)).when(studentService).deleteStudentById(999L);
 
-        mockMvc.perform(delete("/api/students/999"))
+        mockMvc.perform(delete("/api/students/999")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNotFound());
     }
 

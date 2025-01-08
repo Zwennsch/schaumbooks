@@ -10,11 +10,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -70,7 +71,8 @@ public class BookControllerTest {
                 """;
         when(bookService.findAll()).thenReturn(books);
 
-        mockMvc.perform(get("/api/books"))
+        mockMvc.perform(get("/api/books")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
 
@@ -80,18 +82,19 @@ public class BookControllerTest {
     @Test
     void shouldFindBookByGivenValidId() throws Exception {
         String jsonResponse = """
-                    {
-                        "id":1,
-                        "title":"first book",
-                        "verlag":"first verlag",
-                        "isbn":"123456",
-                        "status":"AVAILABLE",
-                        "student":null
+                {
+                    "id":1,
+                    "title":"first book",
+                    "verlag":"first verlag",
+                    "isbn":"123456",
+                    "status":"AVAILABLE",
+                    "student":null
                     }
-                """;
+                    """;
         when(bookService.findById(1L)).thenReturn(books.get(0));
 
-        mockMvc.perform(get("/api/books/1"))
+        mockMvc.perform(get("/api/books/1")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
     }
@@ -105,7 +108,8 @@ public class BookControllerTest {
                     "message": "Book not found with id: 999"
                 }
                 """;
-        mockMvc.perform(get("/api/books/999"))
+        mockMvc.perform(get("/api/books/999")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(content().json(jsonResponse))
                 .andExpect(status().isNotFound());
     }
@@ -118,7 +122,8 @@ public class BookControllerTest {
 
         mockMvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(book)))
+                .content(asJsonString(book))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(3L))
                 .andExpect(jsonPath("$.title").value("new Book"));
@@ -134,7 +139,8 @@ public class BookControllerTest {
 
         mockMvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(invalidBook)))
+                .content(asJsonString(invalidBook))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -145,7 +151,8 @@ public class BookControllerTest {
 
         mockMvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(missingBook)))
+                .content(asJsonString(missingBook))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -157,7 +164,8 @@ public class BookControllerTest {
 
         mockMvc.perform(put("/api/books/1")
                 .contentType("application/json")
-                .content(asJsonString(book)))
+                .content(asJsonString(book))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("updated title"));
     }
@@ -182,7 +190,8 @@ public class BookControllerTest {
 
         mockMvc.perform(put("/api/books/99")
                 .contentType("application/json")
-                .content(asJsonString(book)))
+                .content(asJsonString(book))
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNotFound());
     }
 
@@ -190,7 +199,8 @@ public class BookControllerTest {
     void shouldDeleteBookWithValidId() throws Exception {
         doNothing().when(bookService).deleteBookById(1l);
 
-        mockMvc.perform(delete("/api/books/1"))
+        mockMvc.perform(delete("/api/books/1")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNoContent());
     }
 
@@ -198,7 +208,8 @@ public class BookControllerTest {
     void shouldReturn404WhenDeletingNonExistentBook() throws Exception {
         doThrow(new BookNotFoundException(999L)).when(bookService).deleteBookById(999L);
 
-        mockMvc.perform(delete("/api/books/999"))
+        mockMvc.perform(delete("/api/books/999")
+                .with(httpBasic("sven", "1234")))
                 .andExpect(status().isNotFound());
     }
 

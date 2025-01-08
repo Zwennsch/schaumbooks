@@ -7,7 +7,7 @@ Authorization: Basic sven:1234
 GET http://localhost:8080/api/books/1 HTTP/1.1
 Authorization: Basic sven:1234
 
-### try to get book with with anvialid id 99999:
+### try to get book with with invalid id 99999:
 GET http://localhost:8080/api/books/99999 HTTP/1.1
 Authorization: Basic sven:1234
 
@@ -20,7 +20,6 @@ Authorization: Basic sven 1234
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
 Authorization: Basic sven:1234
-X-CSRF-TOKEN: RykPYY-PrCiOQFfOJAJlWWZFXmEELHmYC22GDR8K_0_dRZ9zch0-BL_pzUqjcWX2HS9RbF51cwA9HEi1OVjlP346z3e-J69D
 
 {
     "id" : null,
@@ -36,7 +35,6 @@ X-CSRF-TOKEN: RykPYY-PrCiOQFfOJAJlWWZFXmEELHmYC22GDR8K_0_dRZ9zch0-BL_pzUqjcWX2HS
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
 Authorization: Basic sven:1234
-X-CSRF-TOKEN: cFoYubnlrqxbNSg4fpGz5oHNHP1mlw5byFC3Lmz4TndGCSc5Qjh82oiGmp92UU1cSryH1uOrMcVXpzh2q2LUFlTJLUAkOkZY
 
 {
     "title" : "title without status, id",
@@ -49,6 +47,7 @@ X-CSRF-TOKEN: cFoYubnlrqxbNSg4fpGz5oHNHP1mlw5byFC3Lmz4TndGCSc5Qjh82oiGmp92UU1cSr
 ### Add invalid new book without title:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
+Authorization: Basic sven:1234
 
 {
     "title" : "",
@@ -61,6 +60,7 @@ content-type: application/json
 ### Add a new book without status and student_id:
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
+Authorization: Basic sven:1234
 
 {
     "title" : "title without status, student_id",
@@ -71,6 +71,7 @@ content-type: application/json
 ### Add a second book with different status
 POST http://localhost:8080/api/books HTTP/1.1
 content-type: application/json
+Authorization: Basic sven:1234
 
 {
     "id": null,
@@ -84,6 +85,7 @@ content-type: application/json
 ### should update book with id 1
 PUT http://localhost:8080/api/books/1 HTTP/1.1
 Content-Type: application/json
+Authorization: Basic sven:1234
 
 {
     "id" : "1",
@@ -97,6 +99,7 @@ Content-Type: application/json
 ### should not update book because of wrong status
 PUT http://localhost:8080/api/books/1 HTTP/1.1
 Content-Type: application/json
+Authorization: Basic sven:1234
 
 {
     "id" : "1",
