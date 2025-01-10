@@ -2,6 +2,10 @@
 GET http://localhost:8080/api/books HTTP/1.1
 Authorization: Basic sven:1234
 
+### get all books just for testing userDetails:
+GET http://localhost:8080/api/books HTTP/1.1
+Authorization: Basic hans:3456
+
 
 ### get book with id 1:
 GET http://localhost:8080/api/books/1 HTTP/1.1
