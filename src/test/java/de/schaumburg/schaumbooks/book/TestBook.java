@@ -4,18 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import de.schaumburg.schaumbooks.student.Student;
+import de.schaumburg.schaumbooks.user.Role;
+import de.schaumburg.schaumbooks.user.User;
 
 public class TestBook {
 
-    Student s1 = new Student(1L, "hans", "meier", "9a", "mail@test");
+    User s1 = new User(1L, "hans", "meier", "mail@test", List.of(Role.STUDENT), "9a");
     
     @Test
     void shouldBeEqualWhenComparingIdenticalBooks(){
 
-        Student student1 = s1;
+        User student1 = s1;
 
         Book book1 = new Book(1L, "title", "verlag", "123-456", BookStatus.AVAILABLE, student1);
         Book book2 = new Book(1L, "title", "verlag", "123-456", BookStatus.AVAILABLE, student1);

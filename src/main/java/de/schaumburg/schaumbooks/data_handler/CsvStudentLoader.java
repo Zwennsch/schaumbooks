@@ -3,22 +3,24 @@ package de.schaumburg.schaumbooks.data_handler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import de.schaumburg.schaumbooks.student.Student;
-import de.schaumburg.schaumbooks.student.StudentRepository;
+import de.schaumburg.schaumbooks.user.Role;
+import de.schaumburg.schaumbooks.user.User;
+import de.schaumburg.schaumbooks.user.UserRepository;
 
 @Component
 public class CsvStudentLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvStudentLoader.class);
-    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
 
-    public CsvStudentLoader(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public CsvStudentLoader(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
@@ -34,9 +36,9 @@ public class CsvStudentLoader {
                     String firstName = parts[2].trim();
                     String email = parts[4].trim();
 
-                    // Create a new Student object and save it to the repository
-                    Student student = new Student(null, firstName, lastName, className, email);
-                    this.studentRepository.save(student);
+                    // Create a new User and save it to the repository
+                    User student = new User(null, firstName, lastName, email, List.of(Role.STUDENT), className);
+                    this.userRepository.save(student);
                 } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
                     logger.error("Skipping malformed line: {}", line, e);
                 }

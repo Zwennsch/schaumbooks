@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import de.schaumburg.schaumbooks.student.StudentRepository;
+import de.schaumburg.schaumbooks.user.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,7 +22,7 @@ public class BookService {
     
     // private final StudentRepository studentRepository;
     
-    public BookService(BookRepository bookRepository, StudentRepository studentRepository) {
+    public BookService(BookRepository bookRepository, UserRepository studentRepository) {
         this.bookRepository = bookRepository;
         // this.studentRepository = studentRepository;
     }

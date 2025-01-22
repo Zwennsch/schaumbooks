@@ -1,6 +1,6 @@
 package de.schaumburg.schaumbooks.book;
 
-import de.schaumburg.schaumbooks.student.Student;
+import de.schaumburg.schaumbooks.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,10 +21,10 @@ public class Book {
         private BookStatus status = BookStatus.AVAILABLE;
         @ManyToOne
         @JoinColumn(name = "student_id")
-        private Student student;
+        private User student;
 
         public Book(Long id, String title, String verlag, String isbn, BookStatus status,
-                        Student student) {
+                        User student) {
                 this.id = id;
                 this.title = title;
                 this.verlag = verlag;
@@ -76,11 +76,11 @@ public class Book {
                 this.status = status;
         }
 
-        public void setStudent(Student student) {
+        public void setStudent(User student) {
                 this.student = student;
         }
 
-        public Student getStudent() {
+        public User getStudent() {
                 return student;
         }
 

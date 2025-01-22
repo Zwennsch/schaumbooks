@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import de.schaumburg.schaumbooks.book.BookNotFoundException;
-import de.schaumburg.schaumbooks.student.StudentNotFoundException;
+import de.schaumburg.schaumbooks.user.UserNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,8 +24,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(StudentNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleStudentNotFoundException(StudentNotFoundException exception) {
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleUserNotFoundException(UserNotFoundException exception) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), exception.getMessage(), new Date());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);

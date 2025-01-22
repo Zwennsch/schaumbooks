@@ -15,13 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import de.schaumburg.schaumbooks.student.Student;
-import de.schaumburg.schaumbooks.student.StudentRepository;
+import de.schaumburg.schaumbooks.user.User;
+import de.schaumburg.schaumbooks.user.UserRepository;
 
 public class CsvStudentLoaderTest {
 
     @Mock
-    private StudentRepository studentRepository;
+    private UserRepository studentRepository;
 
     @InjectMocks
     private CsvStudentLoader csvStudentLoader;
@@ -62,7 +62,7 @@ public class CsvStudentLoaderTest {
         csvStudentLoader.readStudentDataFromCsvAndSave(validCsvPath);
 
         // Verify that two students were saved to the repository
-        verify(studentRepository, times(2)).save(any(Student.class));
+        verify(studentRepository, times(2)).save(any(User.class));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CsvStudentLoaderTest {
         csvStudentLoader.readStudentDataFromCsvAndSave("non_existent_file.csv");
 
         // Verify that no students were saved to the repository
-        verify(studentRepository, times(0)).save(any(Student.class));
+        verify(studentRepository, times(0)).save(any(User.class));
     }
 
     @Test
@@ -79,6 +79,6 @@ public class CsvStudentLoaderTest {
         csvStudentLoader.readStudentDataFromCsvAndSave(invalidCsvPath);
 
         // Verify that only the first student was saved to the repository
-        verify(studentRepository, times(1)).save(any(Student.class));
+        verify(studentRepository, times(1)).save(any(User.class));
     }
 }
