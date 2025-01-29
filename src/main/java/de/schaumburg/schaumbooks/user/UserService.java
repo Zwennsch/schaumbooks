@@ -28,7 +28,7 @@ public class UserService {
     public User save(User user) {
         if (user.getRoles().contains(Role.STUDENT) && (user.getClassName() == null || user.getClassName().isEmpty())){
             throw new InvalidUserInputException("Student must have a className");
-        }else if(!user.getRoles().contains(Role.STUDENT) && user.getClassName() != null){
+        }else if(!user.getRoles().contains(Role.STUDENT) && (user.getClassName() != null)){
             throw new InvalidUserInputException("Non-Student roles must not have a className");
         }
         return userRepository.save(user);

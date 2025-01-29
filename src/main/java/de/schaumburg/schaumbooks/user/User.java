@@ -2,6 +2,7 @@ package de.schaumburg.schaumbooks.user;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,6 +24,7 @@ public class User {
     private @NotEmpty String lastName;
     private @NotEmpty @Email String email;
     private @ElementCollection(fetch = FetchType.EAGER) @Enumerated(EnumType.STRING) List<Role> roles; 
+    @Column(nullable = true)
     private String className;
     
     User() {
