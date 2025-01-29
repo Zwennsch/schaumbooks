@@ -1,5 +1,5 @@
-### get all studetnts:
-GET http://localhost:8080/api/students HTTP/1.1
+### get all users:
+GET http://localhost:8080/api/users HTTP/1.1
 
 ### get student with id 1:
 GET http://localhost:8080/api/students/1 HTTP/1.1
