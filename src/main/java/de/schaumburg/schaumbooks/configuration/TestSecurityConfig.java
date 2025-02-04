@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,20 +19,18 @@ public class TestSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-        // first you declare WHAT you want to protect and how:
-            .authorizeHttpRequests(
-                authorizeHttp -> {
-                    // ensures that every request requires authentication
-                    // except thows you declare here with permitAll();
-                    authorizeHttp.anyRequest().authenticated();
-
-                }
-            )
-        // secondly you declare HOW you want to login:
-            // disable csrf since making the API stateless
-            .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
-            .httpBasic(Customizer.withDefaults())
-            .build();
+                // first you declare WHAT you want to protect and how:
+                .authorizeHttpRequests(
+                        authorizeHttp -> {
+                            // ensures that every request requires authentication
+                            authorizeHttp.anyRequest().authenticated();
+                        })
+                // secondly you declare HOW you want to login:
+                // disable csrf since making the API stateless
+                .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
 
     }
 

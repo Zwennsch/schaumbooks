@@ -1,6 +1,8 @@
 package de.schaumburg.schaumbooks.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -84,6 +86,20 @@ public class UserServiceTest {
         assertEquals(student, savedStudent);
         verify(userRepository).save(student);
     }
+
+    // @Test
+    // void shouldSaveAdminWithoutClassName() {
+    //     User admin = new User(null, "Jane", "Doe", "jane@example.com", "password",
+    //             List.of(Role.ADMIN), null);
+
+    //     when(userRepository.save(admin)).thenReturn(admin);
+
+    //     User savedUser = userService.save(admin);
+
+    //     assertNotNull(savedUser);
+    //     assertNull(savedUser.getClassName());
+    //     verify(userRepository, times(1)).save(admin);
+    // }
 
     // update
     @Test

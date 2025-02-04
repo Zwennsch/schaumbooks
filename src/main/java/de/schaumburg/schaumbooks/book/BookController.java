@@ -60,10 +60,10 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/csrf-token")
-    public CsrfToken getCsrfToken(HttpServletRequest request){
-        return (CsrfToken) request.getAttribute("_csrf");
-    }
+    // @GetMapping("/csrf-token")
+    // public CsrfToken getCsrfToken(HttpServletRequest request){
+    //     return (CsrfToken) request.getAttribute("_csrf");
+    // }
 
 
 }
