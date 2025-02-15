@@ -1,5 +1,6 @@
 package de.schaumburg.schaumbooks.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,9 +16,14 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import de.schaumburg.schaumbooks.user.MyUserDetailsService;
+
 @Configuration
 @EnableWebSecurity
 public class TestSecurityConfig {
+
+    @Autowired
+    MyUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,25 +45,26 @@ public class TestSecurityConfig {
 
 
     // This is just for testing because in a real application those details should come from the database:
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user1 = User.withDefaultPasswordEncoder()
-                .username("sven")
-                .password("1234")
-                // .roles("USER")
-                .build();
-        UserDetails user2 = User.withDefaultPasswordEncoder()
-                .username("hans")
-                .password("3456")
-                // .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2);
-    }
-
     // @Bean
-    // public AuthenticationProvider authenticationProvider(){
-    //     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    //     provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-    //     return provider;
+    // public UserDetailsService userDetailsService() {
+    //     UserDetails user1 = User.withDefaultPasswordEncoder()
+    //             .username("sven")
+    //             .password("1234")
+    //             // .roles("USER")
+    //             .build();
+    //     UserDetails user2 = User.withDefaultPasswordEncoder()
+    //             .username("hans")
+    //             .password("3456")
+    //             // .roles("USER")
+    //             .build();
+    //     return new InMemoryUserDetailsManager(user1, user2);
     // }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
+    }
 }
