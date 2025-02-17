@@ -20,27 +20,32 @@ import jakarta.validation.constraints.NotEmpty;
 public class User {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    private @NotEmpty @Column(unique = true, nullable = false) String username;
+    private @NotEmpty String password;
     private @NotEmpty String firstName;
     private @NotEmpty String lastName;
     private @NotEmpty @Email String email;
-    private @ElementCollection(fetch = FetchType.EAGER) @Enumerated(EnumType.STRING) List<Role> roles; 
+    private @ElementCollection(fetch = FetchType.EAGER) @Enumerated(EnumType.STRING) List<Role> roles;
     @Column(nullable = true)
     private String className;
-    
+
     User() {
 
     }
-    
-    public User(Long id, String firstName, String lastName, String email, List<Role> roles, String className) {
+
+    public User(Long id, String username, String password, String firstName, String lastName, String email,
+            List<Role> roles, String className) {
         this.id = id;
+        this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.className = className;
         this.roles = roles;
     }
-    
-// Getters and Setters
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -48,52 +53,67 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getFirstName() {
         return firstName;
     }
-    
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
-    
+
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     public List<Role> getRoles() {
         return roles;
     }
-    
+
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-    
+
     public String getClassName() {
         return className;
     }
-    
+
     public void setClassName(String className) {
         this.className = className;
     }
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-                + ", roles=" + roles + ", className=" + className + "]";
+        return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
+                + ", lastName=" + lastName + ", email=" + email + ", roles=" + roles + ", className=" + className + "]";
     }
 
     @Override
@@ -101,6 +121,8 @@ public class User {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result + ((password == null) ? 0 : password.hashCode());
         result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
@@ -122,6 +144,16 @@ public class User {
             if (other.id != null)
                 return false;
         } else if (!id.equals(other.id))
+            return false;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        } else if (!username.equals(other.username))
+            return false;
+        if (password == null) {
+            if (other.password != null)
+                return false;
+        } else if (!password.equals(other.password))
             return false;
         if (firstName == null) {
             if (other.firstName != null)
@@ -151,5 +183,4 @@ public class User {
         return true;
     }
 
-   
 }

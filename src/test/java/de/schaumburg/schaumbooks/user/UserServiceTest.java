@@ -40,9 +40,9 @@ public class UserServiceTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        User student1 = new User(1L, "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT), "8a");
-        User student2 = new User(2L, "student2", "lastname2", "student2@mail.com", List.of(Role.STUDENT), "9a");
-        User teacher = new User(3L, "hans", "lehrer", "lehrer@mail.com", List.of(Role.TEACHER), null);
+        User student1 = new User(1L,"user1", "1234", "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT), "8a");
+        User student2 = new User(2L, "user2", "1234", "student2", "lastname2", "student2@mail.com", List.of(Role.STUDENT), "9a");
+        User teacher =  new User(3L, "user3", "1234", "hans", "lehrer", "lehrer@mail.com", List.of(Role.TEACHER), null);
         
         users = List.of(student1, student2, teacher);
     }
@@ -79,7 +79,7 @@ public class UserServiceTest {
     // save
     @Test
     void shouldAddNewStudentGivenValidInput() {
-        User student = new User(4L, "student3", "lastname3", "student3@mail.com", List.of(Role.STUDENT), "9a");
+        User student = new User(4L, "user4", "1234", "student3", "lastname3", "student3@mail.com", List.of(Role.STUDENT), "9a");
         when(userRepository.save(student)).thenReturn(student);
 
         User savedStudent = userService.save(student);
@@ -104,7 +104,7 @@ public class UserServiceTest {
     // update
     @Test
     void shouldUpdateStudentGivenValidInput() {
-        User updatedStudent = new User(1L, "newName", "newLastName", "newMail@mail.com", List.of(Role.STUDENT), "10b" );
+        User updatedStudent = new User(1L,"user1", "1234", "newName", "newLastName", "newMail@mail.com", List.of(Role.STUDENT), "10b" );
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(userRepository.save(updatedStudent)).thenReturn(updatedStudent);
         User result = userService.updateUser(1L, updatedStudent);
@@ -114,15 +114,15 @@ public class UserServiceTest {
 
     @Test
     void shouldThrowStudentNotFoundExceptionWhenUpdatingWithInvalidId() {
-        User updatedStudent = new User(99L, "newName", "newLastName", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+        User updatedStudent = new User(99L,"user99", "1234", "newName", "newLastName", "newMail@mail.com", List.of(Role.STUDENT), "10a");
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(99L, updatedStudent));
     }
 
     @Test
     void shouldUpdateOnlySpecifiedFields() {
-        User existingStudent = new User(1L, "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
-        User updatedStudent = new User(1L, "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+        User existingStudent = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
+        User updatedStudent =  new User(1L, "user1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
         when(userRepository.save(existingStudent)).thenReturn(updatedStudent);

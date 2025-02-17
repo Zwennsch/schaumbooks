@@ -35,9 +35,12 @@ public class CsvStudentLoader {
                     String lastName = parts[1].trim();
                     String firstName = parts[2].trim();
                     String email = parts[4].trim();
+                    String username = parts[3].trim();
+                    String password = parts[5].trim();
 
+                    // TODO: before storing into the database the password it should be encrypted
                     // Create a new User and save it to the repository
-                    User student = new User(null, firstName, lastName, email, List.of(Role.STUDENT), className);
+                    User student = new User(null,username, password, firstName, lastName, email, List.of(Role.STUDENT), className);
                     this.userRepository.save(student);
                 } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
                     logger.error("Skipping malformed line: {}", line, e);

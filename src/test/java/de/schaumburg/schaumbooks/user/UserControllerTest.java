@@ -55,10 +55,10 @@ public class UserControllerTest {
     @BeforeEach
     public void setup() {
 
-        users = List.of(new User(1l, "Test1", "Test1", "test@email.com", List.of(Role.STUDENT), "8a"),
-                new User(2l, "Test2", "Test2", "test2@email.com", List.of(Role.STUDENT), "8b"));
-        new User(3l, "Hans", "teacher", "teacher1@email.com", List.of(Role.TEACHER), null);
-        new User(4l, "Horst", "admin", "admin@email.com", List.of(Role.ADMIN), null);
+        users = List.of(new User(1l, "user1", "1234", "Test1", "Test1", "test@email.com", List.of(Role.STUDENT), "8a"),
+                        new User(2l, "user2", "1234", "Test2", "Test2", "test2@email.com", List.of(Role.STUDENT), "8b"));
+                        new User(4l, "user3", "1234", "Horst", "admin", "admin@email.com", List.of(Role.ADMIN), null);
+                        new User(3l, "user4", "1234", "Hans", "teacher", "teacher1@email.com", List.of(Role.TEACHER), null);
     }
 
     // GET: findAll
@@ -111,7 +111,7 @@ public class UserControllerTest {
     // POST: addStudent
     @Test
     void shouldAddNewStudentGivenValidStudent() throws Exception {
-        User student = new User(5L, "Hans", "Meier", "test@mail.com", List.of(Role.STUDENT), "8b");
+        User student = new User(5L, "user5", "1234", "Hans", "Meier", "test@mail.com", List.of(Role.STUDENT), "8b");
 
         when(userService.save(student)).thenReturn(student);
 
@@ -136,16 +136,16 @@ public class UserControllerTest {
 
     private static Stream<Arguments> provideInvalidStudents() {
         return Stream.of(
-                Arguments.of(new User(null, "", "Doe", "john.doe@example.com", List.of(Role.STUDENT), "10a")), // empty
+                Arguments.of(new User(null,"user20", "1234", "", "Doe", "john.doe@example.com", List.of(Role.STUDENT), "10a")), // empty
                                                                                                                // firstName
-                Arguments.of(new User(null, "John", "", "john.doe@example.com", List.of(Role.STUDENT), "10b")), // empty
+                Arguments.of(new User(null, "user21", "1234", "John", "", "john.doe@example.com", List.of(Role.STUDENT), "10b")), // empty
                                                                                                                 // lastName
                 // Arguments.of(new User(null, "John", "Doe", "john.doe@example.com", List.of(Role.STUDENT), "")), // empty
                                                                                                                 // className
                                                                                                                 // for
                                                                                                                 // student
-                Arguments.of(new User(null, "John", "Doe", "", List.of(Role.STUDENT), "10A")), // empty email
-                Arguments.of(new User(null, "John", "Doe", "not-an-email", List.of(Role.STUDENT), "10A")) // invalid
+                Arguments.of(new User(null,"user22", "1234",  "John", "Doe", "", List.of(Role.STUDENT), "10A")), // empty email
+                Arguments.of(new User(null,"user23", "1234", "John", "Doe", "not-an-email", List.of(Role.STUDENT), "10A")) // invalid
                                                                                                           // email
         );
     }
@@ -153,7 +153,7 @@ public class UserControllerTest {
     // PUT: updateStudent()
     @Test
     void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
-        User student = new User(1L, "updatedName", "Test", "Hans@email.com", List.of(Role.STUDENT), "8b");
+        User student = new User(1L,"user1", "1234",  "updatedName", "Test", "Hans@email.com", List.of(Role.STUDENT), "8b");
 
         when(userService.updateUser(1l, student)).thenReturn(student);
 
@@ -167,7 +167,7 @@ public class UserControllerTest {
 
     @Test
     void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
-        User student = new User(999L, "updatedName", "Test", "Hans@email.com", List.of(Role.STUDENT), "8b");
+        User student = new User(999L, "user999", "1234", "updatedName", "Test", "Hans@email.com", List.of(Role.STUDENT), "8b");
 
         when(userService.updateUser(999L, student)).thenThrow(UserNotFoundException.class);
 

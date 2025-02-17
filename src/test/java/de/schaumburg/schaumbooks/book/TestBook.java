@@ -13,7 +13,7 @@ import de.schaumburg.schaumbooks.user.User;
 
 public class TestBook {
 
-    User s1 = new User(1L, "hans", "meier", "mail@test", List.of(Role.STUDENT), "9a");
+    User s1 = new User(1L, "user1", "1234", "hans", "meier", "mail@test", List.of(Role.STUDENT), "9a");
     
     @Test
     void shouldBeEqualWhenComparingIdenticalBooks(){
