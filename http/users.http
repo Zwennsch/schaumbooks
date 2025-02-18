@@ -21,7 +21,9 @@ Authorization: Basic sven:1234
     "lastName" : "new added last name",
     "email" : "addedMail@mail.com",
     "roles" : ["STUDENT"],
-    "className" : "10b"
+    "className" : "10b",
+    "username" : "newUser",
+    "password" : "123456"
 }
 
 
@@ -35,7 +37,9 @@ Authorization: Basic sven:1234
     "lastName" : "new admin last name",
     "email" : "admin@mail.com",
     "roles" : ["ADMIN"],
-    "className" : null
+    "className" : null,
+    "username" : "newUser2",
+    "password" : "123456"
 }
 
 
@@ -49,7 +53,9 @@ Authorization: Basic sven:1234
     "lastName" : "newer admin last name",
     "email" : "admin2@mail.com",
     "roles" : ["ADMIN"],
-    "className" : ""
+    "className" : "",
+    "username" : "newUser2",
+    "password" : "123456"
 }
 
 
@@ -62,47 +68,14 @@ Authorization: Basic sven:1234
     "firstName" : "newer admin",
     "lastName" : "newer admin last name",
     "email" : "admin2@mail.com",
-    "roles" : ["ADMIN"]
+    "roles" : ["ADMIN"],
+    "username" : "newAdmin",
+    "password" : "123456"
 }
 
 
 
 
-
-### Add invalid new book without title:
-POST http://localhost:8080/api/books HTTP/1.1
-content-type: application/json
-
-{
-    "title" : "",
-    "verlag" : "new verlag posted",
-    "isbn" : "2423-123-12551-123",
-    "student" : null
-}
-
-
-### Add a new book without status and student_id:
-POST http://localhost:8080/api/books HTTP/1.1
-content-type: application/json
-
-{
-    "title" : "title without status, student_id",
-    "verlag" : "new verlag posted",
-    "isbn" : "2423-123-12551-123"
-}
-
-### Add a second book with different status
-POST http://localhost:8080/api/books HTTP/1.1
-content-type: application/json
-
-{
-    "id": null,
-    "title": "Lighthouse English 8",
-    "isbn": "73649-8632-97942-9",
-    "verlag": "klett",
-    "status": "MISSING",
-    "student": null
-}
 
 ### should update student with id 1
 PUT http://localhost:8080/api/students/1 HTTP/1.1

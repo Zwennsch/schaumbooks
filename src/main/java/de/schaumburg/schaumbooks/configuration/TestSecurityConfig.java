@@ -15,15 +15,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
-import de.schaumburg.schaumbooks.user.MyUserDetailsService;
+// import de.schaumburg.schaumbooks.user.MyUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class TestSecurityConfig {
 
-    @Autowired
-    MyUserDetailsService userDetailsService;
+    // @Autowired
+    // MyUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,40 +32,46 @@ public class TestSecurityConfig {
                 // first you declare WHAT you want to protect and how:
                 .authorizeHttpRequests(
                         authorizeHttp -> {
+                            // TODO: remove later in production
+                            authorizeHttp.requestMatchers("/h2-console/**").permitAll();
                             // ensures that every request requires authentication
                             authorizeHttp.anyRequest().authenticated();
                         })
                 // secondly you declare HOW you want to login:
                 // disable csrf since making the API stateless
                 .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
+                // TODO: This is just for testing with h2-database. Has to be removed in production
+                .headers(headers -> headers
+                        .addHeaderWriter(
+                                new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
 
     }
 
-
-    // This is just for testing because in a real application those details should come from the database:
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     UserDetails user1 = User.withDefaultPasswordEncoder()
-    //             .username("sven")
-    //             .password("1234")
-    //             // .roles("USER")
-    //             .build();
-    //     UserDetails user2 = User.withDefaultPasswordEncoder()
-    //             .username("hans")
-    //             .password("3456")
-    //             // .roles("USER")
-    //             .build();
-    //     return new InMemoryUserDetailsManager(user1, user2);
-    // }
-
+    // This is just for testing because in a real application those details should
+    // come from the database:
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
+    public UserDetailsService userDetailsService() {
+        UserDetails user1 = User.withDefaultPasswordEncoder()
+                .username("sven")
+                .password("1234")
+                // .roles("USER")
+                .build();
+        UserDetails user2 = User.withDefaultPasswordEncoder()
+                .username("hans")
+                .password("3456")
+                // .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2);
     }
+
+    // @Bean
+    // public AuthenticationProvider authenticationProvider(){
+    // DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    // provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+    // provider.setUserDetailsService(userDetailsService);
+    // return provider;
+    // }
 }
