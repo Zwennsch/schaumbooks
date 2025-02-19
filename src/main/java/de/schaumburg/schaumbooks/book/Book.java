@@ -19,18 +19,19 @@ public class Book {
         private @NotEmpty String isbn;
         @Enumerated(EnumType.STRING)
         private BookStatus status = BookStatus.AVAILABLE;
+        // TODO: this should be named as user instead of student
         @ManyToOne
-        @JoinColumn(name = "student_id")
-        private User student;
+        @JoinColumn(name = "user_id")
+        private User user;
 
         public Book(Long id, String title, String verlag, String isbn, BookStatus status,
-                        User student) {
+                        User user) {
                 this.id = id;
                 this.title = title;
                 this.verlag = verlag;
                 this.isbn = isbn;
                 this.status = status;
-                this.student = student;
+                this.user = user;
         }
 
         Book() {
@@ -76,12 +77,12 @@ public class Book {
                 this.status = status;
         }
 
-        public void setStudent(User student) {
-                this.student = student;
+        public void setUser(User user) {
+                this.user = user;
         }
 
-        public User getStudent() {
-                return student;
+        public User getUser() {
+                return user;
         }
 
         public String getVerlag() {
@@ -101,7 +102,7 @@ public class Book {
                 result = prime * result + ((verlag == null) ? 0 : verlag.hashCode());
                 result = prime * result + ((isbn == null) ? 0 : isbn.hashCode());
                 result = prime * result + ((status == null) ? 0 : status.hashCode());
-                result = prime * result + ((student == null) ? 0 : student.hashCode());
+                result = prime * result + ((user == null) ? 0 : user.hashCode());
                 return result;
         }
 
@@ -136,10 +137,10 @@ public class Book {
                         return false;
                 if (status != other.status)
                         return false;
-                if (student == null) {
-                        if (other.student != null)
+                if (user == null) {
+                        if (other.user != null)
                                 return false;
-                } else if (!student.equals(other.student))
+                } else if (!user.equals(other.user))
                         return false;
                 return true;
         }
@@ -147,7 +148,7 @@ public class Book {
         @Override
         public String toString() {
                 return "Book [id=" + id + ", title=" + title + ", verlag=" + verlag + ", isbn=" + isbn + ", status="
-                                + status + ", student=" + student + "]";
+                                + status + ", user=" + user + "]";
         }
 
 }

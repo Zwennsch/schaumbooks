@@ -16,6 +16,7 @@ import java.util.List;
 // import de.schaumburg.schaumbooks.student.Student;
 
 import java.util.Optional;
+
 // @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 public class BookServiceTest {
 
@@ -35,14 +36,14 @@ public class BookServiceTest {
         book1.setVerlag("Sample Verlag");
         book1.setIsbn("1234567890");
         book1.setStatus(BookStatus.AVAILABLE);
-        book1.setStudent(null);
+        book1.setUser(null);
 
         Book book2 = new Book();
         book2.setTitle("Sample Book2");
         book2.setVerlag("Sample Verlag2");
         book2.setIsbn("1234567890-2");
         book2.setStatus(BookStatus.LENT);
-        book2.setStudent(null);
+        book2.setUser(null);
 
         books = List.of(book1, book2);
     }
@@ -52,14 +53,14 @@ public class BookServiceTest {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
         when(bookRepository.save(any(Book.class))).thenReturn(books.get(0));
 
-    // given(null)
+        // given(null)
 
         Book updatedBook = new Book();
         updatedBook.setTitle("Updated Title");
         updatedBook.setVerlag("Updated Verlag");
         updatedBook.setIsbn("0987654321");
         updatedBook.setStatus(BookStatus.LENT);
-        updatedBook.setStudent(null);
+        updatedBook.setUser(null);
 
         Book result = bookService.updateBook(1L, updatedBook);
 
@@ -76,12 +77,11 @@ public class BookServiceTest {
 
         Book updatedBook = new Book();
         updatedBook.setTitle("Updated Title");
-        assertThrows(BookNotFoundException.class,() ->  bookService.updateBook(999L, updatedBook));
+        assertThrows(BookNotFoundException.class, () -> bookService.updateBook(999L, updatedBook));
     }
 
-
     @Test
-    void shouldCallFindAllCorrectly(){
+    void shouldCallFindAllCorrectly() {
         when(bookRepository.findAll()).thenReturn(books);
         List<Book> allBooks = bookService.findAll();
 
@@ -90,22 +90,23 @@ public class BookServiceTest {
     }
 
     @Test
-    void shouldFindBookById(){
+    void shouldFindBookById() {
         when(bookRepository.findById(1l)).thenReturn(Optional.of(books.get(0)));
         Book book = bookService.findById(1l);
 
         assertEquals(books.get(0).getTitle(), book.getTitle());
         verify(bookRepository, times(1)).findById(1l);
     }
+
     @Test
-    void shouldThrowExceptionWhenFindByIdWithInvalidId(){
+    void shouldThrowExceptionWhenFindByIdWithInvalidId() {
         when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(BookNotFoundException.class, () -> bookService.findById(999L));
     }
 
-    @Test 
-    void shouldDeleteBookGivenValidId(){
+    @Test
+    void shouldDeleteBookGivenValidId() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
         doNothing().when(bookRepository).deleteById(1L);
 
@@ -116,7 +117,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionGivenInvalidIdWhenDeleteBook(){
+    void shouldThrowExceptionGivenInvalidIdWhenDeleteBook() {
         when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(BookNotFoundException.class, () -> bookService.deleteBookById(999L));
@@ -124,14 +125,12 @@ public class BookServiceTest {
         verify(bookRepository, times(1)).findById(999L);
     }
 
-
-
     @Test
     void shouldSaveNewBookWhenValidBook() {
-        Book book = new Book(null, "addedBook", "addVerlag", "12345",BookStatus.DAMAGED, null);
+        Book book = new Book(null, "addedBook", "addVerlag", "12345", BookStatus.DAMAGED, null);
         when(bookRepository.save(book)).thenReturn(book);
         Book returnedBook = bookService.save(book);
         assertEquals(book, returnedBook);
         verify(bookRepository, times(1)).save(book);
-        }
+    }
 }

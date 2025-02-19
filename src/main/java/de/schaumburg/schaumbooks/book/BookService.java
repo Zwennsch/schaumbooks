@@ -19,9 +19,9 @@ import jakarta.validation.constraints.NotNull;
 public class BookService {
 
     private final BookRepository bookRepository;
-    
+
     // private final StudentRepository studentRepository;
-    
+
     public BookService(BookRepository bookRepository, UserRepository studentRepository) {
         this.bookRepository = bookRepository;
         // this.studentRepository = studentRepository;
@@ -31,10 +31,9 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-
     public Book findById(Long id) {
         return bookRepository.findById(id)
-            .orElseThrow(()-> new BookNotFoundException(id));
+                .orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @Transactional
@@ -51,18 +50,16 @@ public class BookService {
             existingBook.setVerlag(updatedBook.getVerlag());
             existingBook.setIsbn(updatedBook.getIsbn());
             existingBook.setStatus(updatedBook.getStatus());
-            existingBook.setStudent(updatedBook.getStudent());
+            existingBook.setUser(updatedBook.getUser());
             return bookRepository.save(existingBook);
-        }).orElseThrow(()-> new BookNotFoundException(id));
+        }).orElseThrow(() -> new BookNotFoundException(id));
     }
-
-
 
     public void deleteBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
-        if(book.isPresent()){
+        if (book.isPresent()) {
             bookRepository.deleteById(id);
-        }else {
+        } else {
             throw new BookNotFoundException(id);
         }
     }
