@@ -57,7 +57,7 @@ public class BookControllerTest {
                         "verlag":"first verlag",
                         "isbn":"123456",
                         "status":"AVAILABLE",
-                        "student":null
+                        "user":null
                     },
                     {
                         "id":2,
@@ -65,7 +65,7 @@ public class BookControllerTest {
                         "verlag":"second verlag",
                         "isbn":"654321",
                         "status":"MISSING",
-                        "student":null
+                        "user":null
                     }
                 ]
                 """;
@@ -88,7 +88,7 @@ public class BookControllerTest {
                     "verlag":"first verlag",
                     "isbn":"123456",
                     "status":"AVAILABLE",
-                    "student":null
+                    "user":null
                     }
                     """;
         when(bookService.findById(1L)).thenReturn(books.get(0));
