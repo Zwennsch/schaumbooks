@@ -24,6 +24,10 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    public User findUserByUsername(String username){
+        return userRepository.findByUsername(username).get();
+    }
+
     @Transactional
     public User save(User user) {
         if (user.getRoles().contains(Role.STUDENT) && (user.getClassName() == null || user.getClassName().isEmpty())){

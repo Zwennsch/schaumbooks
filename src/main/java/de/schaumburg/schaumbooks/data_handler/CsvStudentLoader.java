@@ -40,7 +40,8 @@ public class CsvStudentLoader {
 
                     // TODO: before storing into the database the password it should be encrypted
                     // Create a new User and save it to the repository
-                    User student = new User(null,username, password, firstName, lastName, email, List.of(Role.STUDENT), className);
+                    User student = new User(null, username, password, firstName, lastName, email, List.of(Role.STUDENT),
+                            className);
                     this.userRepository.save(student);
                 } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
                     logger.error("Skipping malformed line: {}", line, e);
@@ -48,8 +49,6 @@ public class CsvStudentLoader {
             }
         } catch (IOException e) {
             logger.error("An error occurred while reading the CSV file: {}", e.getMessage());
-        } catch (Exception e) {
-            logger.error("An unexpected error occurred: {}", e.getMessage());
         }
     }
 }

@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidUserInputException.class)
-    public ResponseEntity<ErrorObject> handleWrongUserInputException(InvalidUserInputException exception) {
+    public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidUserInputException exception) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
     }

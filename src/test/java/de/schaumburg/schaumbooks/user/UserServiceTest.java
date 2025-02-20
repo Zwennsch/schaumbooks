@@ -69,11 +69,27 @@ public class UserServiceTest {
     }
     
     @Test
-    void shouldThrowExceptionWhenGivenInvalidId() {
+    void shouldThrowUserNotFoundExceptionWhenGivenInvalidId() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
         
         assertThrows(UserNotFoundException.class, () -> userService.findUserById(99L));
         verify(userRepository).findById(99L);
+    }
+
+    // findByUsername
+    @Test
+    void shouldFindUserGivenCorrectUsername(){
+        // Given
+        String username = "user1";
+        // When /Then
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
+
+        User user = userService.findUserByUsername("user1");
+
+        assertEquals(users.get(0), user);
+        verify(userRepository, times(1)).findByUsername(username);
+
+
     }
     
     // save
@@ -87,19 +103,37 @@ public class UserServiceTest {
         verify(userRepository).save(student);
     }
 
-    // @Test
-    // void shouldSaveAdminWithoutClassName() {
-    //     User admin = new User(null, "Jane", "Doe", "jane@example.com", "password",
-    //             List.of(Role.ADMIN), null);
+    @Test
+    void shouldSaveAdminWithoutClassName() {
+        User admin = new User(null, "admin2", "123456", "Jane", "Doe", "jane@example.com",
+                List.of(Role.ADMIN), null);
 
-    //     when(userRepository.save(admin)).thenReturn(admin);
+        when(userRepository.save(admin)).thenReturn(admin);
 
-    //     User savedUser = userService.save(admin);
+        User savedUser = userService.save(admin);
 
-    //     assertNotNull(savedUser);
-    //     assertNull(savedUser.getClassName());
-    //     verify(userRepository, times(1)).save(admin);
-    // }
+        assertNotNull(savedUser);
+        assertNull(savedUser.getClassName());
+        verify(userRepository, times(1)).save(admin);
+    }
+
+    @Test
+    void shouldThrowInvalidUserInputExceptionWhenGivenStudentWithoutClass(){
+        User studentNoClass = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.STUDENT), null);
+
+        Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(studentNoClass));
+        verify(userRepository, times(0)).save(studentNoClass);
+        assertEquals("Invalid user input: Student must have a className", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowInvalidUserInputExceptionWhenGivenTeacherWithClassName(){
+        User teacherClass = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.TEACHER), "10a");
+
+        Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(teacherClass));
+        verify(userRepository, times(0)).save(teacherClass);
+        assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
+    }
 
     // update
     @Test
