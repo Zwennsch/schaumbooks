@@ -36,15 +36,15 @@ public class CsvStudentLoaderTest {
         
         // Create a valid CSV file for testing
         try (PrintWriter writer = new PrintWriter(new FileWriter(validCsvPath))) {
-            writer.println("Klasse,Nachname,Vorname,LogIn,Email");
-            writer.println("10A,Doe,John,loginJohn,john.doe@example.com");
-            writer.println("10B,Smith,Jane,jane123,jane.smith@example.com");
+            writer.println("Klasse,Nachname,Vorname,LogIn,email,password");
+            writer.println("10A,Doe,John,loginJohn,john.doe@example.com,12345");
+            writer.println("10B,Smith,Jane,jane123,jane.smith@example.com,123456");
         }
         
         // Create an invalid CSV file for testing
         try (PrintWriter writer = new PrintWriter(new FileWriter(invalidCsvPath))) {
-            writer.println("Klasse,Nachname,Vorname,LogIn,Email");
-            writer.println("10A,Doe,John,loginJohn,john.doe@example.com");
+            writer.println("Klasse,Nachname,Vorname,LogIn,email,password");
+            writer.println("10A,Doe,John,loginJohn,john.doe@example.com,123456");
             writer.println("10B,jane.smith@example.com");// Malformed line
         }
     }
