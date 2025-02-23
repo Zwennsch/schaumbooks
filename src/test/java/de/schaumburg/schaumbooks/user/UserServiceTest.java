@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.foreign.Linker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,15 +82,24 @@ public class UserServiceTest {
     void shouldFindUserGivenCorrectUsername(){
         // Given
         String username = "user1";
-        // When /Then
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
-
+        
+        // When
         User user = userService.findUserByUsername("user1");
-
+        // Then
         assertEquals(users.get(0), user);
         verify(userRepository, times(1)).findByUsername(username);
+    }
+
+    @Test 
+    void shouldThrowUserNotFoundExceptionGivenWrongUsername(){
+        // Given
+        String username = "wrongUsername";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
 
+        assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
+        verify(userRepository).findByUsername(username);
     }
     
     // save
