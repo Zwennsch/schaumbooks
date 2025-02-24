@@ -11,6 +11,15 @@ Authorization: Basic sven:1234
 GET http://localhost:8080/api/users/99999 HTTP/1.1
 Authorization: Basic sven:1234
 
+### should get user with username "arvid8"
+GET http://localhost:8080/api/users/username/arvid8 HTTP/1.1
+Authorization: Basic sven:1234
+
+
+### should not get any user with username "wrongUsername"
+GET http://localhost:8080/api/users/username/wrongUsername HTTP/1.1
+Authorization: Basic sven:1234
+
 ### Add a new user with Role.Student:
 POST http://localhost:8080/api/users HTTP/1.1
 content-type: application/json

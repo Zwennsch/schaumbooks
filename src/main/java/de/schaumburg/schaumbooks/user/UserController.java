@@ -32,6 +32,10 @@ public class UserController {
         List<User> allUsers = userService.findAll();
         return ResponseEntity.ok(allUsers);
     }
+    @GetMapping("/username/{username}")
+    public ResponseEntity<User> findUserByUsername(@PathVariable String username){
+        return ResponseEntity.ok(userService.findUserByUsername(username));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> findUserById(@PathVariable Long id) {

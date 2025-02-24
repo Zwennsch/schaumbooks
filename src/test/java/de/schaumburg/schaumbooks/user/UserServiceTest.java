@@ -99,7 +99,8 @@ public class UserServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
 
-        assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
+        assertEquals("User not found with username: wrongUsername", exception.getMessage());
         verify(userRepository).findByUsername(username);
     }
     

@@ -34,8 +34,7 @@ public class DataLoaderConfig {
     CommandLineRunner initStudentsData() {
         return args -> {
             String csvFilePath = ".school-data/schuelerliste_test.csv";
-            // TODO: This does not seem to be right: Even when something went wrong and a
-            // get's logged it still shows success...
+// TODO: This does not seem to be right: Even when something went wrong and a get's logged it still shows success...
             csvStudentLoader.readStudentDataFromCsvAndSave(csvFilePath);
             System.out.println("Successfully loaded students data from csv file");
             // } catch (IOException e) {

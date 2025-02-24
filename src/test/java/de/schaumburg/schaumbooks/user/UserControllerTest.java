@@ -108,6 +108,21 @@ public class UserControllerTest {
                 .andExpect(content().json(jsonResponse));
     }
 
+    @Test
+    void shouldFindUserGivenUsername()throws Exception{
+        // Given
+        String username = "user1";
+        String jsonResponse = objectMapper.writeValueAsString(users.get(0));
+        // When
+        when(userService.findUserByUsername(username)).thenReturn(users.get(0));
+        // Then
+        mockMvc.perform(get("/api/users/username/"+username)
+                .with(httpBasic("sven", "1234")))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonResponse));
+
+    }
+
     // POST: addStudent
     @Test
     void shouldAddNewStudentGivenValidStudent() throws Exception {
