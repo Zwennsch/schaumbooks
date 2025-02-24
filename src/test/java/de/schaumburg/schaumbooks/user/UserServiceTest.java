@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -143,6 +144,19 @@ public class UserServiceTest {
         Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(teacherClass));
         verify(userRepository, times(0)).save(teacherClass);
         assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowInvalidUserInputExceptionWhenUsernameIsAlreadyExisting(){
+        // Given
+        User user = new User(null, "user1", "12345", "hans", "Müller", "email@hans.com", List.of(Role.STUDENT), "10a");
+        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
+
+        // When/Then
+        Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(user));
+        verify(userRepository).findByUsername(user.getUsername());
+        verify(userRepository, times(0)).save(any(User.class));
+        assertEquals("Invalid user input: Username already taken", exception.getMessage());
     }
 
     // update

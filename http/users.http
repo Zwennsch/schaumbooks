@@ -73,6 +73,21 @@ Authorization: Basic sven:1234
     "password" : "123456"
 }
 
+### should not Add new user with already taken username 'arvid8:
+POST http://localhost:8080/api/users HTTP/1.1
+content-type: application/json
+Authorization: Basic sven:1234
+
+{
+    "firstName" : "given username",
+    "lastName" : "lastname",
+    "email" : "admin2@mail.com",
+    "roles" : ["STUDENT"],
+    "className" : "10a",
+    "username" : "arvid8",
+    "password" : "123456"
+}
+
 
 
 

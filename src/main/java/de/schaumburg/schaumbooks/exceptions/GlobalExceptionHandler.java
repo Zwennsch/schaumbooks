@@ -32,11 +32,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
-    // @ExceptionHandler(InvalidUserInputException.class)
-    // public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidUserInputException exception) {
-    //     ErrorObject errorObject = new ErrorObject(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
-    //     return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
-    // }
+    @ExceptionHandler(InvalidUserInputException.class)
+    public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidUserInputException exception) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
+        return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

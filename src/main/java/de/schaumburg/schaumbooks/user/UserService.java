@@ -31,6 +31,9 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
+        if(userRepository.findByUsername(user.getUsername()).isPresent()){
+            throw new InvalidUserInputException("Username already taken");
+        }
         if (user.getRoles().contains(Role.STUDENT) && (user.getClassName() == null || user.getClassName().isEmpty())) {
             throw new InvalidUserInputException("Student must have a className");
         } else if (!user.getRoles().contains(Role.STUDENT) && (user.getClassName() != null)) {
