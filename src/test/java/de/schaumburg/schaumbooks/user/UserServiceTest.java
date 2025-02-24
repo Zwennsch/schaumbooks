@@ -138,6 +138,15 @@ public class UserServiceTest {
     }
 
     @Test
+    void shouldThrowInvalidUserInputExceptionWhenGivenStudentWithEmptyClass(){
+        User studentNoClass = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.STUDENT), "");
+
+        Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(studentNoClass));
+        verify(userRepository, times(0)).save(studentNoClass);
+        assertEquals("Invalid user input: Student must have a className", exception.getMessage());
+    }
+
+    @Test
     void shouldThrowInvalidUserInputExceptionWhenGivenTeacherWithClassName(){
         User teacherClass = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.TEACHER), "10a");
 
