@@ -1,12 +1,14 @@
 package de.schaumburg.schaumbooks.user;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +53,11 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid User user) {
         User updatedUser = userService.updateUser(id, user);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> updateUserFields(@PathVariable Long id, @RequestBody Map<String, Object> fieldsToPatch){
+        User updatedUser = userService.updateUserFields(id, fieldsToPatch);
         return ResponseEntity.ok(updatedUser);
     }
 
