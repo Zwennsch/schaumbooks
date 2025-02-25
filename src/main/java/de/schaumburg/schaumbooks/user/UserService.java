@@ -1,10 +1,13 @@
 package de.schaumburg.schaumbooks.user;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 
 @Service
 public class UserService {
@@ -55,7 +58,25 @@ public class UserService {
             existingUser.setEmail(user.getEmail());
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new UserNotFoundException(id));
+    }
 
+    @Transactional
+    public User updateUserFields(Long userId, Map<String, Object> fieldsToPatch){
+        User user = userRepository.findById(userId)
+            .orElseThrow(()-> new UserNotFoundException(userId));
+
+        fieldsToPatch.forEach((key, value) -> {
+
+            Field field = ReflectionUtils.findField(User.class, key);
+            if( field == null){
+                throw new InvalidUserInputException("No field named "+key);
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, user, value);
+        });
+        
+        return userRepository.save(user);
+        
     }
 
     @Transactional

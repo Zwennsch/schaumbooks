@@ -15,6 +15,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -213,6 +214,18 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.lastName").value("must not be empty"))
                 // .andExpect(jsonPath("$.className").value("must not be empty"))
                 .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
+    }
+    // TODO: finish test
+    @Test
+    void shouldPatchUserFieldsSuccessfully(){
+        // Given
+        Map<String,Object> updateFields = Map.of(
+            "firstName", "NewName",
+            "email", "new.email@example.com"
+
+        );
+
+        User updatedUser = users.get(0);
     }
 
     // DELETE: deleteStudentById()

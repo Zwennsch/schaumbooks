@@ -11,7 +11,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.foreign.Linker.Option;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -191,17 +193,76 @@ public class UserServiceTest {
     void shouldUpdateOnlySpecifiedFields() {
         User existingStudent = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
         User updatedStudent =  new User(1L, "user1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
-
+        
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
         when(userRepository.save(existingStudent)).thenReturn(updatedStudent);
-
+        
         User result = userService.updateUser(1L, updatedStudent);
-
+        
         assertEquals(updatedStudent.getEmail(), result.getEmail());
         assertEquals(existingStudent.getFirstName(), result.getFirstName());
         assertEquals(existingStudent.getLastName(), result.getLastName());
         verify(userRepository).save(existingStudent);
     }
+
+    @Test
+    void shouldUpdateFirstNameAndEmail() {
+        // Arrange
+        User user = new User(5L, "john1", "1234", "John", "Doe", "john@example.com", List.of(Role.STUDENT), "Old Class");
+        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        
+        Map<String, Object> updateFields = new HashMap<>();
+        updateFields.put("firstName", "New Name");
+        updateFields.put("email", "new.email@example.com");
+        
+        // Act
+        User updatedUser = userService.updateUserFields(5L, updateFields);
+        
+        // Assert
+        assertEquals("New Name", updatedUser.getFirstName());
+        assertEquals("new.email@example.com", updatedUser.getEmail());
+        verify(userRepository, times(1)).save(user);
+    }
+    
+    @Test
+    void shouldThrowExceptionForInvalidField() {
+        // Arrange
+        User user = new User(5L, "john1", "1234", "John", "Doe", "john@example.com", List.of(Role.STUDENT), "Old Class");
+        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
+
+        Map<String, Object> updateFields = new HashMap<>();
+        updateFields.put("invalidField", "value");
+
+        // Act & Assert
+        assertThrows(InvalidUserInputException.class, () -> userService.updateUserFields(5L, updateFields));
+    }
+
+    
+    // @Test
+    // void shouldUpdateOnlyOneSpecificFieldWhenNotAllFieldsAreGiven(){
+    //     // Given
+    //     User existingStudent = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
+        
+    //     Map<String, Object> fieldsToUpdate = new HashMap<>();
+    //     fieldsToUpdate.put("username", "updatedUser1");
+
+    //     User updatedUsername =  new User(1L, "updatedUser1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+    //     User updatedPassword =  new User(1L, "user1", "updatedPW", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+    //     User updatedFirstName =  new User(1L, "user1", "1234", "updatedFirst", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+    //     User updatedLastName = new User(1L, "user1", "1234", "John", "updatedLast", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
+    //     User updatedEmail = new User(1L, "user1", "1234", "John", "Doe", "updated@mail.com", List.of(Role.STUDENT), "10a");
+    //     User updatedRole = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.ADMIN), "10a");
+    //     User existingClass = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
+
+    //     // When
+    //     when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
+    //     User returnedUser = userService.updateUserByFields(1L, fieldsToUpdate);
+
+    //     // Then
+    //     verify(userRepository).findById(1L);
+
+    // }
 
     // Delete
     @Test
