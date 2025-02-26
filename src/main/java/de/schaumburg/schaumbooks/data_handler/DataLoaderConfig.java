@@ -30,17 +30,13 @@ public class DataLoaderConfig {
         };
     }
 
+    // TODO: This does not seem to be right: Even when something went wrong and a get's logged it still shows success...
     @Bean
     CommandLineRunner initStudentsData() {
         return args -> {
             String csvFilePath = ".school-data/schuelerliste_test.csv";
-// TODO: This does not seem to be right: Even when something went wrong and a get's logged it still shows success...
             csvStudentLoader.readStudentDataFromCsvAndSave(csvFilePath);
             System.out.println("Successfully loaded students data from csv file");
-            // } catch (IOException e) {
-            // System.out.println("Error while loading data from csv file: " +
-            // e.getMessage());
-            // }
         };
     }
 }

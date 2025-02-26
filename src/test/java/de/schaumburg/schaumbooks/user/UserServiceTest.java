@@ -233,36 +233,23 @@ public class UserServiceTest {
 
         Map<String, Object> updateFields = new HashMap<>();
         updateFields.put("invalidField", "value");
-
+        
         // Act & Assert
         assertThrows(InvalidUserInputException.class, () -> userService.updateUserFields(5L, updateFields));
     }
+    @Test
+    void shoudThrowUserNotFoundExceptionWhenPatchingWithWrongId(){
+        // Given
+        Long id = 99999L;
+        Map<String, Object> updateFields = new HashMap<>();
+        updateFields.put("username", "value");
+
+        // When/Then
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> userService.updateUserFields(id, updateFields));
+    }
 
     
-    // @Test
-    // void shouldUpdateOnlyOneSpecificFieldWhenNotAllFieldsAreGiven(){
-    //     // Given
-    //     User existingStudent = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
-        
-    //     Map<String, Object> fieldsToUpdate = new HashMap<>();
-    //     fieldsToUpdate.put("username", "updatedUser1");
-
-    //     User updatedUsername =  new User(1L, "updatedUser1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
-    //     User updatedPassword =  new User(1L, "user1", "updatedPW", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
-    //     User updatedFirstName =  new User(1L, "user1", "1234", "updatedFirst", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
-    //     User updatedLastName = new User(1L, "user1", "1234", "John", "updatedLast", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
-    //     User updatedEmail = new User(1L, "user1", "1234", "John", "Doe", "updated@mail.com", List.of(Role.STUDENT), "10a");
-    //     User updatedRole = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.ADMIN), "10a");
-    //     User existingClass = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
-
-    //     // When
-    //     when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
-    //     User returnedUser = userService.updateUserByFields(1L, fieldsToUpdate);
-
-    //     // Then
-    //     verify(userRepository).findById(1L);
-
-    // }
 
     // Delete
     @Test

@@ -56,6 +56,8 @@ public class UserService {
             existingUser.setClassName(user.getClassName());
             existingUser.setRoles(user.getRoles());
             existingUser.setEmail(user.getEmail());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setUsername(user.getUsername());
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new UserNotFoundException(id));
     }
