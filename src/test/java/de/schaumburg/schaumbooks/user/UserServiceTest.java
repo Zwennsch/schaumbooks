@@ -152,10 +152,50 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidUserInputExceptionWhenGivenTeacherWithClassName(){
         User teacherClass = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.TEACHER), "10a");
-
+        
         Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(teacherClass));
         verify(userRepository, times(0)).save(teacherClass);
         assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
+    }
+    
+    @Test
+    void shouldAddDefaultStudentRoleWhenAddingNewUserWithoutRole(){
+        // Given
+        User user = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", null, "10a");
+        User returnedUser = new User(1L, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.STUDENT), "10a");
+        // When
+        when(userRepository.save(any(User.class))).thenReturn(returnedUser);
+        User savedUser = userService.save(user);
+        // Then
+        assertNotNull(savedUser);
+        assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
+        verify(userRepository).save(any(User.class));
+    }   
+
+    @Test
+    void shouldAddDefaultStudentRoleWhenAddingNewUserWithoutEmptyStringAsRole(){
+        // Given
+        User user = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(), "10a");
+        User returnedUser = new User(1L, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.STUDENT), "10a");
+        // When
+        when(userRepository.save(any(User.class))).thenReturn(returnedUser);
+        User savedUser = userService.save(user);
+        // Then
+        assertNotNull(savedUser);
+        assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
+        verify(userRepository).save(any(User.class));
+    }   
+    @Test
+    void shouldNotOverrideExistingRoles(){
+        // Given
+        User user = new User(null, "hans", "12345", "hans", "meier", "hans@mail.com", List.of(Role.ADMIN), null);
+        // When
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        User savedUser = userService.save(user);
+        // Then
+        assertNotNull(savedUser);
+        assertEquals(List.of(Role.ADMIN), savedUser.getRoles());
+
     }
 
     @Test
@@ -192,14 +232,14 @@ public class UserServiceTest {
     @Test
     void shouldUpdateOnlySpecifiedFields() {
         User existingStudent = new User(1L, "user1", "1234", "John", "Doe", "john.doe@mail.com", List.of(Role.STUDENT), "10a");
-        User updatedStudent =  new User(1L, "user1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
+        User updatedEmailStudent =  new User(1L, "user1", "1234", "John", "Doe", "newMail@mail.com", List.of(Role.STUDENT), "10a");
         
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
-        when(userRepository.save(existingStudent)).thenReturn(updatedStudent);
+        when(userRepository.save(existingStudent)).thenReturn(updatedEmailStudent);
         
-        User result = userService.updateUser(1L, updatedStudent);
+        User result = userService.updateUser(1L, updatedEmailStudent);
         
-        assertEquals(updatedStudent.getEmail(), result.getEmail());
+        assertEquals(updatedEmailStudent.getEmail(), result.getEmail());
         assertEquals(existingStudent.getFirstName(), result.getFirstName());
         assertEquals(existingStudent.getLastName(), result.getLastName());
         verify(userRepository).save(existingStudent);
