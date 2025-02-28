@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotEmpty;
 
+
+// Try to switch to record:
 @Entity
 public class Book {
         private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
