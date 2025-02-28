@@ -35,8 +35,9 @@ public class UserController {
         List<User> allUsers = userService.findAll();
         return ResponseEntity.ok(allUsers);
     }
+
     @GetMapping("/username/{username}")
-    public ResponseEntity<User> findUserByUsername(@PathVariable String username){
+    public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.findUserByUsername(username));
     }
 
@@ -56,9 +57,11 @@ public class UserController {
         User updatedUser = userService.updateUser(id, user);
         return ResponseEntity.ok(updatedUser);
     }
+
     @PatchMapping("/{id}")
-    // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUserFields(@PathVariable Long id, @RequestBody Map<String, Object> fieldsToPatch){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> updateUserFields(@PathVariable Long id,
+            @RequestBody Map<String, Object> fieldsToPatch) {
         User updatedUser = userService.updateUserFields(id, fieldsToPatch);
         return ResponseEntity.ok(updatedUser);
     }

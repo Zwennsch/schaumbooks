@@ -32,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -68,6 +69,7 @@ public class UserControllerTest {
 
     // GET: findAll
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldFindAllStudents() throws Exception {
         String jsonString = objectMapper.writeValueAsString(users);
 
@@ -75,7 +77,7 @@ public class UserControllerTest {
 
         mockMvc.perform(get("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .with(httpBasic("sven", "1234")))
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonString));
 
@@ -85,7 +87,7 @@ public class UserControllerTest {
 
     // GET: findById
     @Test
-    void shouldFindBookGivenValidId() throws Exception {
+    void shouldFindUserGivenValidId() throws Exception {
         String jsonResponse = objectMapper.writeValueAsString(users.get(0));
 
         when(userService.findUserById(1L)).thenReturn(users.get(0));
@@ -97,6 +99,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldReturnNotFoundForId999() throws Exception {
         when(userService.findUserById(999L)).thenThrow(new UserNotFoundException(999L));
 
@@ -108,7 +111,7 @@ public class UserControllerTest {
                 """;
 
         mockMvc.perform(get("/api/users/999")
-                .with(httpBasic("sven", "1234")))
+                )
                 .andExpect(status().isNotFound())
                 .andExpect(content().json(jsonResponse));
     }
@@ -228,6 +231,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldPatchUserFieldsSuccessfully() throws JsonProcessingException, Exception {
         // Given
         Map<String, Object> updateFields = Map.of(
@@ -243,7 +247,8 @@ public class UserControllerTest {
         mockMvc.perform(patch("/api/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(updateFields))
-                .with(httpBasic("sven", "1234")))
+                // .with(httpBasic("sven", "1234"))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("NewName"))
                 .andExpect(jsonPath("$.email").value("new.email@example.com"));
