@@ -45,14 +45,21 @@ public class BookService {
     public Book updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
 
-        return optionalBook.map(existingBook -> {
-            existingBook.setTitle(updatedBook.getTitle());
-            existingBook.setVerlag(updatedBook.getVerlag());
-            existingBook.setIsbn(updatedBook.getIsbn());
-            existingBook.setStatus(updatedBook.getStatus());
-            existingBook.setUser(updatedBook.getUser());
-            return bookRepository.save(existingBook);
-        }).orElseThrow(() -> new BookNotFoundException(id));
+        if (optionalBook.isPresent()) {
+            Book newBook = new Book(id, updatedBook.title(), updatedBook.verlag(), updatedBook.isbn(),
+                    updatedBook.status(), updatedBook.user());
+            return bookRepository.save(newBook);
+        }
+        throw new BookNotFoundException(id);
+
+        // return optionalBook.map(existingBook -> {
+        // existingBook.setTitle(updatedBook.getTitle());
+        // existingBook.setVerlag(updatedBook.getVerlag());
+        // existingBook.setIsbn(updatedBook.getIsbn());
+        // existingBook.setStatus(updatedBook.getStatus());
+        // existingBook.setUser(updatedBook.getUser());
+        // return bookRepository.save(existingBook);
+        // }).orElseThrow(() -> new BookNotFoundException(id));
     }
 
     public void deleteBookById(Long id) {
