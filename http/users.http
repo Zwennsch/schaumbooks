@@ -154,7 +154,9 @@ Authorization: Basic sven:1234
 ###DELETE
 ### should delete user
 DELETE  http://localhost:8080/api/users/1 HTTP/1.1
+Authorization: Basic sven:1234
 
 
-### should throw BookNotFoundException on deletebook
+### should throw UserNotFound on deleteUsers
 DELETE  http://localhost:8080/api/users/9999 HTTP/1.1
+Authorization: Basic sven:1234
