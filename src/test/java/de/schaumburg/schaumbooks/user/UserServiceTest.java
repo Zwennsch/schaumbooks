@@ -208,7 +208,7 @@ public class UserServiceTest {
         Exception exception = assertThrows(InvalidUserInputException.class, () -> userService.save(user));
         verify(userRepository).findByUsername(user.getUsername());
         verify(userRepository, times(0)).save(any(User.class));
-        assertEquals("Invalid user input: Username already taken", exception.getMessage());
+        assertEquals("Invalid user input: Username already taken: user1", exception.getMessage());
     }
 
     // update
@@ -270,7 +270,7 @@ public class UserServiceTest {
         // Arrange
         User user = new User(5L, "john1", "1234", "John", "Doe", "john@example.com", List.of(Role.STUDENT), "Old Class");
         when(userRepository.findById(5L)).thenReturn(Optional.of(user));
-
+        
         Map<String, Object> updateFields = new HashMap<>();
         updateFields.put("invalidField", "value");
         
@@ -283,10 +283,44 @@ public class UserServiceTest {
         Long id = 99999L;
         Map<String, Object> updateFields = new HashMap<>();
         updateFields.put("username", "value");
-
+        
         // When/Then
         when(userRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> userService.updateUserFields(id, updateFields));
+    }
+    
+    @Test
+    void shouldNotUpdateUserWhenUsernameAlreadyTaken(){
+        // Given
+        String takenUsername = users.get(0).getUsername();
+        Map<String, Object> fieldsToUpdate = new HashMap<>();
+        fieldsToUpdate.put("username", takenUsername);
+        User userBefore = new User(5L, "validUsername", "1234", "John", "Doe", "john@example.com", List.of(Role.STUDENT), "Old Class");
+        User userToUpdate = new User(5L, takenUsername, "1234", "John", "Doe", "john@example.com", List.of(Role.STUDENT), "Old Class");
+        when(userRepository.findById(5L)).thenReturn(Optional.of(userBefore));
+        when(userRepository.findByUsername(takenUsername)).thenReturn(Optional.of(users.get(0)));
+
+        // When/Then
+        assertThrows(InvalidUserInputException.class, ()-> userService.updateUser(5L, userToUpdate));
+        assertThrows(InvalidUserInputException.class, ()-> userService.updateUserFields(5L, fieldsToUpdate));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldUpdateEmailSuccessfully() {
+        // Arrange
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("email", "newemail@example.com");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.save(any(User.class))).thenReturn(users.get(0));
+
+        // Act
+        User updatedUser = userService.updateUserFields(1L, updates);
+
+        // Assert
+        assertEquals("newemail@example.com", updatedUser.getEmail());
+        verify(userRepository, times(1)).save(users.get(0));
     }
 
     

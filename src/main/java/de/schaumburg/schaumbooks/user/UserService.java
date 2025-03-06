@@ -34,12 +34,12 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        if(user.getRoles() == null || user.getRoles().isEmpty()){
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(List.of(Role.STUDENT));
         }
 
-        if(userRepository.findByUsername(user.getUsername()).isPresent()){
-            throw new InvalidUserInputException("Username already taken");
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new InvalidUserInputException("Username already taken: " + user.getUsername());
         }
         if (user.getRoles().contains(Role.STUDENT) && (user.getClassName() == null || user.getClassName().isEmpty())) {
             throw new InvalidUserInputException("Student must have a className");
@@ -52,6 +52,9 @@ public class UserService {
     @Transactional
     public User updateUser(long id, User user) {
         Optional<User> possibleUser = userRepository.findById(id);
+        if (usernameExistsInDB(user.getUsername())){
+            throw new InvalidUserInputException("User with username: "+ user.getUsername() + " already exits");
+        }
 
         return possibleUser.map(existingUser -> {
             existingUser.setId(id);
@@ -67,22 +70,26 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUserFields(Long userId, Map<String, Object> fieldsToPatch){
+    public User updateUserFields(Long userId, Map<String, Object> fieldsToPatch) {
         User user = userRepository.findById(userId)
-            .orElseThrow(()-> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         fieldsToPatch.forEach((key, value) -> {
+            
 
             Field field = ReflectionUtils.findField(User.class, key);
-            if( field == null){
-                throw new InvalidUserInputException("No field named "+key);
+            if (field == null) {
+                throw new InvalidUserInputException("No field named " + key);
+            }
+            if(key == "username" && usernameExistsInDB((String)value)){
+                throw new InvalidUserInputException("Username already taken");
             }
             field.setAccessible(true);
             ReflectionUtils.setField(field, user, value);
         });
-        
+
         return userRepository.save(user);
-        
+
     }
 
     @Transactional
@@ -90,6 +97,10 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         userRepository.deleteById(user.getId());
 
+    }
+
+    boolean usernameExistsInDB(String username){
+        return userRepository.findByUsername(username).isPresent();
     }
 
 }
