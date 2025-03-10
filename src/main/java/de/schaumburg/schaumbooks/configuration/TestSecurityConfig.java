@@ -17,14 +17,16 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
+import de.schaumburg.schaumbooks.user.CustomUserDetailsService;
+
 // import de.schaumburg.schaumbooks.user.MyUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class TestSecurityConfig {
 
-    // @Autowired
-    // MyUserDetailsService userDetailsService;
+    @Autowired
+    CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,26 +54,27 @@ public class TestSecurityConfig {
 
     // This is just for testing because in a real application those details should
     // come from the database:
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user1 = User.withDefaultPasswordEncoder()
-                .username("sven")
-                .password("1234")
-                // .roles("USER")
-                .build();
-        UserDetails user2 = User.withDefaultPasswordEncoder()
-                .username("hans")
-                .password("3456")
-                // .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2);
-    }
+//     @Bean
+//     public UserDetailsService userDetailsService() {
+//         UserDetails user1 = User.withDefaultPasswordEncoder()
+//                 .username("sven")
+//                 .password("1234")
+//                 // .roles("USER")
+//                 .build();
+//         UserDetails user2 = User.withDefaultPasswordEncoder()
+//                 .username("hans")
+//                 .password("3456")
+//                 // .roles("USER")
+//                 .build();
+//         return new InMemoryUserDetailsManager(user1, user2);
+//     }
 
-    // @Bean
-    // public AuthenticationProvider authenticationProvider(){
-    // DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    // provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-    // provider.setUserDetailsService(userDetailsService);
-    // return provider;
-    // }
+// TODO: Set proper PasswordEncoder!
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+    provider.setUserDetailsService(userDetailsService);
+    return provider;
+    }
 }

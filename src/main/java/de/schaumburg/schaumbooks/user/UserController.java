@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import de.schaumburg.schaumbooks.book.Book;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -46,6 +49,15 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserById(id));
     }
 
+    // Get rented books for specific user
+    // Only for student with id {id}, teacher and admin
+    @GetMapping("/{id}/books")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or #id == authentication.principal.id")
+    public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
+       return ResponseEntity.ok(userService.getRentedBooks(id));
+    }
+
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
@@ -71,5 +83,6 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }

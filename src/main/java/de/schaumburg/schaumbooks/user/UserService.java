@@ -9,13 +9,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
+import de.schaumburg.schaumbooks.book.Book;
+import de.schaumburg.schaumbooks.book.BookRepository;
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BookRepository bookRepository) {
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     public List<User> findAll() {
@@ -101,6 +106,13 @@ public class UserService {
 
     boolean usernameExistsInDB(String username){
         return userRepository.findByUsername(username).isPresent();
+    }
+
+    public List<Book> getRentedBooks(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return bookRepository.findByUser(user);
     }
 
 }
