@@ -24,6 +24,8 @@ public class CsvStudentLoader {
     }
 
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
+        // TODO: Remove later admin added jsut for testing purposes.
+        userRepository.save(new User(null, "sven", "1234", "Sven", "Schröder", "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
             // Skip header line
