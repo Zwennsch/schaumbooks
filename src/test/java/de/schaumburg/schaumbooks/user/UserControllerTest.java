@@ -60,6 +60,9 @@ public class UserControllerTest {
         @MockBean
         private UserService userService;
 
+        @MockBean
+        private CustomUserDetailsService userDetailsService;
+
         List<User> users = new ArrayList<>();
         List<Book> rentedBooks;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -99,13 +102,13 @@ public class UserControllerTest {
 
         // GET: findById
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldFindUserGivenValidId() throws Exception {
                 String jsonResponse = objectMapper.writeValueAsString(users.get(0));
 
                 when(userService.findUserById(1L)).thenReturn(users.get(0));
 
-                mockMvc.perform(get("/api/users/1")
-                                .with(httpBasic("sven", "1234")))
+                mockMvc.perform(get("/api/users/1"))
                                 .andExpect(status().isOk())
                                 .andExpect(content().json(jsonResponse));
         }
@@ -128,6 +131,7 @@ public class UserControllerTest {
         }
 
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldFindUserGivenUsername() throws Exception {
                 // Given
                 String username = "user1";
@@ -135,8 +139,7 @@ public class UserControllerTest {
                 // When
                 when(userService.findUserByUsername(username)).thenReturn(users.get(0));
                 // Then
-                mockMvc.perform(get("/api/users/username/" + username)
-                                .with(httpBasic("sven", "1234")))
+                mockMvc.perform(get("/api/users/username/" + username))
                                 .andExpect(status().isOk())
                                 .andExpect(content().json(jsonResponse));
 
@@ -144,6 +147,7 @@ public class UserControllerTest {
 
         // POST: addStudent
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldAddNewStudentGivenValidStudent() throws Exception {
                 User student = new User(5L, "user5", "1234", "Hans", "Meier", "test@mail.com", List.of(Role.STUDENT),
                                 "8b");
@@ -152,8 +156,7 @@ public class UserControllerTest {
 
                 mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(student))
-                                .with(httpBasic("sven", "1234")))
+                                .content(objectMapper.writeValueAsString(student)))
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.id").value(5L))
                                 .andExpect(jsonPath("$.firstName").value("Hans"));
@@ -161,11 +164,11 @@ public class UserControllerTest {
 
         @ParameterizedTest
         @MethodSource("provideInvalidStudents")
+        @WithMockUser(roles = "ADMIN")
         public void shouldReturnBadRequestForInvalidStudents(User invalidStudent) throws Exception {
                 mockMvc.perform(post("/api/users")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(new ObjectMapper().writeValueAsString(invalidStudent))
-                                .with(httpBasic("sven", "1234")))
+                                .content(new ObjectMapper().writeValueAsString(invalidStudent)))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -196,6 +199,7 @@ public class UserControllerTest {
 
         // PUT: updateStudent()
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
                 User student = new User(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
                                 List.of(Role.STUDENT),
@@ -205,13 +209,13 @@ public class UserControllerTest {
 
                 mockMvc.perform(put("/api/users/1")
                                 .contentType("application/json")
-                                .content(new ObjectMapper().writeValueAsString(student))
-                                .with(httpBasic("sven", "1234")))
+                                .content(new ObjectMapper().writeValueAsString(student)))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.firstName").value("updatedName"));
         }
 
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
                 User student = new User(999L, "user999", "1234", "updatedName", "Test", "Hans@email.com",
                                 List.of(Role.STUDENT),
@@ -221,12 +225,12 @@ public class UserControllerTest {
 
                 mockMvc.perform(put("/api/users/999")
                                 .contentType("application/json")
-                                .content(new ObjectMapper().writeValueAsString(student))
-                                .with(httpBasic("sven", "1234")))
+                                .content(new ObjectMapper().writeValueAsString(student)))
                                 .andExpect(status().isNotFound());
         }
 
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldReturn400WhenUpdatingStudentWithInvalidData() throws Exception {
                 // Create a Student object with invalid data (e.g., missing required fields)
                 User invalidUser = new User();
@@ -239,8 +243,7 @@ public class UserControllerTest {
                 // Perform a PUT request with invalid data
                 mockMvc.perform(put("/api/users/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidUser))
-                                .with(httpBasic("sven", "1234")))
+                                .content(objectMapper.writeValueAsString(invalidUser)))
                                 .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
                                 .andExpect(jsonPath("$.firstName").value("must not be empty"))
                                 .andExpect(jsonPath("$.lastName").value("must not be empty"))
@@ -275,22 +278,22 @@ public class UserControllerTest {
         }
 
         @Test
-        @WithMockUser(username = "user1", roles = {"STUDENT"})
-        void studentShouldAccessOwnBooks() throws Exception{
+        @WithMockUser(username = "user1", roles = { "STUDENT" })
+        void studentShouldAccessOwnBooks() throws Exception {
                 when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
                 mockMvc.perform(get("/api/users/1/books"))
-                        .andExpect(status().isOk());
+                                .andExpect(status().isOk());
         }
 
         // @Test
         // // @WithMockUser(username = "user2", roles = {"STUDENT"})
         // void studentShouldNotAccessOtherBooks() throws Exception{
-        //         CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
-        //         // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
+        // CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
+        // // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
-        //         mockMvc.perform(get("/api/users/1/books"))
-        //                 .andExpect(status().isForbidden());
+        // mockMvc.perform(get("/api/users/1/books"))
+        // .andExpect(status().isForbidden());
         // }
 
         // @Test
@@ -317,20 +320,20 @@ public class UserControllerTest {
 
         // DELETE: deleteStudentById()
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldDeleteStudentWhenGivenValidId() throws Exception {
                 doNothing().when(userService).deleteUserById(1L);
 
-                mockMvc.perform(delete("/api/users/1")
-                                .with(httpBasic("sven", "1234")))
+                mockMvc.perform(delete("/api/users/1"))
                                 .andExpect(status().isNoContent());
         }
 
         @Test
+        @WithMockUser(roles = "ADMIN")
         void shouldReturn404WhenDeletingNonExistingStudent() throws Exception {
                 doThrow(new UserNotFoundException(999L)).when(userService).deleteUserById(999L);
 
-                mockMvc.perform(delete("/api/users/999")
-                                .with(httpBasic("sven", "1234")))
+                mockMvc.perform(delete("/api/users/999"))
                                 .andExpect(status().isNotFound());
         }
 

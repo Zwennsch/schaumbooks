@@ -101,13 +101,25 @@ Authorization: Basic sven:1234
 
 ### UPDATE
 
-### should update user with id 1
-PUT http://localhost:8080/api/users/1 HTTP/1.1
+### should patch first name and email for user with id2
+PATCH http://localhost:8080/api/users/2
 Content-Type: application/json
 Authorization: Basic sven:1234
 
 {
-    "id" : "1",
+    "firstName" : "patchedName",
+    "email" : "patchedMail@mail.com"
+}
+
+
+
+### should update user with id 2
+PUT http://localhost:8080/api/users/2 HTTP/1.1
+Content-Type: application/json
+Authorization: Basic sven:1234
+
+{
+    "id" : "2",
     "firstName" : "new first name",
     "lastName" : "new last name",
     "className" : "10b",
