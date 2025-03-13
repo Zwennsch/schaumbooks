@@ -3,6 +3,7 @@ package de.schaumburg.schaumbooks.data_handler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
+import de.schaumburg.schaumbooks.user.User;
+import de.schaumburg.schaumbooks.user.UserNotFoundException;
+import de.schaumburg.schaumbooks.user.UserRepository;
 
 @Component
 public class CsvBookLoader {
@@ -20,8 +24,11 @@ public class CsvBookLoader {
 
     private BookRepository bookRepository;
 
-    public CsvBookLoader(BookRepository bookRepository) {
+    private UserRepository userRepository;
+
+    public CsvBookLoader(BookRepository bookRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -56,6 +63,21 @@ public class CsvBookLoader {
         } catch (IOException e) {
             logger.error("Error reading CSV file: {}", e.getMessage(), e);
             // throw e; // Rethrow the exception to handle it elsewhere if necessary
+        }
+    }
+
+    // TODO: Remove after testing
+    @Transactional
+    public void add3BooksForStudent2() {
+        Optional<User> optionalUser = userRepository.findById(2L);
+        if (optionalUser.isPresent()){
+            for (int i = 0; i < 3; i++) {
+                Book b = new Book(null, "BookForStud2No " + i, "testVerlag", "123-3479-789", BookStatus.LENT,
+                        userRepository.getReferenceById(2L));
+                bookRepository.save(b);
+            }
+        }else{
+            throw new UserNotFoundException(2L);
         }
     }
 

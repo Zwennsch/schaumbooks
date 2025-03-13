@@ -19,7 +19,6 @@ public class Book {
         private @NotEmpty String isbn;
         @Enumerated(EnumType.STRING)
         private BookStatus status = BookStatus.AVAILABLE;
-        // TODO: this should be named as user instead of student
         @ManyToOne
         @JoinColumn(name = "user_id")
         private User user;

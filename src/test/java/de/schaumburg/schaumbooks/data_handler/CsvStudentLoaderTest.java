@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import de.schaumburg.schaumbooks.user.User;
 import de.schaumburg.schaumbooks.user.UserRepository;
 
+// FIXME: tests won't work because I am storing admin at the beginning.
 public class CsvStudentLoaderTest {
 
     @Mock
