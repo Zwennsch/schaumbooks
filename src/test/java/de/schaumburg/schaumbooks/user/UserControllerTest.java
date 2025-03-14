@@ -280,7 +280,7 @@ public class UserControllerTest {
         @Test
         @WithMockUser(username = "user1", roles = { "STUDENT" })
         void studentShouldAccessOwnBooks() throws Exception {
-                when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
+                // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
                 mockMvc.perform(get("/api/users/1/books"))
                                 .andExpect(status().isOk());

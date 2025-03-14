@@ -108,6 +108,17 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByUsername(username);
     }
 
+    @Test
+    void shouldThrowUserNotFoundExceptionGivenWrongUsername() {
+        // Given
+        String username = "wrongUsername";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
+        assertEquals("User not found with username: wrongUsername", exception.getMessage());
+        verify(userRepository).findByUsername(username);
+    }
+    
     // findBooksForId
     @Test
     void shouldReturnBooksForGivenUser() {
@@ -123,18 +134,6 @@ public class UserServiceTest {
     }
 
     
-
-    @Test
-    void shouldThrowUserNotFoundExceptionGivenWrongUsername() {
-        // Given
-        String username = "wrongUsername";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
-        assertEquals("User not found with username: wrongUsername", exception.getMessage());
-        verify(userRepository).findByUsername(username);
-    }
-
     // save
     @Test
     void shouldAddNewStudentGivenValidInput() {

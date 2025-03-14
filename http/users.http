@@ -20,6 +20,11 @@ Authorization: Basic sven:1234
 GET http://localhost:8080/api/users/username/wrongUsername HTTP/1.1
 Authorization: Basic sven:1234
 
+
+### should get a list of books for user with id2:
+GET http://localhost:8080/api/users/2/books
+Authorization: Basic sven:1234
+
 ### Add a new user with Role.Student:
 POST http://localhost:8080/api/users HTTP/1.1
 content-type: application/json

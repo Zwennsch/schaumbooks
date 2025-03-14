@@ -29,7 +29,7 @@ public class DataLoaderConfig {
     }
 
     @Bean
-    CommandLineRunner initBooksData() {
+    CommandLineRunner initBooksData(CommandLineRunner initStudentData) {
         return args -> {
             String csvFilePath = ".school-data/books_test.csv";
             try {
