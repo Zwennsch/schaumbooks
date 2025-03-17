@@ -286,15 +286,15 @@ public class UserControllerTest {
                                 .andExpect(status().isOk());
         }
 
-        // @Test
-        // // @WithMockUser(username = "user2", roles = {"STUDENT"})
-        // void studentShouldNotAccessOtherBooks() throws Exception{
-        // CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
-        // // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
+        @Test
+        // @WithMockUser(username = "user2", roles = {"STUDENT"})
+        void studentShouldNotAccessOtherBooks() throws Exception{
+        CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
+        // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
-        // mockMvc.perform(get("/api/users/1/books"))
-        // .andExpect(status().isForbidden());
-        // }
+        mockMvc.perform(get("/api/users/1/books"))
+        .andExpect(status().isForbidden());
+        }
 
         // @Test
         // @WithMockUser(roles = "STUDENT")
