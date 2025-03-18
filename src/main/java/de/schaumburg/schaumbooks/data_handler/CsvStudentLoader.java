@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import de.schaumburg.schaumbooks.user.Role;
@@ -18,14 +20,23 @@ public class CsvStudentLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvStudentLoader.class);
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public CsvStudentLoader(UserRepository userRepository) {
+    public CsvStudentLoader(UserRepository userRepository
+        , BCryptPasswordEncoder passwordEncoder
+        ) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    // TODO: This has to be improved
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
         // TODO: Remove later admin added jsut for testing purposes.
-        userRepository.save(new User(null, "sven", "1234", "Sven", "Schröder", "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
+        if (!userRepository.findByUsername("sven").isPresent()) { // Avoid duplicate admin entry
+            userRepository.save(new User(null, "sven", passwordEncoder.encode("1234"), "Sven", "Schröder",
+                    "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
+        }
+        // userRepository.save(new User(null, "sven", "1234", "Sven", "Schröder", "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
             // Skip header line
@@ -40,9 +51,10 @@ public class CsvStudentLoader {
                     String username = parts[3].trim();
                     String password = parts[5].trim();
 
-                    // TODO: before storing into the database the password it should be encrypted
+                    String encryptedPassword = passwordEncoder.encode(password);
+
                     // Create a new User and save it to the repository
-                    User student = new User(null, username, password, firstName, lastName, email, List.of(Role.STUDENT),
+                    User student = new User(null, username, encryptedPassword, firstName, lastName, email, List.of(Role.STUDENT),
                             className);
                     this.userRepository.save(student);
                 } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
