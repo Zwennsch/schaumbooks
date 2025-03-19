@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import de.schaumburg.schaumbooks.user.User;
 import de.schaumburg.schaumbooks.user.UserRepository;
@@ -23,6 +24,7 @@ public class CsvStudentLoaderTest {
 
     @Mock
     private UserRepository studentRepository;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private CsvStudentLoader csvStudentLoader;
