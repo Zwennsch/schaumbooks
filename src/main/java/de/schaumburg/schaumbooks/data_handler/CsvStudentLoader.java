@@ -29,9 +29,11 @@ public class CsvStudentLoader {
 
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
         // TODO: Remove later admin added jsut for testing purposes.
-        // if (!userRepository.findByUsername("sven").isPresent()) { // Avoid duplicate admin entry
-        //     userRepository.save(new User(null, "sven", passwordEncoder.encode("1234"), "Sven", "Schröder",
-        //             "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
+        // if (!userRepository.findByUsername("sven").isPresent()) { // Avoid duplicate
+        // admin entry
+        // userRepository.save(new User(null, "sven", passwordEncoder.encode("1234"),
+        // "Sven", "Schröder",
+        // "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
         // }
         List<User> students = new ArrayList<>();
         int successCount = 0, failureCount = 0;
