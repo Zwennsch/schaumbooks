@@ -177,3 +177,12 @@ Authorization: Basic sven:1234
 ### should throw UserNotFound on deleteUsers
 DELETE  http://localhost:8080/api/users/9999 HTTP/1.1
 Authorization: Basic sven:1234
+
+### should get 3 books when logged in as user with id 2:
+GET http://localhost:8080/api/users/2/books
+Authorization: Basic mohammed123:12341
+
+
+### should NOT get nay books for user with id 2, if logged in as user with id 3:
+GET http://localhost:8080/api/users/2/books
+Authorization: Basic arvid8:12342

@@ -51,8 +51,8 @@ public class UserController {
 
     // Get rented books for specific user
     // Only for student with id {id}, teacher and admin
-    @GetMapping("/{id}/books")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or #id == authentication.principal.id")
+    @GetMapping("/{id}/books")
     public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
        return ResponseEntity.ok(userService.getRentedBooks(id));
     }
