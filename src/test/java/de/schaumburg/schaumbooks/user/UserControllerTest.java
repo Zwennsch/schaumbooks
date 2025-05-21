@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookStatus;
-import de.schaumburg.schaumbooks.configuration.TestSecurityConfig;
+import de.schaumburg.schaumbooks.configuration.SecurityConfig;
 import de.schaumburg.schaumbooks.user.Role;
 import de.schaumburg.schaumbooks.user.User;
 import de.schaumburg.schaumbooks.user.UserController;
@@ -51,7 +51,7 @@ import de.schaumburg.schaumbooks.user.UserNotFoundException;
 import de.schaumburg.schaumbooks.user.UserService;
 
 @WebMvcTest(UserController.class)
-@Import(TestSecurityConfig.class)
+@Import(SecurityConfig.class)
 public class UserControllerTest {
 
         @Autowired
@@ -288,12 +288,12 @@ public class UserControllerTest {
 
         @Test
         // @WithMockUser(username = "user2", roles = {"STUDENT"})
-        void studentShouldNotAccessOtherBooks() throws Exception{
-        CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
-        // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
+        void studentShouldNotAccessOtherBooks() throws Exception {
+                CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
+                // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
-        mockMvc.perform(get("/api/users/1/books"))
-        .andExpect(status().isForbidden());
+                mockMvc.perform(get("/api/users/1/books"))
+                                .andExpect(status().isForbidden());
         }
 
         // @Test

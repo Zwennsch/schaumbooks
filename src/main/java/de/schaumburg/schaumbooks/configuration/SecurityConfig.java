@@ -25,7 +25,7 @@ import de.schaumburg.schaumbooks.user.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
-public class TestSecurityConfig {
+public class SecurityConfig {
 
     @Autowired
     CustomUserDetailsService userDetailsService;
@@ -44,7 +44,8 @@ public class TestSecurityConfig {
                 // secondly you declare HOW you want to login:
                 // disable csrf since making the API stateless
                 .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
-                // TODO: This is just for testing with h2-database. Has to be removed in production
+                // TODO: This is just for testing with h2-database. Has to be removed in
+                // production
                 .headers(headers -> headers
                         .addHeaderWriter(
                                 new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
@@ -56,34 +57,33 @@ public class TestSecurityConfig {
 
     // This is just for testing because in a real application those details should
     // come from the database:
-//     @Bean
-//     public UserDetailsService userDetailsService() {
-//         UserDetails user1 = User.withDefaultPasswordEncoder()
-//                 .username("sven")
-//                 .password("1234")
-//                 // .roles("USER")
-//                 .build();
-//         UserDetails user2 = User.withDefaultPasswordEncoder()
-//                 .username("hans")
-//                 .password("3456")
-//                 // .roles("USER")
-//                 .build();
-//         return new InMemoryUserDetailsManager(user1, user2);
-//     }
+    // @Bean
+    // public UserDetailsService userDetailsService() {
+    // UserDetails user1 = User.withDefaultPasswordEncoder()
+    // .username("sven")
+    // .password("1234")
+    // // .roles("USER")
+    // .build();
+    // UserDetails user2 = User.withDefaultPasswordEncoder()
+    // .username("hans")
+    // .password("3456")
+    // // .roles("USER")
+    // .build();
+    // return new InMemoryUserDetailsManager(user1, user2);
+    // }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    // provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-    provider.setPasswordEncoder(passwordEncoder());
-    provider.setUserDetailsService(userDetailsService);
-    return provider;
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        // provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 }

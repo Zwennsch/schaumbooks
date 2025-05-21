@@ -20,14 +20,14 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.schaumburg.schaumbooks.configuration.TestSecurityConfig;
+import de.schaumburg.schaumbooks.configuration.SecurityConfig;
 import de.schaumburg.schaumbooks.user.CustomUserDetailsService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookController.class)
-@Import(TestSecurityConfig.class)
+@Import(SecurityConfig.class)
 public class BookControllerTest {
 
     @Autowired

@@ -28,7 +28,7 @@ public class CsvStudentLoader {
     }
 
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
-        // TODO: Remove later admin added jsut for testing purposes.
+        // TODO: Remove later admin added just for testing purposes.
         if (!userRepository.findByUsername("sven").isPresent()) { // Avoid duplicate admin entry
             userRepository.save(new User(null, "sven", passwordEncoder.encode("1234"),
             "Sven", "Schröder",

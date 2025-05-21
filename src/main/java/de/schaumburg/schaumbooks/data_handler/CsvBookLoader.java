@@ -68,7 +68,7 @@ public class CsvBookLoader {
     // TODO: Remove after testing
     @Transactional
     public void add3BooksForStudent2() throws InterruptedException {
-        User user = waitForUser(2l, 10, 500);
+        User user = waitForUser(2l, 10, 1000);
 
         for (int i = 0; i < 3; i++) {
             Book b = new Book(null, "BookForStud2No " + i, "testVerlag", "123-3479-789", BookStatus.LENT,
@@ -77,7 +77,6 @@ public class CsvBookLoader {
         }
 
     }
-
 
     private User waitForUser(long userId, int maxRetries, long sleepMillis) throws InterruptedException {
         for (int i = 0; i < maxRetries; i++) {
