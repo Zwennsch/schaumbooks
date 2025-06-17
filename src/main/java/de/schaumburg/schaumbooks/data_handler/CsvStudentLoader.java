@@ -5,12 +5,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import de.schaumburg.schaumbooks.book.Book;
+import de.schaumburg.schaumbooks.book.BookRepository;
+import de.schaumburg.schaumbooks.book.BookStatus;
 import de.schaumburg.schaumbooks.user.Role;
 import de.schaumburg.schaumbooks.user.User;
 import de.schaumburg.schaumbooks.user.UserRepository;
@@ -21,18 +26,21 @@ public class CsvStudentLoader {
     private static final Logger logger = LoggerFactory.getLogger(CsvStudentLoader.class);
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final BookRepository bookRepository;
 
-    public CsvStudentLoader(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public CsvStudentLoader(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,
+            BookRepository bookRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.bookRepository = bookRepository;
     }
 
     public void readStudentDataFromCsvAndSave(String csvFilePath) {
         // TODO: Remove later admin added just for testing purposes.
         if (!userRepository.findByUsername("sven").isPresent()) { // Avoid duplicate admin entry
             userRepository.save(new User(null, "sven", passwordEncoder.encode("1234"),
-            "Sven", "Schröder",
-            "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
+                    "Sven", "Schröder",
+                    "s.schroeder3@schule.bremen.de", List.of(Role.ADMIN, Role.TEACHER), null));
         }
         List<User> students = new ArrayList<>();
         int successCount = 0, failureCount = 0;
@@ -82,8 +90,41 @@ public class CsvStudentLoader {
             if (failureCount > 0) {
                 logger.warn("Skipped {} malformated student records.", failureCount);
             }
+
         } catch (IOException e) {
             logger.error("An error occurred while reading the CSV file: {}", e.getMessage());
         }
+        // TODO: Remove after testing
+        try {
+            add3BooksForStudent2();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
+    // TODO: Remove after testing
+    @Transactional
+    public void add3BooksForStudent2() throws InterruptedException {
+        waitForUser(2l, 10, 1000);
+
+        for (int i = 0; i < 3; i++) {
+            Book b = new Book(null, "BookForStud2No " + i, "testVerlag", "123-3479-789", BookStatus.LENT,
+                    userRepository.getReferenceById(2L));
+            bookRepository.save(b);
+        }
+
+    }
+
+    private void waitForUser(long userId, int maxRetries, long sleepMillis) throws InterruptedException {
+        for (int i = 0; i < maxRetries; i++) {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                System.out.println("user wit id 2 present!");
+                return;
+            }
+            Thread.sleep(sleepMillis);
+        }
+        throw new RuntimeException("User with id: " + userId + " could not be found");
+    }
+
 }

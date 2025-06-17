@@ -34,7 +34,7 @@ public class DataLoaderConfig {
             String csvFilePath = ".school-data/books_test.csv";
             try {
                 csvBookLoader.readBookDataFromCsvAndSave(csvFilePath);
-                csvBookLoader.add3BooksForStudent2();
+                // csvBookLoader.add3BooksForStudent2();
                 System.out.println("Successfully loaded book data from csv file");
             } catch (IOException e) {
                 System.out.println("Error while loading data from csv file: " + e.getMessage());
