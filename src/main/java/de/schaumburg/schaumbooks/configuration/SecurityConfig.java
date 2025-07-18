@@ -38,11 +38,14 @@ public class SecurityConfig {
                 // secondly you declare HOW you want to login:
                 // disable csrf since making the API stateless
                 .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
+                // .formLogin(Customizer.withDefaults())
+                // .formLogin(form -> form.defaultSuccessUrl("/api/books"))
                 // TODO: This is just for testing with h2-database. Has to be removed in
                 // production
                 .headers(headers -> headers
                         .addHeaderWriter(
                                 new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+                // this is so that request via direct http (Postman...) work
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
