@@ -28,9 +28,10 @@ class BookRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        student = new User(1L, "user1", "1234", "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT),
+        // create user without pre-set id and persist it, assigning the managed instance back
+        student = new User(null, "user1", "1234", "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT),
                 "8a");
-        userRepository.save(student);
+        student = userRepository.save(student);
 
         book1 = new Book(null, "Book One", "Publisher One", "ISBN-12345", BookStatus.LENT, student);
         book2 = new Book(null, "Book Two", "Publisher Two", "ISBN-67890", BookStatus.LENT, student);

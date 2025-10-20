@@ -10,7 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.foreign.Linker.Option;
+// removed accidental preview API import
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

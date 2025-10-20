@@ -287,7 +287,7 @@ public class UserControllerTest {
         }
 
         @Test
-        // @WithMockUser(username = "user2", roles = {"STUDENT"})
+        @WithMockUser(username = "user2", roles = { "STUDENT" })
         void studentShouldNotAccessOtherBooks() throws Exception {
                 CustomUserDetails studentWithId2 = new CustomUserDetails(users.get(1));
                 // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
