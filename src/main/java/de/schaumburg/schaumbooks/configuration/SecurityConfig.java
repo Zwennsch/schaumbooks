@@ -27,7 +27,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // first you declare WHAT you want to protect and how:
+                // FIRST you declare WHAT you want to protect and how:
                 .authorizeHttpRequests(
                         authorizeHttp -> {
                             // TODO: remove later in production
@@ -35,7 +35,8 @@ public class SecurityConfig {
                             // ensures that every request requires authentication
                             authorizeHttp.anyRequest().authenticated();
                         })
-                // secondly you declare HOW you want to login:
+
+                // SECONDly you declare HOW you want to login:
                 // disable csrf since making the API stateless
                 .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
                 // .formLogin(Customizer.withDefaults())
