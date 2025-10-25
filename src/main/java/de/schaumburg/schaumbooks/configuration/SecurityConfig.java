@@ -24,29 +24,47 @@ public class SecurityConfig {
     @Autowired
     CustomUserDetailsService userDetailsService;
 
+    // @Bean
+    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    //     return http
+    //             // FIRST you declare WHAT you want to protect and how:
+    //             .authorizeHttpRequests(
+    //                     authorizeHttp -> {
+    //                         // TODO: remove later in production
+    //                         authorizeHttp.requestMatchers("/h2-console/**").permitAll();
+    //                         // ensures that every request requires authentication
+    //                         authorizeHttp.anyRequest().authenticated();
+    //                     })
+
+    //             // SECONDly you declare HOW you want to login:
+    //             // disable csrf since making the API stateless
+    //             .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
+    //             // .formLogin(Customizer.withDefaults())
+    //             // .formLogin(form -> form.defaultSuccessUrl("/api/books"))
+    //             // TODO: This is just for testing with h2-database. Has to be removed in
+    //             // production
+    //             .headers(headers -> headers
+    //                     .addHeaderWriter(
+    //                             new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+    //             // this is so that request via direct http (Postman...) work
+    //             .httpBasic(Customizer.withDefaults())
+    //             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    //             .build();
+
+    // }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // FIRST you declare WHAT you want to protect and how:
                 .authorizeHttpRequests(
                         authorizeHttp -> {
-                            // TODO: remove later in production
                             authorizeHttp.requestMatchers("/h2-console/**").permitAll();
-                            // ensures that every request requires authentication
                             authorizeHttp.anyRequest().authenticated();
                         })
 
-                // SECONDly you declare HOW you want to login:
-                // disable csrf since making the API stateless
                 .csrf(csrfConfigCustomizer -> csrfConfigCustomizer.disable())
-                // .formLogin(Customizer.withDefaults())
-                // .formLogin(form -> form.defaultSuccessUrl("/api/books"))
-                // TODO: This is just for testing with h2-database. Has to be removed in
-                // production
                 .headers(headers -> headers
                         .addHeaderWriter(
                                 new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
-                // this is so that request via direct http (Postman...) work
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
