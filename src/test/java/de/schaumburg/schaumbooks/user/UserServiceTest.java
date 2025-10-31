@@ -39,7 +39,7 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
-    
+
     @Mock
     private BookRepository bookRepository;
 
@@ -113,38 +113,37 @@ public class UserServiceTest {
         // Given
         String username = "wrongUsername";
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-        
+
         Exception exception = assertThrows(UserNotFoundException.class, () -> userService.findUserByUsername(username));
         assertEquals("User not found with username: wrongUsername", exception.getMessage());
         verify(userRepository).findByUsername(username);
     }
-    
+
     // findBooksForId
     @Test
     void shouldReturnBooksForGivenUser() {
         // Given
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(bookRepository.findByUser(users.get(0))).thenReturn(rentedBooks);
-        
+
         // When
         List<Book> result = userService.getRentedBooks(1L);
-        
+
         assertEquals(2, result.size());
         verify(bookRepository).findByUser(users.get(0));
     }
-    
+
     @Test
-    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenGettingListOfBooks(){
+    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenGettingListOfBooks() {
         // Given
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
         // when
-        
+
         Exception exception = assertThrows(UserNotFoundException.class, () -> userService.getRentedBooks(99L));
         assertEquals("User not found with id: 99", exception.getMessage());
         verify(userRepository).findById(99L);
     }
 
-    
     // save
     @Test
     void shouldAddNewStudentGivenValidInput() {
