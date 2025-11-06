@@ -1,4 +1,4 @@
-package de.schaumburg.schaumbooks.user;
+package de.schaumburg.schaumbooks.person;
 
 import java.util.Optional;
 
@@ -9,20 +9,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomPersonDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private PersonRepository personRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
-            var userObject = user.get();
-            return new CustomUserDetails(userObject);
+        Optional<Person> person = personRepository.findByUsername(username);
+        if (person.isPresent()) {
+            var personObject = person.get();
+            return new CustomPersonDetails(personObject);
         } else {
-            throw new UserNotFoundException(username);
+            throw new PersonNotFoundException(username);
         }
     }
 

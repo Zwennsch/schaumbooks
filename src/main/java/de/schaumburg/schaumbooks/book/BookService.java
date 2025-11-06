@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import de.schaumburg.schaumbooks.user.UserRepository;
+import de.schaumburg.schaumbooks.person.PersonRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,7 +22,7 @@ public class BookService {
 
     // private final StudentRepository studentRepository;
 
-    public BookService(BookRepository bookRepository, UserRepository studentRepository) {
+    public BookService(BookRepository bookRepository, PersonRepository personRepository) {
         this.bookRepository = bookRepository;
         // this.studentRepository = studentRepository;
     }
@@ -50,7 +50,7 @@ public class BookService {
             existingBook.setVerlag(updatedBook.getVerlag());
             existingBook.setIsbn(updatedBook.getIsbn());
             existingBook.setStatus(updatedBook.getStatus());
-            existingBook.setUser(updatedBook.getUser());
+            existingBook.setPerson(updatedBook.getPerson());
             return bookRepository.save(existingBook);
         }).orElseThrow(() -> new BookNotFoundException(id));
     }

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
-import de.schaumburg.schaumbooks.user.UserRepository;
+import de.schaumburg.schaumbooks.person.PersonRepository;
 
 @Component
 public class CsvBookLoader {
@@ -21,11 +21,11 @@ public class CsvBookLoader {
 
     private BookRepository bookRepository;
 
-    private UserRepository userRepository;
+    private PersonRepository personRepository;
 
-    public CsvBookLoader(BookRepository bookRepository, UserRepository userRepository) {
+    public CsvBookLoader(BookRepository bookRepository, PersonRepository personRepository) {
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
+        this.personRepository = personRepository;
     }
 
     @Transactional
@@ -62,7 +62,5 @@ public class CsvBookLoader {
             // throw e; // Rethrow the exception to handle it elsewhere if necessary
         }
     }
-
-    
 
 }

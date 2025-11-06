@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import de.schaumburg.schaumbooks.user.Role;
-import de.schaumburg.schaumbooks.user.User;
-import de.schaumburg.schaumbooks.user.UserRepository;
+import de.schaumburg.schaumbooks.person.Role;
+import de.schaumburg.schaumbooks.person.Person;
+import de.schaumburg.schaumbooks.person.PersonRepository;
 
 @DataJpaTest
 class BookRepositoryTest {
@@ -21,16 +21,16 @@ class BookRepositoryTest {
     private BookRepository bookRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private PersonRepository userRepository;
 
-    private User student;
+    private Person student;
     private Book book1, book2;
 
     @BeforeEach
     void setUp() {
         // create user without pre-set id and persist it, assigning the managed instance
         // back
-        student = new User(null, "user1", "1234", "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT),
+        student = new Person(null, "user1", "1234", "student1", "lastname1", "student1@mail.com", List.of(Role.STUDENT),
                 "8a");
         student = userRepository.save(student);
 
@@ -41,7 +41,7 @@ class BookRepositoryTest {
 
     @Test
     void shouldFindBooksByUser() {
-        List<Book> rentedBooks = bookRepository.findByUser(student);
+        List<Book> rentedBooks = bookRepository.findByPerson(student);
 
         assertEquals(2, rentedBooks.size());
         assertTrue(rentedBooks.contains(book1));

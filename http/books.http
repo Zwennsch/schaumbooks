@@ -86,6 +86,7 @@ Authorization: Basic sven:1234
     "student": null
 }
 
+# TODO: should not be possible since status 'LENT' should always have a student!
 ### should update book with id 1
 PUT http://localhost:8080/api/books/1 HTTP/1.1
 Content-Type: application/json

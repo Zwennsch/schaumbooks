@@ -1,4 +1,4 @@
-package de.schaumburg.schaumbooks.user;
+package de.schaumburg.schaumbooks.person;
 
 import java.util.List;
 
@@ -16,8 +16,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "users")
-public class User {
+public class Person {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private @NotEmpty @Column(unique = true, nullable = false) String username;
@@ -29,11 +28,11 @@ public class User {
     @Column(nullable = true)
     private String className;
 
-    User() {
+    Person() {
 
     }
 
-    public User(Long id, String username, String password, String firstName, String lastName, String email,
+    public Person(Long id, String username, String password, String firstName, String lastName, String email,
             List<Role> roles, String className) {
         this.id = id;
         this.username = username;
@@ -112,7 +111,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
+        return "Person [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
                 + ", lastName=" + lastName + ", email=" + email + ", roles=" + roles + ", className=" + className + "]";
     }
 
@@ -139,7 +138,7 @@ public class User {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        User other = (User) obj;
+        Person other = (Person) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

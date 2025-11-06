@@ -1,4 +1,4 @@
-package de.schaumburg.schaumbooks.user;
+package de.schaumburg.schaumbooks.person;
 
 import java.util.List;
 import java.util.Map;
@@ -25,28 +25,28 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping(path = "/api/users")
-public class UserController {
+public class PersonController {
 
-    private final UserService userService;
+    private final PersonService personService;
 
-    public UserController(UserService studentService) {
-        this.userService = studentService;
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
 
     @GetMapping("")
-    public ResponseEntity<List<User>> findAll() {
-        List<User> allUsers = userService.findAll();
+    public ResponseEntity<List<Person>> findAll() {
+        List<Person> allUsers = personService.findAll();
         return ResponseEntity.ok(allUsers);
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<User> findUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(userService.findUserByUsername(username));
+    public ResponseEntity<Person> findPersonByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(personService.findPersonByUsername(username));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findUserById(id));
+    public ResponseEntity<Person> findPersonById(@PathVariable Long id) {
+        return ResponseEntity.ok(personService.findPersonById(id));
     }
 
     // Get rented books for specific user
@@ -54,35 +54,33 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or #id == authentication.principal.id")
     @GetMapping("/{id}/books")
     public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
-       return ResponseEntity.ok(userService.getRentedBooks(id));
+        return ResponseEntity.ok(personService.getRentedBooks(id));
     }
-
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
+    public ResponseEntity<Person> addPerson(@Valid @RequestBody Person person) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(person));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid User user) {
-        User updatedUser = userService.updateUser(id, user);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
+        Person updatedPerson = personService.updatePerson(id, person);
+        return ResponseEntity.ok(updatedPerson);
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUserFields(@PathVariable Long id,
+    public ResponseEntity<Person> updatePersonFields(@PathVariable Long id,
             @RequestBody Map<String, Object> fieldsToPatch) {
-        User updatedUser = userService.updateUserFields(id, fieldsToPatch);
-        return ResponseEntity.ok(updatedUser);
+        Person updatedPerson = personService.updatePersonFields(id, fieldsToPatch);
+        return ResponseEntity.ok(updatedPerson);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    public ResponseEntity<?> deletePersonById(@PathVariable Long id) {
+        personService.deletePersonById(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

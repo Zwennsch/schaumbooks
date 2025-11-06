@@ -1,0 +1,120 @@
+package de.schaumburg.schaumbooks.person;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
+
+import de.schaumburg.schaumbooks.book.Book;
+import de.schaumburg.schaumbooks.book.BookRepository;
+
+@Service
+public class PersonService {
+
+    private final PersonRepository personRepository;
+    private final BookRepository bookRepository;
+
+    public PersonService(PersonRepository personRepository, BookRepository bookRepository) {
+        this.personRepository = personRepository;
+        this.bookRepository = bookRepository;
+    }
+
+    public List<Person> findAll() {
+        return personRepository.findAll();
+    }
+
+    public Person findPersonById(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    public Person findPersonByUsername(String username) {
+        return personRepository.findByUsername(username)
+                .orElseThrow(() -> new PersonNotFoundException(username));
+    }
+
+    @Transactional
+    public Person save(Person person) {
+        if (person.getRoles() == null || person.getRoles().isEmpty()) {
+            person.setRoles(List.of(Role.STUDENT));
+        }
+
+        if (personRepository.findByUsername(person.getUsername()).isPresent()) {
+            throw new InvalidPersonInputException("Username already taken: " + person.getUsername());
+        }
+        if (person.getRoles().contains(Role.STUDENT)
+                && (person.getClassName() == null || person.getClassName().isEmpty())) {
+            throw new InvalidPersonInputException("Student must have a className");
+        } else if (!person.getRoles().contains(Role.STUDENT) && (person.getClassName() != null)) {
+            throw new InvalidPersonInputException("Non-Student roles must not have a className");
+        }
+        // TODO: encode password here!
+        return personRepository.save(person);
+    }
+
+    @Transactional
+    public Person updatePerson(long id, Person person) {
+        Optional<Person> possibleUser = personRepository.findById(id);
+        if (usernameExistsInDB(person.getUsername())) {
+            throw new InvalidPersonInputException("Person with username: " + person.getUsername() + " already exits");
+        }
+
+        return possibleUser.map(existingUser -> {
+            existingUser.setId(id);
+            existingUser.setFirstName(person.getFirstName());
+            existingUser.setLastName(person.getLastName());
+            existingUser.setClassName(person.getClassName());
+            existingUser.setRoles(person.getRoles());
+            existingUser.setEmail(person.getEmail());
+            existingUser.setPassword(person.getPassword());
+            existingUser.setUsername(person.getUsername());
+            // TODO: use userservice.save to update person
+            return personRepository.save(existingUser);
+        }).orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    @Transactional
+    public Person updatePersonFields(Long personId, Map<String, Object> fieldsToPatch) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+
+        fieldsToPatch.forEach((key, value) -> {
+
+            Field field = ReflectionUtils.findField(Person.class, key);
+            if (field == null) {
+                throw new InvalidPersonInputException("No field named " + key);
+            }
+            if (key == "username" && usernameExistsInDB((String) value)) {
+                throw new InvalidPersonInputException("Username already taken");
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, person, value);
+        });
+
+        return personRepository.save(person);
+
+    }
+
+    @Transactional
+    public void deletePersonById(Long id) {
+        Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
+        personRepository.deleteById(person.getId());
+
+    }
+
+    boolean usernameExistsInDB(String username) {
+        return personRepository.findByUsername(username).isPresent();
+    }
+
+    public List<Book> getRentedBooks(Long personId) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+
+        return bookRepository.findByPerson(person);
+    }
+
+}

@@ -8,27 +8,27 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.schaumburg.schaumbooks.user.Role;
-import de.schaumburg.schaumbooks.user.User;
+import de.schaumburg.schaumbooks.person.Role;
+import de.schaumburg.schaumbooks.person.Person;
 
 public class TestBook {
 
-    User s1 = new User(1L, "user1", "1234", "hans", "meier", "mail@test", List.of(Role.STUDENT), "9a");
-    
-    @Test
-    void shouldBeEqualWhenComparingIdenticalBooks(){
+    Person s1 = new Person(1L, "user1", "1234", "hans", "meier", "mail@test", List.of(Role.STUDENT), "9a");
 
-        User student1 = s1;
+    @Test
+    void shouldBeEqualWhenComparingIdenticalBooks() {
+
+        Person student1 = s1;
 
         Book book1 = new Book(1L, "title", "verlag", "123-456", BookStatus.AVAILABLE, student1);
         Book book2 = new Book(1L, "title", "verlag", "123-456", BookStatus.AVAILABLE, student1);
-        
+
         assertEquals(book1, book2);
     }
-    
+
     @Test
-    void shouldReturnTrueWhenBookIsLent(){
-        
+    void shouldReturnTrueWhenBookIsLent() {
+
         Book book1 = new Book(1L, "title", "verlag", "123-456", BookStatus.LENT, s1);
         Book book2 = new Book(1L, "title", "verlag", "123-456", BookStatus.AVAILABLE, s1);
 

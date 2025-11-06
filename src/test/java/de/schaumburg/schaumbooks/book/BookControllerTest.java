@@ -21,7 +21,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.schaumburg.schaumbooks.configuration.SecurityConfig;
-import de.schaumburg.schaumbooks.user.CustomUserDetailsService;
+import de.schaumburg.schaumbooks.person.CustomPersonDetailsService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -37,7 +37,7 @@ public class BookControllerTest {
     BookService bookService;
 
     @MockBean
-    private CustomUserDetailsService userDetailsService;
+    private CustomPersonDetailsService userDetailsService;
 
     Book updatedBook;
 
@@ -62,7 +62,7 @@ public class BookControllerTest {
                         "verlag":"first verlag",
                         "isbn":"123456",
                         "status":"AVAILABLE",
-                        "user":null
+                        "person":null
                     },
                     {
                         "id":2,
@@ -70,7 +70,7 @@ public class BookControllerTest {
                         "verlag":"second verlag",
                         "isbn":"654321",
                         "status":"MISSING",
-                        "user":null
+                        "person":null
                     }
                 ]
                 """;
@@ -93,7 +93,7 @@ public class BookControllerTest {
                     "verlag":"first verlag",
                     "isbn":"123456",
                     "status":"AVAILABLE",
-                    "user":null
+                    "person":null
                     }
                     """;
         when(bookService.findById(1L)).thenReturn(books.get(0));

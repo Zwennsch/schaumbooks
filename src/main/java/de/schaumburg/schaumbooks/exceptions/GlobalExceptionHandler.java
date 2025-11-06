@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import de.schaumburg.schaumbooks.book.BookNotFoundException;
-import de.schaumburg.schaumbooks.user.InvalidUserInputException;
-import de.schaumburg.schaumbooks.user.UserNotFoundException;
+import de.schaumburg.schaumbooks.person.InvalidPersonInputException;
+import de.schaumburg.schaumbooks.person.PersonNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,15 +25,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleUserNotFoundException(UserNotFoundException exception) {
+    @ExceptionHandler(PersonNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleUserNotFoundException(PersonNotFoundException exception) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.NOT_FOUND.value(), exception.getMessage(), new Date());
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(InvalidUserInputException.class)
-    public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidUserInputException exception) {
+    @ExceptionHandler(InvalidPersonInputException.class)
+    public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidPersonInputException exception) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
     }

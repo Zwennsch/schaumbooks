@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import de.schaumburg.schaumbooks.user.InvalidUserInputException;
+import de.schaumburg.schaumbooks.person.InvalidPersonInputException;
 
 @ExtendWith(MockitoExtension.class)
 public class GlobalExceptionHandlerTest {
@@ -18,14 +18,14 @@ public class GlobalExceptionHandlerTest {
     private GlobalExceptionHandler exceptionHandler;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         exceptionHandler = new GlobalExceptionHandler();
     }
 
     @Test
     void testHandleInvalidUserInputException() {
-        // Given 
-        InvalidUserInputException exception = new InvalidUserInputException("Student must have a class name");
+        // Given
+        InvalidPersonInputException exception = new InvalidPersonInputException("Student must have a class name");
 
         // When
         ResponseEntity<ErrorObject> response = exceptionHandler.handleInvalidUserInputException(exception);

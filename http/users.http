@@ -169,8 +169,8 @@ Authorization: Basic sven:1234
 }
 
 ###DELETE
-### should delete user
-DELETE  http://localhost:8080/api/users/1 HTTP/1.1
+### should delete user with ID 3
+DELETE  http://localhost:8080/api/users/3 HTTP/1.1
 Authorization: Basic sven:1234
 
 

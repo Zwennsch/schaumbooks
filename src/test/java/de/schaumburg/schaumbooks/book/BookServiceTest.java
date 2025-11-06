@@ -36,14 +36,14 @@ public class BookServiceTest {
         book1.setVerlag("Sample Verlag");
         book1.setIsbn("1234567890");
         book1.setStatus(BookStatus.AVAILABLE);
-        book1.setUser(null);
+        book1.setPerson(null);
 
         Book book2 = new Book();
         book2.setTitle("Sample Book2");
         book2.setVerlag("Sample Verlag2");
         book2.setIsbn("1234567890-2");
         book2.setStatus(BookStatus.LENT);
-        book2.setUser(null);
+        book2.setPerson(null);
 
         books = List.of(book1, book2);
     }
@@ -60,7 +60,7 @@ public class BookServiceTest {
         updatedBook.setVerlag("Updated Verlag");
         updatedBook.setIsbn("0987654321");
         updatedBook.setStatus(BookStatus.LENT);
-        updatedBook.setUser(null);
+        updatedBook.setPerson(null);
 
         Book result = bookService.updateBook(1L, updatedBook);
 
