@@ -21,17 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-// import org.springframework.http.MediaType;
-import org.mockito.internal.matchers.Null;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
-import de.schaumburg.schaumbooks.person.Person;
-import de.schaumburg.schaumbooks.person.PersonNotFoundException;
-import de.schaumburg.schaumbooks.person.PersonRepository;
-import de.schaumburg.schaumbooks.person.PersonService;
 
 // import com.fasterxml.jackson.core.JsonProcessingException;
 

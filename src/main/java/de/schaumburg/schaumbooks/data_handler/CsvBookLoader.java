@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
-import de.schaumburg.schaumbooks.person.PersonRepository;
 
 @Component
 public class CsvBookLoader {
@@ -21,11 +20,9 @@ public class CsvBookLoader {
 
     private BookRepository bookRepository;
 
-    private PersonRepository personRepository;
 
-    public CsvBookLoader(BookRepository bookRepository, PersonRepository personRepository) {
+    public CsvBookLoader(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.personRepository = personRepository;
     }
 
     @Transactional

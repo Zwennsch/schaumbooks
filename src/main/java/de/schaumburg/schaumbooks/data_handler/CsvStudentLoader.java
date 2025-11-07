@@ -86,10 +86,10 @@ public class CsvStudentLoader {
             }
             if (!students.isEmpty()) {
                 personRepository.saveAll(students);
-                logger.info("Successsfully saved {} students to the database. ", successCount);
+                logger.info("Successfully saved {} students to the database. ", successCount);
             }
             if (failureCount > 0) {
-                logger.warn("Skipped {} malformated student records.", failureCount);
+                logger.warn("Skipped {} malformed student records.", failureCount);
             }
 
         } catch (FileNotFoundException e) {
