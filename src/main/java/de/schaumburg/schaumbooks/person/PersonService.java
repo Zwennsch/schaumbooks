@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
@@ -17,10 +18,12 @@ public class PersonService {
 
     private final PersonRepository personRepository;
     private final BookRepository bookRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public PersonService(PersonRepository personRepository, BookRepository bookRepository) {
+    public PersonService(PersonRepository personRepository, BookRepository bookRepository, BCryptPasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
         this.bookRepository = bookRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Person> findAll() {
@@ -52,7 +55,11 @@ public class PersonService {
         } else if (!person.getRoles().contains(Role.STUDENT) && (person.getClassName() != null)) {
             throw new InvalidPersonInputException("Non-Student roles must not have a className");
         }
-        // TODO: encode password here!
+        if (person.getPassword() == null || person.getPassword().isEmpty()) {
+            throw new InvalidPersonInputException("Password must not be empty");
+        }
+        person.setPassword(passwordEncoder.encode(person.getPassword()));
+
         return personRepository.save(person);
     }
 
@@ -72,8 +79,8 @@ public class PersonService {
             existingUser.setEmail(person.getEmail());
             existingUser.setPassword(person.getPassword());
             existingUser.setUsername(person.getUsername());
-            // TODO: use userservice.save to update person
-            return personRepository.save(existingUser);
+            // return personRepository.save(existingUser);
+            return this.save(existingUser);
         }).orElseThrow(() -> new PersonNotFoundException(id));
     }
 

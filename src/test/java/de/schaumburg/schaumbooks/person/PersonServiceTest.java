@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
@@ -35,6 +36,9 @@ public class PersonServiceTest {
 
     @Mock
     private BookRepository bookRepository;
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private PersonService userService;
@@ -270,7 +274,8 @@ public class PersonServiceTest {
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10b");
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(userRepository.save(updatedStudent)).thenReturn(updatedStudent);
+        when(userService.save(updatedStudent)).thenReturn(updatedStudent);
+        // FIXME: Throws InvalidUserInputExcepttion password must not be empty
         Person result = userService.updatePerson(1L, updatedStudent);
         assertEquals(updatedStudent, result);
         verify(userRepository).save(updatedStudent);
@@ -411,5 +416,34 @@ public class PersonServiceTest {
         assertThrows(PersonNotFoundException.class, () -> userService.deletePersonById(99l));
 
         verify(userRepository, never()).deleteById(99l);
+    }
+
+    @Test
+    void shouldThrowInvalidPersonInputExceptionWhenGivenStudentWithoutPassword() {
+        Person studentNoPassword = new Person(null, "noPassword", null, "Hans", "Flick", "nopasssw@mail.com", null,
+                "10a");
+        Exception exception = assertThrows(InvalidPersonInputException.class,
+                () -> userService.save(studentNoPassword));
+        verify(userRepository, times(0)).save(studentNoPassword);
+        assertEquals("Invalid user input: Password must not be empty",
+                exception.getMessage());
+    }
+
+    @Test
+    void shouldEncryptPasswordWhenSavingUser() {
+
+        // This test assumes that password encryption is implemented in the save method
+        Person user = new Person(null, "secureUser", "plainPassword", "Secure", "User", "secure@mail.com", null, "10a");
+        // stub the password encoder to return an "encrypted" password
+        when(passwordEncoder.encode("plainPassword")).thenReturn("encryptedPassword");
+
+        // when repository saves, just return the entity passed in
+        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Person savedUser = userService.save(user);
+
+        // verify that the encoder was invoked and its result was set on the entity
+        verify(passwordEncoder, times(1)).encode("plainPassword");
+        assertEquals("encryptedPassword", savedUser.getPassword());
     }
 }
