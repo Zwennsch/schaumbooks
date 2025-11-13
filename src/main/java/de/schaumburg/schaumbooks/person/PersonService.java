@@ -20,7 +20,8 @@ public class PersonService {
     private final BookRepository bookRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public PersonService(PersonRepository personRepository, BookRepository bookRepository, BCryptPasswordEncoder passwordEncoder) {
+    public PersonService(PersonRepository personRepository, BookRepository bookRepository,
+            BCryptPasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
         this.bookRepository = bookRepository;
         this.passwordEncoder = passwordEncoder;
@@ -79,8 +80,8 @@ public class PersonService {
             existingUser.setEmail(person.getEmail());
             existingUser.setPassword(person.getPassword());
             existingUser.setUsername(person.getUsername());
-            // return personRepository.save(existingUser);
-            return this.save(existingUser);
+            return personRepository.save(existingUser);
+            // return this.save(existingUser);
         }).orElseThrow(() -> new PersonNotFoundException(id));
     }
 

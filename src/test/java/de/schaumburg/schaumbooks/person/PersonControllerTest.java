@@ -182,13 +182,13 @@ public class PersonControllerTest {
         void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
                 Person student = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
                                 List.of(Role.STUDENT), "8b");
-
-                when(userService.updatePerson(1l, student)).thenReturn(student);
-
-                mockMvc.perform(put("/api/users/1").contentType("application/json")
+                                
+                                when(userService.updatePerson(1l, student)).thenReturn(student);
+                                
+                                mockMvc.perform(put("/api/users/1").contentType("application/json")
                                 .content(new ObjectMapper().writeValueAsString(student))).andExpect(status().isOk())
                                 .andExpect(jsonPath("$.firstName").value("updatedName"));
-        }
+                        }
 
         @Test
         @WithMockUser(roles = "ADMIN")
@@ -212,37 +212,50 @@ public class PersonControllerTest {
                 invalidUser.setLastName(""); // Invalid because @NotEmpty should trigger validation error
                 invalidUser.setClassName(""); // Invalid because @NotEmpty should trigger validation error
                 invalidUser.setEmail("invalidEmail"); // Invalid because it doesn't match the email pattern
-
+                
                 // Perform a PUT request with invalid data
                 mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidUser)))
-                                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
-                                .andExpect(jsonPath("$.firstName").value("must not be empty"))
-                                .andExpect(jsonPath("$.lastName").value("must not be empty"))
-                                // .andExpect(jsonPath("$.className").value("must not be empty"))
-                                .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
+                .content(objectMapper.writeValueAsString(invalidUser)))
+                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
+                .andExpect(jsonPath("$.firstName").value("must not be empty"))
+                .andExpect(jsonPath("$.lastName").value("must not be empty"))
+                // .andExpect(jsonPath("$.className").value("must not be empty"))
+                .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
         }
-
+        
         @Test
         @WithMockUser(roles = "ADMIN")
         void shouldPatchUserFieldsSuccessfully() throws JsonProcessingException, Exception {
                 // Given
-                Map<String, Object> updateFields = Map.of("firstName", "NewName", "email", "new.email@example.com"
+                Map<String, Object> updateFields = Map.of("firstName", "NewName", "email", "new.email@example.com");
 
-                );
-                Person updatedUser = new Person(1l, "user1", "1234", "NewName", "Test1", "new.email@example.com",
+                Person updatedUser = new Person(1L, "user1", "1234", "NewName", "Test1", "new.email@example.com",
                                 List.of(Role.STUDENT), "8a");
                 // When
                 when(userService.updatePersonFields(eq(1L), any(Map.class))).thenReturn(updatedUser);
                 // When/Then
                 mockMvc.perform(patch("/api/users/1").contentType(MediaType.APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(updateFields))
-                // .with(httpBasic("sven", "1234"))
-                ).andExpect(status().isOk()).andExpect(jsonPath("$.firstName").value("NewName"))
+                                // .with(httpBasic("sven", "1234"))
+                                ).andExpect(status().isOk()).andExpect(jsonPath("$.firstName").value("NewName"))
                                 .andExpect(jsonPath("$.email").value("new.email@example.com"));
 
                 verify(userService, times(1)).updatePersonFields(eq(1L), any(Map.class));
         }
+        // FIXME: Throws 405 (method not allowd) not 403 (forbidden)
+        @Test
+        @WithMockUser(username = "user2", roles = { "STUDENT" })
+        void shouldThrowUnauthorizedExceptionWhenUpdatingPerson() throws JsonProcessingException, Exception{
+                // Given
+                Person person = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
+                                List.of(Role.STUDENT), "8b");
+                
+                mockMvc.perform(put("/api/users").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(person))).andExpect(status().isForbidden());
+                                
+        }
+
+
 
         @Test
         @WithMockUser(username = "user1", roles = { "STUDENT" })
