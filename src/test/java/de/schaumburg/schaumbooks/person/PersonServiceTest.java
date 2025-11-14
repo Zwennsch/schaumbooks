@@ -156,6 +156,24 @@ public class PersonServiceTest {
     }
 
     @Test
+    void shouldEncryptPasswordWhenSavingUser() {
+
+        // This test assumes that password encryption is implemented in the save method
+        Person user = new Person(null, "secureUser", "plainPassword", "Secure", "User", "secure@mail.com", null, "10a");
+        // stub the password encoder to return an "encrypted" password
+        when(passwordEncoder.encode("plainPassword")).thenReturn("encryptedPassword");
+
+        // when repository saves, just return the entity passed in
+        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Person savedUser = userService.save(user);
+
+        // verify that the encoder was invoked and its result was set on the entity
+        verify(passwordEncoder, times(1)).encode("plainPassword");
+        assertEquals("encryptedPassword", savedUser.getPassword());
+    }
+
+    @Test
     void shouldSaveAdminWithoutClassName() {
         Person admin = new Person(null, "admin2", "123456", "Jane", "Doe",
                 "jane@example.com",
@@ -274,11 +292,19 @@ public class PersonServiceTest {
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10b");
         when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(userService.save(updatedStudent)).thenReturn(updatedStudent);
-        // FIXME: Throws InvalidUserInputExcepttion password must not be empty
+        when(userRepository.save(updatedStudent)).thenReturn(updatedStudent);
         Person result = userService.updatePerson(1L, updatedStudent);
         assertEquals(updatedStudent, result);
         verify(userRepository).save(updatedStudent);
+    }
+
+    // TODO: not finished yet
+    @Test
+    void shouldEncryptPasswordWhenUpdatingUser() {
+        Person updatedStudent = new Person(1L, "user1", "1234", "newName",
+                "newLastName", "newMail@mail.com",
+                List.of(Role.STUDENT), "10b");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
     }
 
     @Test
@@ -400,13 +426,14 @@ public class PersonServiceTest {
     }
 
     // @Test
-    // void shouldThrowUpdateForbiddenExceptionWhenUsingUpdatePersonToUpdatePassword(){
-    //     // Arrange
-    //     Person updatedStudent = new Person(1L, "user1", "1234", "newName",
-    //             "newLastName", "newMail@mail.com",
-    //             List.of(Role.STUDENT), "10b");
-        
-    //     when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+    // void
+    // shouldThrowUpdateForbiddenExceptionWhenUsingUpdatePersonToUpdatePassword(){
+    // // Arrange
+    // Person updatedStudent = new Person(1L, "user1", "1234", "newName",
+    // "newLastName", "newMail@mail.com",
+    // List.of(Role.STUDENT), "10b");
+
+    // when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
 
     // }
 
@@ -440,21 +467,4 @@ public class PersonServiceTest {
                 exception.getMessage());
     }
 
-    @Test
-    void shouldEncryptPasswordWhenSavingUser() {
-
-        // This test assumes that password encryption is implemented in the save method
-        Person user = new Person(null, "secureUser", "plainPassword", "Secure", "User", "secure@mail.com", null, "10a");
-        // stub the password encoder to return an "encrypted" password
-        when(passwordEncoder.encode("plainPassword")).thenReturn("encryptedPassword");
-
-        // when repository saves, just return the entity passed in
-        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        Person savedUser = userService.save(user);
-
-        // verify that the encoder was invoked and its result was set on the entity
-        verify(passwordEncoder, times(1)).encode("plainPassword");
-        assertEquals("encryptedPassword", savedUser.getPassword());
-    }
 }
