@@ -242,15 +242,16 @@ public class PersonControllerTest {
 
                 verify(userService, times(1)).updatePersonFields(eq(1L), any(Map.class));
         }
-        // FIXME: Throws 405 (method not allowd) not 403 (forbidden)
         @Test
-        @WithMockUser(username = "user2", roles = { "STUDENT" })
+        @WithMockUser(username = "user1" , roles = { "STUDENT" })
         void shouldThrowUnauthorizedExceptionWhenUpdatingPerson() throws JsonProcessingException, Exception{
                 // Given
                 Person person = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
                                 List.of(Role.STUDENT), "8b");
+
+                // when(personService.findById(1L)).then
                 
-                mockMvc.perform(put("/api/users").contentType(MediaType.APPLICATION_JSON)
+                mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(person))).andExpect(status().isForbidden());
                                 
         }

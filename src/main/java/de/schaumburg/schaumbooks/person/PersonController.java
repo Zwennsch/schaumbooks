@@ -62,6 +62,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(person));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
         Person updatedPerson = personService.updatePerson(id, person);
