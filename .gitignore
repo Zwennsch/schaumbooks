@@ -38,3 +38,9 @@ application-mariadb.properties
 ### private data ###
 .school-data/schuelerliste_8*.csv
 .personal/
+
+### Logs ###
+.clj-kondo/*.*
+
+### transition/ java-upgrade ###
+.lsp/
