@@ -90,18 +90,27 @@ public class PersonService {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
 
-        fieldsToPatch.forEach((key, value) -> {
+        for (Map.Entry<String, Object> e : fieldsToPatch.entrySet()) {
+            String key = e.getKey();
+            Object value = e.getValue();
 
             Field field = ReflectionUtils.findField(Person.class, key);
             if (field == null) {
                 throw new InvalidPersonInputException("No field named " + key);
             }
-            if (key == "username" && usernameExistsInDB((String) value)) {
+
+            if ("username".equals(key) && usernameExistsInDB((String) value)) {
                 throw new InvalidPersonInputException("Username already taken");
             }
+
+            if ("password".equals(key)) {
+                person.setPassword(passwordEncoder.encode(value.toString()));
+                continue; // clearer than return-in-lambda
+            }
+
             field.setAccessible(true);
             ReflectionUtils.setField(field, person, value);
-        });
+        }
 
         return personRepository.save(person);
 

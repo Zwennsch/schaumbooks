@@ -2,8 +2,8 @@
 GET http://localhost:8080/api/users HTTP/1.1
 Authorization: Basic sven:1234
 
-### get user with id 1:
-GET http://localhost:8080/api/users/1 HTTP/1.1
+### get user with id 2:
+GET http://localhost:8080/api/users/2 HTTP/1.1
 Authorization: Basic sven:1234
 
 
@@ -117,6 +117,15 @@ Authorization: Basic sven:1234
     "email" : "patchedMail@mail.com"
 }
 
+### should patch email
+PATCH http://localhost:8080/api/users/2
+Content-Type: application/json
+Authorization: Basic sven:1234
+
+{
+    "password" : "newpwd"
+}
+
 
 ### should not patch user with id2, because of non ADMIN trying to update another user
 PATCH http://localhost:8080/api/users/2 HTTP/1.1
@@ -128,6 +137,8 @@ Authorization: Basic arvid8:12342
     "email" : "newMaiNonAdminl@mail.com",
     "username" : "nonAdminUser"
 }
+
+
 
 
 ### PUT

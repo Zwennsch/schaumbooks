@@ -68,6 +68,11 @@ public class PersonController {
         Person updatedPerson = personService.updatePerson(id, person);
         return ResponseEntity.ok(updatedPerson);
     }
+    // @PreAuthorize("hasRole('ADMIN')")
+    // @PatchMapping("/{id}/changePassword")
+    // public ResponseEntity<Person> changePassword(@PathVariable Long id, @RequestBody String newPassword){
+
+    // }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

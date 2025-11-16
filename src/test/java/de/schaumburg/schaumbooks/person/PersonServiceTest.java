@@ -425,17 +425,26 @@ public class PersonServiceTest {
         verify(userRepository, times(1)).save(users.get(0));
     }
 
-    // @Test
-    // void
-    // shouldThrowUpdateForbiddenExceptionWhenUsingUpdatePersonToUpdatePassword(){
-    // // Arrange
-    // Person updatedStudent = new Person(1L, "user1", "1234", "newName",
-    // "newLastName", "newMail@mail.com",
-    // List.of(Role.STUDENT), "10b");
+    @Test
+    void shouldUpdatePasswordWithEncryptionWhenPatching() {
+        // Arrange
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("password", "newPassword");
+        when(passwordEncoder.encode("newPassword")).thenReturn("encryptedNewPassword");
 
-    // when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    // }
+        // Act
+        Person updatedUser = userService.updatePersonFields(1L, updates);
+
+        // Assert
+        assertEquals("encryptedNewPassword", updatedUser.getPassword());
+        verify(passwordEncoder, times(1)).encode("newPassword");
+        verify(userRepository, times(1)).save(users.get(0));
+    }
+
+    
 
     // Delete
     @Test
