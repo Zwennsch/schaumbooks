@@ -32,6 +32,14 @@ public class PersonController {
         this.personService = personService;
     }
 
+    // CREATE
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping()
+    public ResponseEntity<Person> addPerson(@Valid @RequestBody Person person) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(person));
+    }
+
+    // READ
     @GetMapping("")
     public ResponseEntity<List<Person>> findAll() {
         List<Person> allUsers = personService.findAll();
@@ -48,31 +56,19 @@ public class PersonController {
         return ResponseEntity.ok(personService.findPersonById(id));
     }
 
-    // Get rented books for specific user
-    // Only for student with id {id}, teacher and admin
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or #id == authentication.principal.id")
     @GetMapping("/{id}/books")
     public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
         return ResponseEntity.ok(personService.getRentedBooks(id));
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping()
-    public ResponseEntity<Person> addPerson(@Valid @RequestBody Person person) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(person));
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
+    // UPDATE
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
         Person updatedPerson = personService.updatePerson(id, person);
         return ResponseEntity.ok(updatedPerson);
     }
-    // @PreAuthorize("hasRole('ADMIN')")
-    // @PatchMapping("/{id}/changePassword")
-    // public ResponseEntity<Person> changePassword(@PathVariable Long id, @RequestBody String newPassword){
-
-    // }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -82,7 +78,9 @@ public class PersonController {
         return ResponseEntity.ok(updatedPerson);
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePersonById(@PathVariable Long id) {
         personService.deletePersonById(id);
         return ResponseEntity.noContent().build();

@@ -64,7 +64,8 @@ public class PersonControllerTest {
         @BeforeEach
         public void setup() {
 
-                users = List.of(new Person(1l, "user1", "1234", "Test1", "Test1", "test@email.com", List.of(Role.STUDENT),
+                users = List.of(new Person(1l, "user1", "1234", "Test1", "Test1", "test@email.com",
+                                List.of(Role.STUDENT),
                                 "8a"),
                                 new Person(2l, "user2", "1234", "Test2", "Test2", "test2@email.com",
                                                 List.of(Role.STUDENT), "8b"));
@@ -77,6 +78,50 @@ public class PersonControllerTest {
                                 new Book(3l, "Book three", "Verlag 3", "123-4569", BookStatus.LENT, users.get(1)));
         }
 
+        // CREATE
+        // POST: addStudent
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldAddNewStudentGivenValidStudent() throws Exception {
+                Person student = new Person(5L, "user5", "1234", "Hans", "Meier", "test@mail.com",
+                                List.of(Role.STUDENT),
+                                "8b");
+
+                when(userService.save(student)).thenReturn(student);
+
+                mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(student))).andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.id").value(5L)).andExpect(jsonPath("$.firstName").value("Hans"));
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideInvalidStudents")
+        @WithMockUser(roles = "ADMIN")
+        public void shouldReturnBadRequestForInvalidStudents(Person invalidStudent) throws Exception {
+                mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON)
+                                .content(new ObjectMapper().writeValueAsString(invalidStudent)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        private static Stream<Arguments> provideInvalidStudents() {
+                return Stream.of(Arguments.of(new Person(null, "user20", "1234", "", "Doe", "john.doe@example.com",
+                                List.of(Role.STUDENT), "10a")),
+                                // empty firstName
+                                Arguments.of(new Person(null, "user21", "1234", "", "lastName", "john.doe@example.com",
+                                                List.of(Role.STUDENT), "10b")),
+                                // empty lastName
+                                Arguments.of(new Person(null, "user22", "1234", "John", "", "john.doe@example.com",
+                                                List.of(Role.STUDENT), "10b")),
+                                // invalid email
+                                Arguments.of(new Person(null, "user23", "1234", "John", "Doe", "not-an-email",
+                                                List.of(Role.STUDENT), "10A")), 
+                                // empty email
+                                Arguments.of(new Person(null, "user24", "1234", "John", "Doe", "",
+                                                List.of(Role.STUDENT), "10A"))
+                );
+        }
+
+        // READ
         // GET: findAll
         @Test
         @WithMockUser(roles = "ADMIN")
@@ -115,7 +160,8 @@ public class PersonControllerTest {
                                 }
                                 """;
 
-                mockMvc.perform(get("/api/users/999")).andExpect(status().isNotFound()).andExpect(content().json(jsonResponse));
+                mockMvc.perform(get("/api/users/999")).andExpect(status().isNotFound())
+                                .andExpect(content().json(jsonResponse));
         }
 
         @Test
@@ -131,132 +177,6 @@ public class PersonControllerTest {
                                 .andExpect(content().json(jsonResponse));
 
         }
-
-        // POST: addStudent
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        void shouldAddNewStudentGivenValidStudent() throws Exception {
-                Person student = new Person(5L, "user5", "1234", "Hans", "Meier", "test@mail.com", List.of(Role.STUDENT),
-                                "8b");
-
-                when(userService.save(student)).thenReturn(student);
-
-                mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(student))).andExpect(status().isCreated())
-                                .andExpect(jsonPath("$.id").value(5L)).andExpect(jsonPath("$.firstName").value("Hans"));
-        }
-
-        @ParameterizedTest
-        @MethodSource("provideInvalidStudents")
-        @WithMockUser(roles = "ADMIN")
-        public void shouldReturnBadRequestForInvalidStudents(Person invalidStudent) throws Exception {
-                mockMvc.perform(post("/api/users").contentType(MediaType.APPLICATION_JSON)
-                                .content(new ObjectMapper().writeValueAsString(invalidStudent)))
-                                .andExpect(status().isBadRequest());
-        }
-
-        private static Stream<Arguments> provideInvalidStudents() {
-                return Stream.of(Arguments.of(new Person(null, "user20", "1234", "", "Doe", "john.doe@example.com",
-                                List.of(Role.STUDENT), "10a")), // empty
-                                // firstName
-                                Arguments.of(new Person(null, "user21", "1234", "John", "", "john.doe@example.com",
-                                                List.of(Role.STUDENT), "10b")), // empty
-                                // lastName
-                                // Arguments.of(new User(null, "John", "Doe", "john.doe@example.com",
-                                // List.of(Role.STUDENT), "")), // empty
-                                // className
-                                // for
-                                // student
-                                Arguments.of(new Person(null, "user22", "1234", "John", "Doe", "",
-                                                List.of(Role.STUDENT), "10A")), // empty
-                                // email
-                                Arguments.of(new Person(null, "user23", "1234", "John", "Doe", "not-an-email",
-                                                List.of(Role.STUDENT), "10A")) // invalid
-                                // email
-                );
-        }
-
-        // PUT: updateStudent()
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
-                Person student = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
-                                List.of(Role.STUDENT), "8b");
-                                
-                                when(userService.updatePerson(1l, student)).thenReturn(student);
-                                
-                                mockMvc.perform(put("/api/users/1").contentType("application/json")
-                                .content(new ObjectMapper().writeValueAsString(student))).andExpect(status().isOk())
-                                .andExpect(jsonPath("$.firstName").value("updatedName"));
-                        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
-                Person student = new Person(999L, "user999", "1234", "updatedName", "Test", "Hans@email.com",
-                                List.of(Role.STUDENT), "8b");
-
-                when(userService.updatePerson(999L, student)).thenThrow(PersonNotFoundException.class);
-
-                mockMvc.perform(put("/api/users/999").contentType("application/json")
-                                .content(new ObjectMapper().writeValueAsString(student))).andExpect(status().isNotFound());
-        }
-
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        void shouldReturn400WhenUpdatingStudentWithInvalidData() throws Exception {
-                // Create a Student object with invalid data (e.g., missing required fields)
-                Person invalidUser = new Person();
-                invalidUser.setId(1L); // Assuming ID is set for an update, but fields are empty
-                invalidUser.setFirstName(""); // Invalid because @NotEmpty should trigger validation error
-                invalidUser.setLastName(""); // Invalid because @NotEmpty should trigger validation error
-                invalidUser.setClassName(""); // Invalid because @NotEmpty should trigger validation error
-                invalidUser.setEmail("invalidEmail"); // Invalid because it doesn't match the email pattern
-                
-                // Perform a PUT request with invalid data
-                mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidUser)))
-                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
-                .andExpect(jsonPath("$.firstName").value("must not be empty"))
-                .andExpect(jsonPath("$.lastName").value("must not be empty"))
-                // .andExpect(jsonPath("$.className").value("must not be empty"))
-                .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
-        }
-        
-        @Test
-        @WithMockUser(roles = "ADMIN")
-        void shouldPatchUserFieldsSuccessfully() throws JsonProcessingException, Exception {
-                // Given
-                Map<String, Object> updateFields = Map.of("firstName", "NewName", "email", "new.email@example.com");
-
-                Person updatedUser = new Person(1L, "user1", "1234", "NewName", "Test1", "new.email@example.com",
-                                List.of(Role.STUDENT), "8a");
-                // When
-                when(userService.updatePersonFields(eq(1L), any(Map.class))).thenReturn(updatedUser);
-                // When/Then
-                mockMvc.perform(patch("/api/users/1").contentType(MediaType.APPLICATION_JSON)
-                                .content(new ObjectMapper().writeValueAsString(updateFields))
-                                // .with(httpBasic("sven", "1234"))
-                                ).andExpect(status().isOk()).andExpect(jsonPath("$.firstName").value("NewName"))
-                                .andExpect(jsonPath("$.email").value("new.email@example.com"));
-
-                verify(userService, times(1)).updatePersonFields(eq(1L), any(Map.class));
-        }
-        @Test
-        @WithMockUser(username = "user1" , roles = { "STUDENT" })
-        void shouldThrowUnauthorizedExceptionWhenUpdatingPerson() throws JsonProcessingException, Exception{
-                // Given
-                Person person = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
-                                List.of(Role.STUDENT), "8b");
-
-                // when(personService.findById(1L)).then
-                
-                mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(person))).andExpect(status().isForbidden());
-                                
-        }
-
-
 
         @Test
         @WithMockUser(username = "user1", roles = { "STUDENT" })
@@ -277,6 +197,92 @@ public class PersonControllerTest {
                                 .andExpect(status().isForbidden());
         }
 
+        
+        // UPDATE
+        // PUT: updateStudent()
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldUpdateStudentGivenValidInput() throws JsonProcessingException, Exception {
+                Person student = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
+                                List.of(Role.STUDENT), "8b");
+
+                when(userService.updatePerson(1l, student)).thenReturn(student);
+
+                mockMvc.perform(put("/api/users/1").contentType("application/json")
+                                .content(new ObjectMapper().writeValueAsString(student))).andExpect(status().isOk())
+                                .andExpect(jsonPath("$.firstName").value("updatedName"));
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
+                Person student = new Person(999L, "user999", "1234", "updatedName", "Test", "Hans@email.com",
+                                List.of(Role.STUDENT), "8b");
+
+                when(userService.updatePerson(999L, student)).thenThrow(PersonNotFoundException.class);
+
+                mockMvc.perform(put("/api/users/999").contentType("application/json")
+                                .content(new ObjectMapper().writeValueAsString(student)))
+                                .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldReturn400WhenUpdatingStudentWithInvalidData() throws Exception {
+                // Create a Student object with invalid data (e.g., missing required fields)
+                Person invalidUser = new Person();
+                invalidUser.setId(1L); // Assuming ID is set for an update, but fields are empty
+                invalidUser.setFirstName(""); // Invalid because @NotEmpty should trigger validation error
+                invalidUser.setLastName(""); // Invalid because @NotEmpty should trigger validation error
+                invalidUser.setClassName(""); // Invalid because @NotEmpty should trigger validation error
+                invalidUser.setEmail("invalidEmail"); // Invalid because it doesn't match the email pattern
+
+                // Perform a PUT request with invalid data
+                mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidUser)))
+                                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
+                                .andExpect(jsonPath("$.firstName").value("must not be empty"))
+                                .andExpect(jsonPath("$.lastName").value("must not be empty"))
+                                // .andExpect(jsonPath("$.className").value("must not be empty"))
+                                .andExpect(jsonPath("$.email").value("must be a well-formed email address"));
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldPatchUserFieldsSuccessfully() throws JsonProcessingException, Exception {
+                // Given
+                Map<String, Object> updateFields = Map.of("firstName", "NewName", "email", "new.email@example.com");
+
+                Person updatedUser = new Person(1L, "user1", "1234", "NewName", "Test1", "new.email@example.com",
+                                List.of(Role.STUDENT), "8a");
+                // When
+                when(userService.updatePersonFields(eq(1L), any(Map.class))).thenReturn(updatedUser);
+                // When/Then
+                mockMvc.perform(patch("/api/users/1").contentType(MediaType.APPLICATION_JSON)
+                                .content(new ObjectMapper().writeValueAsString(updateFields))
+                // .with(httpBasic("sven", "1234"))
+                ).andExpect(status().isOk()).andExpect(jsonPath("$.firstName").value("NewName"))
+                                .andExpect(jsonPath("$.email").value("new.email@example.com"));
+
+                verify(userService, times(1)).updatePersonFields(eq(1L), any(Map.class));
+        }
+
+        @Test
+        @WithMockUser(username = "user1", roles = { "STUDENT" })
+        void shouldThrowUnauthorizedExceptionWhenUpdatingPerson() throws JsonProcessingException, Exception {
+                // Given
+                Person person = new Person(1L, "user1", "1234", "updatedName", "Test", "Hans@email.com",
+                                List.of(Role.STUDENT), "8b");
+
+                // when(personService.findById(1L)).then
+
+                mockMvc.perform(put("/api/users/1").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(person))).andExpect(status().isForbidden());
+
+        }
+
+        
+        // DELETE
         // DELETE: deleteStudentById()
         @Test
         @WithMockUser(roles = "ADMIN")
@@ -292,6 +298,12 @@ public class PersonControllerTest {
                 doThrow(new PersonNotFoundException(999L)).when(userService).deletePersonById(999L);
 
                 mockMvc.perform(delete("/api/users/999")).andExpect(status().isNotFound());
+        }
+        @Test
+        @WithMockUser(roles = { "STUDENT" })
+        void shouldThrowUnauthorizedExceptionWhenDeletingPersonAsStudent() throws Exception{
+                doNothing().when(userService).deletePersonById(1L);
+                mockMvc.perform(delete("/api/users/1")).andExpect(status().isForbidden());
         }
 
 }

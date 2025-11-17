@@ -81,7 +81,6 @@ public class PersonService {
             existingUser.setPassword(person.getPassword());
             existingUser.setUsername(person.getUsername());
             return personRepository.save(existingUser);
-            // return this.save(existingUser);
         }).orElseThrow(() -> new PersonNotFoundException(id));
     }
 
@@ -105,7 +104,7 @@ public class PersonService {
 
             if ("password".equals(key)) {
                 person.setPassword(passwordEncoder.encode(value.toString()));
-                continue; // clearer than return-in-lambda
+                continue; 
             }
 
             field.setAccessible(true);
