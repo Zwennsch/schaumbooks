@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping(path = "/api/users")
 public class PersonController {
@@ -56,7 +57,7 @@ public class PersonController {
         return ResponseEntity.ok(personService.findPersonById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('TEACHER') or #id == authentication.principal.id")
     @GetMapping("/{id}/books")
     public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
         return ResponseEntity.ok(personService.getRentedBooks(id));
@@ -64,26 +65,32 @@ public class PersonController {
 
     // UPDATE
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
         Person updatedPerson = personService.updatePerson(id, person);
         return ResponseEntity.ok(updatedPerson);
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Person> updatePersonFields(@PathVariable Long id,
             @RequestBody Map<String, Object> fieldsToPatch) {
         Person updatedPerson = personService.updatePersonFields(id, fieldsToPatch);
         return ResponseEntity.ok(updatedPerson);
     }
 
+    @PatchMapping("{id}/password")
+    public ResponseEntity<?> patchPassword(@PathVariable Long id, @RequestBody ChangePasswordRequest reqPwds){
+        personService.patchPassword(id, reqPwds);
+        return ResponseEntity.noContent().build();
+    }
+
+
     // DELETE
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePersonById(@PathVariable Long id) {
         personService.deletePersonById(id);
         return ResponseEntity.noContent().build();
     }
 
 }
+
+

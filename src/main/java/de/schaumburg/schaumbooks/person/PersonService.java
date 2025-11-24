@@ -114,6 +114,17 @@ public class PersonService {
         return personRepository.save(person);
 
     }
+    public void patchPassword(Long personId, ChangePasswordRequest req) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+
+        if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {
+            throw new InvalidPersonInputException("Old password is incorrect");
+        }
+
+        person.setPassword(passwordEncoder.encode(req.newPassword()));
+        personRepository.save(person);
+    }
 
     @Transactional
     public void deletePersonById(Long id) {

@@ -16,7 +16,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class PersonControllerTest {
 
         @BeforeEach
         public void setup() {
-
+                // setup four users: 1 ->Student ; 2 -> Student; 3->Admin; 4->Teacher
                 users = List.of(new Person(1l, "user1", "1234", "Test1", "Test1", "test@email.com",
                                 List.of(Role.STUDENT),
                                 "8a"),
@@ -72,6 +71,7 @@ public class PersonControllerTest {
                 new Person(4l, "user3", "1234", "Horst", "admin", "admin@email.com", List.of(Role.ADMIN), null);
                 new Person(3l, "user4", "1234", "Hans", "teacher", "teacher1@email.com", List.of(Role.TEACHER), null);
 
+                // Books id=1 and id=2 are rented by Student with id 1; Book 3 is rented by Student id2
                 rentedBooks = List.of(
                                 new Book(1l, "Book one", "Verlag 1", "123-4567", BookStatus.LENT, users.get(0)),
                                 new Book(2l, "Book two", "Verlag 2", "123-4568", BookStatus.LENT, users.get(0)),
@@ -178,6 +178,7 @@ public class PersonControllerTest {
 
         }
 
+        // TODO: This test should also test for correctly returned books
         @Test
         @WithMockUser(username = "user1", roles = { "STUDENT" })
         void studentShouldAccessOwnBooks() throws Exception {
@@ -191,7 +192,6 @@ public class PersonControllerTest {
         @WithMockUser(username = "user2", roles = { "STUDENT" })
         void studentShouldNotAccessOtherBooks() throws Exception {
                 CustomPersonDetails studentWithId2 = new CustomPersonDetails(users.get(1));
-                // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
                 mockMvc.perform(get("/api/users/1/books").with(user(studentWithId2)))
                                 .andExpect(status().isForbidden());
@@ -215,7 +215,7 @@ public class PersonControllerTest {
 
         @Test
         @WithMockUser(roles = "ADMIN")
-        void shouldGetStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
+        void shouldThrowStudentNotFoundGivenInvalidId() throws JsonProcessingException, Exception {
                 Person student = new Person(999L, "user999", "1234", "updatedName", "Test", "Hans@email.com",
                                 List.of(Role.STUDENT), "8b");
 
@@ -280,6 +280,23 @@ public class PersonControllerTest {
                                 .content(objectMapper.writeValueAsString(person))).andExpect(status().isForbidden());
 
         }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        void shouldReturn204GivenAdminUserPatchPasswordOfUser1ByOnlySendingNewPassword() throws JsonProcessingException, Exception{
+                // Given
+                ChangePasswordRequest req = new ChangePasswordRequest(null, "newPassword");
+                // When
+                doNothing().when(userService).patchPassword(1L, req);
+                // Then
+
+                mockMvc.perform(patch("/api/users/1/password").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req))).andExpect(status().isNoContent());
+
+                verify(userService, times(1)).patchPassword(1L, req);
+        }
+
+        
 
         
         // DELETE
