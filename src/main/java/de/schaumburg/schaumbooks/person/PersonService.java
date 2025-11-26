@@ -78,7 +78,9 @@ public class PersonService {
             existingUser.setClassName(person.getClassName());
             existingUser.setRoles(person.getRoles());
             existingUser.setEmail(person.getEmail());
-            existingUser.setPassword(person.getPassword());
+            if (person.getPassword() != null && !person.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(person.getPassword()));
+            }
             existingUser.setUsername(person.getUsername());
             return personRepository.save(existingUser);
         }).orElseThrow(() -> new PersonNotFoundException(id));
@@ -104,7 +106,7 @@ public class PersonService {
 
             if ("password".equals(key)) {
                 person.setPassword(passwordEncoder.encode(value.toString()));
-                continue; 
+                continue;
             }
 
             field.setAccessible(true);
@@ -114,6 +116,7 @@ public class PersonService {
         return personRepository.save(person);
 
     }
+
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));

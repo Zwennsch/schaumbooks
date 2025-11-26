@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,7 +34,7 @@ import de.schaumburg.schaumbooks.book.BookStatus;
 public class PersonServiceTest {
 
     @Mock
-    private PersonRepository userRepository;
+    private PersonRepository personRepository;
 
     @Mock
     private BookRepository bookRepository;
@@ -67,30 +69,30 @@ public class PersonServiceTest {
     // findAll()
     @Test
     void shouldReturnAllStudentsFromRepository() {
-        when(userRepository.findAll()).thenReturn(users);
+        when(personRepository.findAll()).thenReturn(users);
         List<Person> allStudents = userService.findAll();
 
         assertEquals("student2", allStudents.get(1).getFirstName());
-        verify(userRepository, times(1)).findAll();
+        verify(personRepository, times(1)).findAll();
 
     }
 
     // findById
     @Test
     void shouldFindStudentGivenValidId() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         Person student = userService.findPersonById(1L);
 
         assertEquals(users.get(0), student);
-        verify(userRepository).findById(1L);
+        verify(personRepository).findById(1L);
     }
 
     @Test
     void shouldThrowPersonNotFoundExceptionWhenGivenInvalidId() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(PersonNotFoundException.class, () -> userService.findPersonById(99L));
-        verify(userRepository).findById(99L);
+        verify(personRepository).findById(99L);
     }
 
     // findByUsername
@@ -98,32 +100,32 @@ public class PersonServiceTest {
     void shouldFindUserGivenCorrectUsername() {
         // Given
         String username = "user1";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
 
         // When
         Person user = userService.findPersonByUsername("user1");
         // Then
         assertEquals(users.get(0), user);
-        verify(userRepository, times(1)).findByUsername(username);
+        verify(personRepository, times(1)).findByUsername(username);
     }
 
     @Test
     void shouldThrowUserNotFoundExceptionGivenWrongUsername() {
         // Given
         String username = "wrongUsername";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(personRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(PersonNotFoundException.class,
                 () -> userService.findPersonByUsername(username));
         assertEquals("Person not found with username: wrongUsername", exception.getMessage());
-        verify(userRepository).findByUsername(username);
+        verify(personRepository).findByUsername(username);
     }
 
     // findBooksForId
     @Test
     void shouldReturnBooksForGivenUser() {
         // Given
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(bookRepository.findByPerson(users.get(0))).thenReturn(rentedBooksForStudentId1);
 
         List<Book> books = bookRepository.findByPerson(users.get(0));
@@ -135,11 +137,11 @@ public class PersonServiceTest {
     @Test
     void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenGettingListOfBooks() {
         // Given
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
         // when
         Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.getRentedBooks(99L));
         assertEquals("Person not found with id: 99", exception.getMessage());
-        verify(userRepository).findById(99L);
+        verify(personRepository).findById(99L);
     }
 
     // save
@@ -148,11 +150,11 @@ public class PersonServiceTest {
         Person student = new Person(4L, "user4", "1234", "student3", "lastname3",
                 "student3@mail.com",
                 List.of(Role.STUDENT), "9a");
-        when(userRepository.save(student)).thenReturn(student);
+        when(personRepository.save(student)).thenReturn(student);
 
         Person savedStudent = userService.save(student);
         assertEquals(student, savedStudent);
-        verify(userRepository).save(student);
+        verify(personRepository).save(student);
     }
 
     @Test
@@ -164,7 +166,7 @@ public class PersonServiceTest {
         when(passwordEncoder.encode("plainPassword")).thenReturn("encryptedPassword");
 
         // when repository saves, just return the entity passed in
-        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Person savedUser = userService.save(user);
 
@@ -179,13 +181,13 @@ public class PersonServiceTest {
                 "jane@example.com",
                 List.of(Role.ADMIN), null);
 
-        when(userRepository.save(admin)).thenReturn(admin);
+        when(personRepository.save(admin)).thenReturn(admin);
 
         Person savedUser = userService.save(admin);
 
         assertNotNull(savedUser);
         assertNull(savedUser.getClassName());
-        verify(userRepository, times(1)).save(admin);
+        verify(personRepository, times(1)).save(admin);
     }
 
     @Test
@@ -195,7 +197,7 @@ public class PersonServiceTest {
                 null);
 
         Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(studentNoClass));
-        verify(userRepository, times(0)).save(studentNoClass);
+        verify(personRepository, times(0)).save(studentNoClass);
         assertEquals("Invalid user input: Student must have a className",
                 exception.getMessage());
     }
@@ -207,7 +209,7 @@ public class PersonServiceTest {
                 "");
 
         Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(studentNoClass));
-        verify(userRepository, times(0)).save(studentNoClass);
+        verify(personRepository, times(0)).save(studentNoClass);
         assertEquals("Invalid user input: Student must have a className",
                 exception.getMessage());
     }
@@ -219,7 +221,7 @@ public class PersonServiceTest {
                 "10a");
 
         Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(teacherWithClass));
-        verify(userRepository, times(0)).save(teacherWithClass);
+        verify(personRepository, times(0)).save(teacherWithClass);
         assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
     }
 
@@ -232,12 +234,12 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.STUDENT),
                 "10a");
         // When
-        when(userRepository.save(any(Person.class))).thenReturn(returnedUser);
+        when(personRepository.save(any(Person.class))).thenReturn(returnedUser);
         Person savedUser = userService.save(user);
         // Then
         assertNotNull(savedUser);
         assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
-        verify(userRepository).save(any(Person.class));
+        verify(personRepository).save(any(Person.class));
     }
 
     @Test
@@ -249,12 +251,12 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.STUDENT),
                 "10a");
         // When
-        when(userRepository.save(any(Person.class))).thenReturn(returnedUser);
+        when(personRepository.save(any(Person.class))).thenReturn(returnedUser);
         Person savedUser = userService.save(user);
         // Then
         assertNotNull(savedUser);
         assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
-        verify(userRepository).save(any(Person.class));
+        verify(personRepository).save(any(Person.class));
     }
 
     // @Test
@@ -275,12 +277,12 @@ public class PersonServiceTest {
         // Given
         Person user = new Person(null, "user1", "12345", "hans", "Müller",
                 "email@hans.com", List.of(Role.STUDENT), "10a");
-        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
+        when(personRepository.findByUsername("user1")).thenReturn(Optional.of(user));
 
         // When/Then
         Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(user));
-        verify(userRepository).findByUsername(user.getUsername());
-        verify(userRepository, times(0)).save(any(Person.class));
+        verify(personRepository).findByUsername(user.getUsername());
+        verify(personRepository, times(0)).save(any(Person.class));
         assertEquals("Invalid user input: Username already taken: user1",
                 exception.getMessage());
     }
@@ -291,20 +293,28 @@ public class PersonServiceTest {
         Person updatedStudent = new Person(1L, "user1", "1234", "newName",
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10b");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(userRepository.save(updatedStudent)).thenReturn(updatedStudent);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.save(any(Person.class))).thenReturn(updatedStudent);
         Person result = userService.updatePerson(1L, updatedStudent);
-        assertEquals(updatedStudent, result);
-        verify(userRepository).save(updatedStudent);
+        assertEquals(updatedStudent.getUsername(), result.getUsername());
+        // save is called with the existing entity (updated via fields), not the
+        // incoming instance
+        verify(personRepository).save(any(Person.class));
     }
 
-    // TODO: not finished yet
     @Test
     void shouldEncryptPasswordWhenUpdatingUser() {
-        Person updatedStudent = new Person(1L, "user1", "1234", "newName",
+        Person updatedStudent = new Person(1L, "user1", "newPassword", "newName",
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10b");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        // doNothing().when(users.get(0)).setPassword(anyString());
+        when(passwordEncoder.encode("newPassword")).thenReturn("encryptedPassword");
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Person result = userService.updatePerson(1L, updatedStudent);
+        // password should have been encoded and set on the returned entity
+        assertEquals("encryptedPassword", result.getPassword());
+        verify(passwordEncoder, times(1)).encode("newPassword");
     }
 
     @Test
@@ -312,7 +322,7 @@ public class PersonServiceTest {
         Person updatedStudent = new Person(99L, "user99", "1234", "newName",
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10a");
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(PersonNotFoundException.class, () -> userService.updatePerson(99L, updatedStudent));
     }
 
@@ -325,15 +335,15 @@ public class PersonServiceTest {
                 "newMail@mail.com",
                 List.of(Role.STUDENT), "10a");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
-        when(userRepository.save(existingStudent)).thenReturn(updatedEmailStudent);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
+        when(personRepository.save(existingStudent)).thenReturn(updatedEmailStudent);
 
         Person result = userService.updatePerson(1L, updatedEmailStudent);
 
         assertEquals(updatedEmailStudent.getEmail(), result.getEmail());
         assertEquals(existingStudent.getFirstName(), result.getFirstName());
         assertEquals(existingStudent.getLastName(), result.getLastName());
-        verify(userRepository).save(existingStudent);
+        verify(personRepository).save(existingStudent);
     }
 
     @Test
@@ -342,8 +352,8 @@ public class PersonServiceTest {
         Person user = new Person(5L, "john1", "1234", "John", "Doe",
                 "john@example.com", List.of(Role.STUDENT),
                 "Old Class");
-        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(personRepository.findById(5L)).thenReturn(Optional.of(user));
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Map<String, Object> updateFields = new HashMap<>();
         updateFields.put("firstName", "New Name");
@@ -355,7 +365,7 @@ public class PersonServiceTest {
         // Assert
         assertEquals("New Name", updatedUser.getFirstName());
         assertEquals("new.email@example.com", updatedUser.getEmail());
-        verify(userRepository, times(1)).save(user);
+        verify(personRepository, times(1)).save(user);
     }
 
     @Test
@@ -364,7 +374,7 @@ public class PersonServiceTest {
         Person user = new Person(5L, "john1", "1234", "John", "Doe",
                 "john@example.com", List.of(Role.STUDENT),
                 "Old Class");
-        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
+        when(personRepository.findById(5L)).thenReturn(Optional.of(user));
 
         Map<String, Object> updateFields = new HashMap<>();
         updateFields.put("invalidField", "value");
@@ -381,7 +391,7 @@ public class PersonServiceTest {
         updateFields.put("username", "value");
 
         // When/Then
-        when(userRepository.findById(id)).thenReturn(Optional.empty());
+        when(personRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(PersonNotFoundException.class, () -> userService.updatePersonFields(id, updateFields));
     }
 
@@ -397,13 +407,13 @@ public class PersonServiceTest {
         Person userToUpdate = new Person(5L, takenUsername, "1234", "John", "Doe",
                 "john@example.com",
                 List.of(Role.STUDENT), "Old Class");
-        when(userRepository.findById(5L)).thenReturn(Optional.of(userBefore));
-        when(userRepository.findByUsername(takenUsername)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(5L)).thenReturn(Optional.of(userBefore));
+        when(personRepository.findByUsername(takenUsername)).thenReturn(Optional.of(users.get(0)));
 
         // When/Then
         assertThrows(InvalidPersonInputException.class, () -> userService.updatePerson(5L, userToUpdate));
         assertThrows(InvalidPersonInputException.class, () -> userService.updatePersonFields(5L, fieldsToUpdate));
-        verify(userRepository, never()).save(any(Person.class));
+        verify(personRepository, never()).save(any(Person.class));
     }
 
     @Test
@@ -412,17 +422,17 @@ public class PersonServiceTest {
         Map<String, Object> updates = new HashMap<>();
         updates.put("email", "newemail@example.com");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         // TODO: This seems wrong: userRepository.save should be called with the
         // modified user
-        when(userRepository.save(any(Person.class))).thenReturn(users.get(0));
+        when(personRepository.save(any(Person.class))).thenReturn(users.get(0));
 
         // Act
         Person updatedUser = userService.updatePersonFields(1L, updates);
 
         // Assert
         assertEquals("newemail@example.com", updatedUser.getEmail());
-        verify(userRepository, times(1)).save(users.get(0));
+        verify(personRepository, times(1)).save(users.get(0));
     }
 
     @Test
@@ -432,37 +442,34 @@ public class PersonServiceTest {
         updates.put("password", "newPassword");
         when(passwordEncoder.encode("newPassword")).thenReturn("encryptedNewPassword");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(userRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         // Act
         Person updatedUser = userService.updatePersonFields(1L, updates);
 
         // Assert
         assertEquals("encryptedNewPassword", updatedUser.getPassword());
         verify(passwordEncoder, times(1)).encode("newPassword");
-        verify(userRepository, times(1)).save(users.get(0));
+        verify(personRepository, times(1)).save(users.get(0));
     }
-
-    
 
     // Delete
     @Test
     void shouldDeleteStudentGivenValidId() {
-        when(userRepository.findById(1l)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.findById(1l)).thenReturn(Optional.of(users.get(0)));
 
         userService.deletePersonById(1l);
 
-        verify(userRepository).deleteById(1l);
+        verify(personRepository).deleteById(1l);
     }
 
     @Test
     void shouldThrowStudentNotFoundExceptionGivenNoStudentWithIdFOund() {
-        when(userRepository.findById(99l)).thenReturn(Optional.empty());
+        when(personRepository.findById(99l)).thenReturn(Optional.empty());
 
         assertThrows(PersonNotFoundException.class, () -> userService.deletePersonById(99l));
 
-        verify(userRepository, never()).deleteById(99l);
+        verify(personRepository, never()).deleteById(99l);
     }
 
     @Test
@@ -471,7 +478,7 @@ public class PersonServiceTest {
                 "10a");
         Exception exception = assertThrows(InvalidPersonInputException.class,
                 () -> userService.save(studentNoPassword));
-        verify(userRepository, times(0)).save(studentNoPassword);
+        verify(personRepository, times(0)).save(studentNoPassword);
         assertEquals("Invalid user input: Password must not be empty",
                 exception.getMessage());
     }
