@@ -178,14 +178,14 @@ public class PersonControllerTest {
 
         }
 
-        // TODO: This test should also test for correctly returned books
         @Test
         @WithMockUser(username = "user1", roles = { "STUDENT" })
         void studentShouldAccessOwnBooks() throws Exception {
-                // when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
+                when(userService.getRentedBooks(1L)).thenReturn(rentedBooks);
 
                 mockMvc.perform(get("/api/users/1/books").with(user(new CustomPersonDetails(users.get(0)))))
-                                .andExpect(status().isOk());
+                                .andExpect(status().isOk())
+                                .andExpect(content().json(objectMapper.writeValueAsString(rentedBooks)));
         }
 
         @Test

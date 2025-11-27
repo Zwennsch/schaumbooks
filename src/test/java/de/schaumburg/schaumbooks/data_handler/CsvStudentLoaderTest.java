@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,11 +24,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import de.schaumburg.schaumbooks.person.PersonRepository;
 
-// FIXME: tests won't work because I am storing admin at the beginning.
 public class CsvStudentLoaderTest {
 
     @Mock
-    private PersonRepository userRepository;
+    private PersonRepository personRepository;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -43,7 +43,7 @@ public class CsvStudentLoaderTest {
     void setUp() throws IOException {
         closeable = MockitoAnnotations.openMocks(this);
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
-        when(userRepository.saveAll(anyList())).thenReturn(Collections.emptyList());
+        when(personRepository.saveAll(anyList())).thenReturn(Collections.emptyList());
 
         // Create a valid CSV file for testing
         try (PrintWriter writer = new PrintWriter(new FileWriter(validCsvPath))) {
@@ -81,11 +81,11 @@ public class CsvStudentLoaderTest {
 
     @Test
     void testReadValidStudentDataFromCsvAndSave() throws IOException {
-        // when(studentRepository.saveAll(anyList())).thenReturn(anyList());
+        when(personRepository.saveAll(anyList())).thenReturn(anyList());
         csvStudentLoader.readStudentDataFromCsvAndSave(validCsvPath);
 
         // Verify that saveAll() was called once with exactly 2 students
-        verify(userRepository).saveAll(argThat(list -> list instanceof List<?> && ((List<?>) list).size() == 2));
+        verify(personRepository).saveAll(argThat(list -> list instanceof List<?> && ((List<?>) list).size() == 2));
     }
 
     @Test
@@ -93,10 +93,9 @@ public class CsvStudentLoaderTest {
         // No exception should be thrown, but no students should be saved
         csvStudentLoader.readStudentDataFromCsvAndSave("non_existent_file.csv");
 
-        // assertThrows(FileNotFoundException.class, () ->csvStudentLoader.readStudentDataFromCsvAndSave("non_existent_file_path"));
 
         // Verify that no students were saved to the repository
-        verify(userRepository, times(0)).saveAll(anyList());
+        verify(personRepository, times(0)).saveAll(anyList());
     }
 
     @Test
@@ -105,13 +104,13 @@ public class CsvStudentLoaderTest {
         csvStudentLoader.readStudentDataFromCsvAndSave(oneInvalidEntryCsvPath);
 
         // Verify that saveAll() was called once with exactly 3 students
-        verify(userRepository).saveAll(argThat(list -> list instanceof List<?> && ((List<?>) list).size() == 3));
+        verify(personRepository).saveAll(argThat(list -> list instanceof List<?> && ((List<?>) list).size() == 3));
     }
 
     @Test
     void shouldCatchIllegalArgumentExceptionBecauseOfInvalidEmail() {
         csvStudentLoader.readStudentDataFromCsvAndSave(onlyInvalidCsvPath);
 
-        verify(userRepository, times(0)).saveAll(anyList());
+        verify(personRepository, times(0)).saveAll(anyList());
     }
 }

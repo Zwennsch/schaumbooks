@@ -76,6 +76,7 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).findAll();
 
     }
+    
 
     // findById
     @Test
@@ -140,6 +141,41 @@ public class PersonServiceTest {
         when(personRepository.findById(99L)).thenReturn(Optional.empty());
         // when
         Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.getRentedBooks(99L));
+        assertEquals("Person not found with id: 99", exception.getMessage());
+        verify(personRepository).findById(99L);
+    }
+    @Test
+    void shouldCheckForRoleGivenValidId() {
+        // Given
+        when(personRepository.findById(3L)).thenReturn(Optional.of(users.get(2)));
+
+        // When
+        boolean hasRole = userService.hasRole(3L, Role.TEACHER);
+
+        // Then
+        assertEquals(true, hasRole);
+        verify(personRepository).findById(3L);
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserDoesNotHaveRole() {
+        // Given
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+
+        // When
+        boolean hasRole = userService.hasRole(1L, Role.ADMIN);
+
+        // Then
+        assertEquals(false, hasRole);
+        verify(personRepository).findById(1L);
+    }
+
+    @Test
+    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenCheckingForRole() {
+        // Given
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
+        // when
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.hasRole(99L, Role.ADMIN));
         assertEquals("Person not found with id: 99", exception.getMessage());
         verify(personRepository).findById(99L);
     }

@@ -147,4 +147,10 @@ public class PersonService {
         return bookRepository.findByPerson(person);
     }
 
+    public boolean hasRole(Long personId, Role role) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+        return person.getRoles().contains(role);
+    }
+
 }
