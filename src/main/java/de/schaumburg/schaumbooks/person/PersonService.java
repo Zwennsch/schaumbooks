@@ -40,6 +40,22 @@ public class PersonService {
         return personRepository.findByUsername(username)
                 .orElseThrow(() -> new PersonNotFoundException(username));
     }
+    boolean usernameExistsInDB(String username) {
+        return personRepository.findByUsername(username).isPresent();
+    }
+
+    public List<Book> getRentedBooks(Long personId) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+
+        return bookRepository.findByPerson(person);
+    }
+
+    public boolean hasRole(Long personId, Role role) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+        return person.getRoles().contains(role);
+    }
 
     @Transactional
     public Person save(Person person) {
@@ -136,21 +152,6 @@ public class PersonService {
 
     }
 
-    boolean usernameExistsInDB(String username) {
-        return personRepository.findByUsername(username).isPresent();
-    }
-
-    public List<Book> getRentedBooks(Long personId) {
-        Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new PersonNotFoundException(personId));
-
-        return bookRepository.findByPerson(person);
-    }
-
-    public boolean hasRole(Long personId, Role role) {
-        Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new PersonNotFoundException(personId));
-        return person.getRoles().contains(role);
-    }
+    
 
 }

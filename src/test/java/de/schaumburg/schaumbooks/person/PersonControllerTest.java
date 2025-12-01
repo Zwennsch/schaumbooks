@@ -2,6 +2,7 @@ package de.schaumburg.schaumbooks.person;
 
 // import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -295,8 +296,23 @@ public class PersonControllerTest {
 
                 verify(userService, times(1)).patchPassword(1L, req);
         }
+        // patch password
+        @Test
+        @WithMockUser(username = "user1", roles = { "STUDENT" })
+        void shouldReturn204GivenStudentUserPatchOwnPasswordBySendingOldAndNewPassword() throws JsonProcessingException, Exception{
+                // Given
+                ChangePasswordRequest req = new ChangePasswordRequest("oldPassword", "newPassword");
+                // When
+                doNothing().when(userService).patchPassword(anyLong(), any(ChangePasswordRequest.class));
+                // Then
+                mockMvc.perform(patch("/api/users/1/password")
+                                .with(user(new CustomPersonDetails(users.get(0))))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                        .andExpect(status().isNoContent());
 
-        
+                verify(userService, times(1)).patchPassword(1L, req);
+        }
 
         
         // DELETE

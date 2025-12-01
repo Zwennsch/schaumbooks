@@ -65,122 +65,8 @@ public class PersonServiceTest {
                 new Book(1l, "Book One", "Publisher One", "1234-5678", BookStatus.LENT, users.get(0)),
                 new Book(2l, "Book Two", "Publisher Two", "1234-5679", BookStatus.LENT, users.get(0)));
     }
-
-    // findAll()
-    @Test
-    void shouldReturnAllStudentsFromRepository() {
-        when(personRepository.findAll()).thenReturn(users);
-        List<Person> allStudents = userService.findAll();
-
-        assertEquals("student2", allStudents.get(1).getFirstName());
-        verify(personRepository, times(1)).findAll();
-
-    }
     
-
-    // findById
-    @Test
-    void shouldFindStudentGivenValidId() {
-        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        Person student = userService.findPersonById(1L);
-
-        assertEquals(users.get(0), student);
-        verify(personRepository).findById(1L);
-    }
-
-    @Test
-    void shouldThrowPersonNotFoundExceptionWhenGivenInvalidId() {
-        when(personRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(PersonNotFoundException.class, () -> userService.findPersonById(99L));
-        verify(personRepository).findById(99L);
-    }
-
-    // findByUsername
-    @Test
-    void shouldFindUserGivenCorrectUsername() {
-        // Given
-        String username = "user1";
-        when(personRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
-
-        // When
-        Person user = userService.findPersonByUsername("user1");
-        // Then
-        assertEquals(users.get(0), user);
-        verify(personRepository, times(1)).findByUsername(username);
-    }
-
-    @Test
-    void shouldThrowUserNotFoundExceptionGivenWrongUsername() {
-        // Given
-        String username = "wrongUsername";
-        when(personRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(PersonNotFoundException.class,
-                () -> userService.findPersonByUsername(username));
-        assertEquals("Person not found with username: wrongUsername", exception.getMessage());
-        verify(personRepository).findByUsername(username);
-    }
-
-    // findBooksForId
-    @Test
-    void shouldReturnBooksForGivenUser() {
-        // Given
-        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(bookRepository.findByPerson(users.get(0))).thenReturn(rentedBooksForStudentId1);
-
-        List<Book> books = bookRepository.findByPerson(users.get(0));
-        assertEquals(2, books.size());
-        verify(bookRepository).findByPerson(users.get(0));
-
-    }
-
-    @Test
-    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenGettingListOfBooks() {
-        // Given
-        when(personRepository.findById(99L)).thenReturn(Optional.empty());
-        // when
-        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.getRentedBooks(99L));
-        assertEquals("Person not found with id: 99", exception.getMessage());
-        verify(personRepository).findById(99L);
-    }
-    @Test
-    void shouldCheckForRoleGivenValidId() {
-        // Given
-        when(personRepository.findById(3L)).thenReturn(Optional.of(users.get(2)));
-
-        // When
-        boolean hasRole = userService.hasRole(3L, Role.TEACHER);
-
-        // Then
-        assertEquals(true, hasRole);
-        verify(personRepository).findById(3L);
-    }
-
-    @Test
-    void shouldReturnFalseWhenUserDoesNotHaveRole() {
-        // Given
-        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-
-        // When
-        boolean hasRole = userService.hasRole(1L, Role.ADMIN);
-
-        // Then
-        assertEquals(false, hasRole);
-        verify(personRepository).findById(1L);
-    }
-
-    @Test
-    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenCheckingForRole() {
-        // Given
-        when(personRepository.findById(99L)).thenReturn(Optional.empty());
-        // when
-        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.hasRole(99L, Role.ADMIN));
-        assertEquals("Person not found with id: 99", exception.getMessage());
-        verify(personRepository).findById(99L);
-    }
-
-    // save
+    // CREATE
     @Test
     void shouldAddNewStudentGivenValidInput() {
         Person student = new Person(4L, "user4", "1234", "student3", "lastname3",
@@ -323,7 +209,124 @@ public class PersonServiceTest {
                 exception.getMessage());
     }
 
-    // update
+    // READ
+
+    // findAll()
+    @Test
+    void shouldReturnAllStudentsFromRepository() {
+        when(personRepository.findAll()).thenReturn(users);
+        List<Person> allStudents = userService.findAll();
+
+        assertEquals("student2", allStudents.get(1).getFirstName());
+        verify(personRepository, times(1)).findAll();
+
+    }
+    // findById
+    @Test
+    void shouldFindStudentGivenValidId() {
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        Person student = userService.findPersonById(1L);
+
+        assertEquals(users.get(0), student);
+        verify(personRepository).findById(1L);
+    }
+
+    @Test
+    void shouldThrowPersonNotFoundExceptionWhenGivenInvalidId() {
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(PersonNotFoundException.class, () -> userService.findPersonById(99L));
+        verify(personRepository).findById(99L);
+    }
+
+    // findByUsername
+    @Test
+    void shouldFindUserGivenCorrectUsername() {
+        // Given
+        String username = "user1";
+        when(personRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
+
+        // When
+        Person user = userService.findPersonByUsername("user1");
+        // Then
+        assertEquals(users.get(0), user);
+        verify(personRepository, times(1)).findByUsername(username);
+    }
+
+    @Test
+    void shouldThrowUserNotFoundExceptionGivenWrongUsername() {
+        // Given
+        String username = "wrongUsername";
+        when(personRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(PersonNotFoundException.class,
+                () -> userService.findPersonByUsername(username));
+        assertEquals("Person not found with username: wrongUsername", exception.getMessage());
+        verify(personRepository).findByUsername(username);
+    }
+
+    // findBooksForId
+    @Test
+    void shouldReturnBooksForGivenUser() {
+        // Given
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(bookRepository.findByPerson(users.get(0))).thenReturn(rentedBooksForStudentId1);
+
+        List<Book> books = bookRepository.findByPerson(users.get(0));
+        assertEquals(2, books.size());
+        verify(bookRepository).findByPerson(users.get(0));
+
+    }
+
+    @Test
+    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenGettingListOfBooks() {
+        // Given
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
+        // when
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.getRentedBooks(99L));
+        assertEquals("Person not found with id: 99", exception.getMessage());
+        verify(personRepository).findById(99L);
+    }
+    
+    // hasRole
+    @Test
+    void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenCheckingForRole() {
+        // Given
+        when(personRepository.findById(99L)).thenReturn(Optional.empty());
+        // when
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.hasRole(99L, Role.ADMIN));
+        assertEquals("Person not found with id: 99", exception.getMessage());
+        verify(personRepository).findById(99L);
+    }
+    @Test
+    void shouldCheckForRoleGivenValidId() {
+        // Given
+        when(personRepository.findById(3L)).thenReturn(Optional.of(users.get(2)));
+
+        // When
+        boolean hasRole = userService.hasRole(3L, Role.TEACHER);
+
+        // Then
+        assertEquals(true, hasRole);
+        verify(personRepository).findById(3L);
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserDoesNotHaveRole() {
+        // Given
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+
+        // When
+        boolean hasRole = userService.hasRole(1L, Role.ADMIN);
+
+        // Then
+        assertEquals(false, hasRole);
+        verify(personRepository).findById(1L);
+    }
+
+
+    // UPDATE
+
     @Test
     void shouldUpdateStudentGivenValidInput() {
         Person updatedStudent = new Person(1L, "user1", "1234", "newName",
@@ -362,8 +365,9 @@ public class PersonServiceTest {
         assertThrows(PersonNotFoundException.class, () -> userService.updatePerson(99L, updatedStudent));
     }
 
+    // patch / partial update
     @Test
-    void shouldUpdateOnlySpecifiedFields() {
+    void shouldUpdateOnlySpecifiedFieldsSuccessfully() {
         Person existingStudent = new Person(1L, "user1", "1234", "John", "Doe",
                 "john.doe@mail.com", List.of(Role.STUDENT),
                 "10a");
@@ -405,7 +409,7 @@ public class PersonServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionForInvalidField() {
+    void shouldThrowExceptionForInvalidFieldWhenUpdatingPersonFieldsWithInvalidField() {
         // Arrange
         Person user = new Person(5L, "john1", "1234", "John", "Doe",
                 "john@example.com", List.of(Role.STUDENT),
@@ -472,7 +476,7 @@ public class PersonServiceTest {
     }
 
     @Test
-    void shouldUpdatePasswordWithEncryptionWhenPatching() {
+    void shouldUpdatePasswordWithEncryptionWhenPatchingWithUpdateFieldsAndPassword() {
         // Arrange
         Map<String, Object> updates = new HashMap<>();
         updates.put("password", "newPassword");
@@ -489,7 +493,7 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).save(users.get(0));
     }
 
-    // Delete
+    // DELETE
     @Test
     void shouldDeleteStudentGivenValidId() {
         when(personRepository.findById(1l)).thenReturn(Optional.of(users.get(0)));
