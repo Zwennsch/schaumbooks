@@ -81,7 +81,7 @@ public class PersonController {
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PatchMapping("{id}/password")
     public ResponseEntity<?> patchPassword(@PathVariable Long id, @RequestBody ChangePasswordRequest reqPwds){
-        boolean isAdmin = personService.hasRole(id, Role.ADMIN);
+        // boolean isAdmin = personService.hasRole(id, Role.ADMIN);
         personService.patchPassword(id, reqPwds);
         return ResponseEntity.noContent().build();
     }

@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
@@ -210,7 +211,6 @@ public class PersonServiceTest {
     }
 
     // READ
-
     // findAll()
     @Test
     void shouldReturnAllStudentsFromRepository() {
@@ -326,7 +326,6 @@ public class PersonServiceTest {
 
 
     // UPDATE
-
     @Test
     void shouldUpdateStudentGivenValidInput() {
         Person updatedStudent = new Person(1L, "user1", "1234", "newName",
@@ -492,6 +491,23 @@ public class PersonServiceTest {
         verify(passwordEncoder, times(1)).encode("newPassword");
         verify(personRepository, times(1)).save(users.get(0));
     }
+
+    @Test
+    @WithMockUser(roles = { "ADMIN" })
+    void shouldPatchPasswordCorrectlyWhenCalledAsAdminWithoutPassword(){
+        // Arrange
+        String newPassword = "newPassword";
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(personRepository.save(null)).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
+        // Act
+        userService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
+        // Assert
+        verify(passwordEncoder, times(1)).encode(newPassword);
+        verify(personRepository, times(1)).save(users.get(0));
+
+    }
+
 
     // DELETE
     @Test

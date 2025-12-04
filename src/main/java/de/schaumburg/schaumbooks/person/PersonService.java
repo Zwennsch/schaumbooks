@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,36 +29,7 @@ public class PersonService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<Person> findAll() {
-        return personRepository.findAll();
-    }
-
-    public Person findPersonById(Long id) {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
-    }
-
-    public Person findPersonByUsername(String username) {
-        return personRepository.findByUsername(username)
-                .orElseThrow(() -> new PersonNotFoundException(username));
-    }
-    boolean usernameExistsInDB(String username) {
-        return personRepository.findByUsername(username).isPresent();
-    }
-
-    public List<Book> getRentedBooks(Long personId) {
-        Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new PersonNotFoundException(personId));
-
-        return bookRepository.findByPerson(person);
-    }
-
-    public boolean hasRole(Long personId, Role role) {
-        Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new PersonNotFoundException(personId));
-        return person.getRoles().contains(role);
-    }
-
+    // CREATE
     @Transactional
     public Person save(Person person) {
         if (person.getRoles() == null || person.getRoles().isEmpty()) {
@@ -80,6 +53,39 @@ public class PersonService {
         return personRepository.save(person);
     }
 
+    // READ
+    public List<Person> findAll() {
+        return personRepository.findAll();
+    }
+
+    public Person findPersonById(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    public Person findPersonByUsername(String username) {
+        return personRepository.findByUsername(username)
+                .orElseThrow(() -> new PersonNotFoundException(username));
+    }
+
+    boolean usernameExistsInDB(String username) {
+        return personRepository.findByUsername(username).isPresent();
+    }
+
+    public List<Book> getRentedBooks(Long personId) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+
+        return bookRepository.findByPerson(person);
+    }
+
+    public boolean hasRole(Long personId, Role role) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotFoundException(personId));
+        return person.getRoles().contains(role);
+    }
+
+    // UPDATE
     @Transactional
     public Person updatePerson(long id, Person person) {
         Optional<Person> possibleUser = personRepository.findById(id);
@@ -134,24 +140,26 @@ public class PersonService {
     }
 
     public void patchPassword(Long personId, ChangePasswordRequest req) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
-
-        if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {
-            throw new InvalidPersonInputException("Old password is incorrect");
-        }
-
+        // Check if user has no ADMIN role
+        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            //  - if so, do  old password check
+            if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {
+                throw new InvalidPersonInputException("Old password is incorrect");
+            }
+        } 
         person.setPassword(passwordEncoder.encode(req.newPassword()));
         personRepository.save(person);
     }
 
+    // DELETE
     @Transactional
     public void deletePersonById(Long id) {
         Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
         personRepository.deleteById(person.getId());
 
     }
-
-    
 
 }
