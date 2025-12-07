@@ -138,6 +138,38 @@ Authorization: Basic arvid8:12342
     "username" : "nonAdminUser"
 }
 
+### should patch password for user with id 4 when logged in as admin user
+PATCH http://localhost:8080/api/users/4/password
+Content-Type: application/json
+Authorization: Basic sven:1234
+
+{
+    "oldPassword" : null,
+    "newPassword" : "newPwd"
+}
+
+### should change password for user with id 2 when logged in as user id2 and presenting the correct password:
+PATCH http://localhost:8080/api/users/2/password
+Content-Type: application/json
+Authorization: Basic mohammed123 12341
+
+{
+    "oldPassword" : "12341",
+    "newPassword" : "newPwd"
+}
+
+### should not  change password for user with id 3 when logged in as user id3 and presenting the false password:
+PATCH http://localhost:8080/api/users/3/password
+Content-Type: application/json
+Authorization: Basic arvid8 12342
+
+{
+    "oldPassword" : "falsePwd",
+    "newPassword" : "newPwd"
+}
+
+
+
 
 
 

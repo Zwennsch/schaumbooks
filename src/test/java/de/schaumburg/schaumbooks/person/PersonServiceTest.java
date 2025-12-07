@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -507,6 +508,25 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).save(users.get(0));
 
     }
+    @Test
+    @WithMockUser(roles = { "STUDENT" })
+    void shouldPatchPasswordCorrectlyWhenCalledAsUserWithOldPassword(){
+        // Arrange
+        String oldPassword = "1234";
+        String newPassword = "newPassword";
+        // when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(null);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(passwordEncoder.matches(oldPassword, users.get(0).getPassword())).thenReturn(true);
+        when(personRepository.save(null)).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
+        // Act
+        userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
+        // Assert
+        verify(passwordEncoder, times(1)).matches(oldPassword, users.get(0).getPassword());
+        verify(passwordEncoder, times(1)).encode(newPassword);
+        verify(personRepository, times(1)).save(users.get(0));
+    }
+
 
 
     // DELETE

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final BookRepository bookRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
     public PersonService(PersonRepository personRepository, BookRepository bookRepository,
             BCryptPasswordEncoder passwordEncoder) {
@@ -138,14 +141,16 @@ public class PersonService {
         return personRepository.save(person);
 
     }
-
+// TODO: add security
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("logged in authorities:"+auth.getAuthorities().toString());
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         // Check if user has no ADMIN role
-        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             //  - if so, do  old password check
+            logger.info("logged in as non-admin user");
             if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {
                 throw new InvalidPersonInputException("Old password is incorrect");
             }
