@@ -144,7 +144,7 @@ public class PersonService {
 // TODO: add security
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        logger.info("logged in authorities:"+auth.getAuthorities().toString());
+        // logger.info("logged in authorities:"+auth.getAuthorities().toString());
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         // Check if user has no ADMIN role

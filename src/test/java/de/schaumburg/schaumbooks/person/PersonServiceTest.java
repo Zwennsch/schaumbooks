@@ -23,8 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import de.schaumburg.schaumbooks.book.Book;
@@ -499,8 +501,12 @@ public class PersonServiceTest {
         // Arrange
         String newPassword = "newPassword";
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        when(personRepository.save(null)).thenAnswer(invocation -> invocation.getArgument(0));
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
+        // set an authentication with ADMIN role so service logic treats this as admin
+        var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
         // Act
         userService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
         // Assert
@@ -509,7 +515,7 @@ public class PersonServiceTest {
 
     }
     @Test
-    @WithMockUser(roles = { "STUDENT" })
+    // @WithMockUser(roles = { "STUDENT" })
     void shouldPatchPasswordCorrectlyWhenCalledAsUserWithOldPassword(){
         // Arrange
         String oldPassword = "1234";
@@ -517,12 +523,16 @@ public class PersonServiceTest {
         // when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(null);
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(passwordEncoder.matches(oldPassword, users.get(0).getPassword())).thenReturn(true);
-        when(personRepository.save(null)).thenAnswer(invocation -> invocation.getArgument(0));
+        when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
+        // set authentication for the student principal
+        var auth = new UsernamePasswordAuthenticationToken("user1", "pw",
+                List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
         // Act
         userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
         // Assert
-        verify(passwordEncoder, times(1)).matches(oldPassword, users.get(0).getPassword());
+        verify(passwordEncoder, times(1)).matches(oldPassword, oldPassword);
         verify(passwordEncoder, times(1)).encode(newPassword);
         verify(personRepository, times(1)).save(users.get(0));
     }
