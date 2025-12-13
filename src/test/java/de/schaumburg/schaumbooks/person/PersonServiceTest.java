@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -49,8 +50,13 @@ public class PersonServiceTest {
     @InjectMocks
     private PersonService userService;
 
+    //  var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
+    //             List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+
     private List<Person> users;
     private List<Book> rentedBooksForStudentId1;
+    private UsernamePasswordAuthenticationToken adminAuth;
+    private UsernamePasswordAuthenticationToken studentAuth;
 
     @BeforeEach
     void setup() {
@@ -64,10 +70,20 @@ public class PersonServiceTest {
 
         users = List.of(student1, student2, teacher);
 
+        adminAuth = new UsernamePasswordAuthenticationToken("admin", "pw",
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        studentAuth = new UsernamePasswordAuthenticationToken("student", "pw",
+                List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
+
         // Create rented books for student1
         rentedBooksForStudentId1 = List.of(
                 new Book(1l, "Book One", "Publisher One", "1234-5678", BookStatus.LENT, users.get(0)),
                 new Book(2l, "Book Two", "Publisher Two", "1234-5679", BookStatus.LENT, users.get(0)));
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
     
     // CREATE
@@ -463,7 +479,6 @@ public class PersonServiceTest {
         // Arrange
         Map<String, Object> updates = new HashMap<>();
         updates.put("email", "newemail@example.com");
-
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         // TODO: This seems wrong: userRepository.save should be called with the
         // modified user
@@ -496,7 +511,6 @@ public class PersonServiceTest {
     }
 
     @Test
-    @WithMockUser(roles = { "ADMIN" })
     void shouldPatchPasswordCorrectlyWhenCalledAsAdminWithoutPassword(){
         // Arrange
         String newPassword = "newPassword";
@@ -504,9 +518,7 @@ public class PersonServiceTest {
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
         // set an authentication with ADMIN role so service logic treats this as admin
-        var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
-                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        SecurityContextHolder.getContext().setAuthentication(adminAuth);
         // Act
         userService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
         // Assert
@@ -515,7 +527,6 @@ public class PersonServiceTest {
 
     }
     @Test
-    // @WithMockUser(roles = { "STUDENT" })
     void shouldPatchPasswordCorrectlyWhenCalledAsUserWithOldPassword(){
         // Arrange
         String oldPassword = "1234";
@@ -526,15 +537,29 @@ public class PersonServiceTest {
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
         // set authentication for the student principal
-        var auth = new UsernamePasswordAuthenticationToken("user1", "pw",
-                List.of(new SimpleGrantedAuthority("ROLE_STUDENT")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        SecurityContextHolder.getContext().setAuthentication(studentAuth);
         // Act
         userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
         // Assert
         verify(passwordEncoder, times(1)).matches(oldPassword, oldPassword);
         verify(passwordEncoder, times(1)).encode(newPassword);
         verify(personRepository, times(1)).save(users.get(0));
+    }
+    @Test
+    void shouldThrowInvaldPersonInputExceptionGivenStudentEntersWrongPassword(){
+        // Arrange
+        String oldPassword = "1234";
+        String newPassword = "newPassword";
+        SecurityContextHolder.getContext().setAuthentication(studentAuth);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
+        when(passwordEncoder.matches(oldPassword, users.get(0).getPassword())).thenReturn(false);
+        // Act
+        // userService.patchPassword(1l, new ChangePasswordRequest(oldPassword, newPassword));
+        // Act/Verify
+        assertThrows(InvalidPersonInputException.class, () -> userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword)));
+        verify(passwordEncoder, times(1)).matches(oldPassword, users.get(0).getPassword());
+        verify(personRepository, times(0)).save(any(Person.class));
+        verify(passwordEncoder, times(0)).encode(newPassword);
     }
 
 
