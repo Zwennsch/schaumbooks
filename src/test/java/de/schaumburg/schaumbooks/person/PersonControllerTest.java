@@ -31,10 +31,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,10 +51,10 @@ public class PersonControllerTest {
         @Autowired
         private MockMvc mockMvc;
 
-        @MockBean
+        @MockitoBean
         private PersonService userService;
 
-        @MockBean
+        @MockitoBean
         private de.schaumburg.schaumbooks.person.CustomPersonDetailsService userDetailsService;
 
         List<Person> users = new ArrayList<>();
@@ -257,7 +257,7 @@ public class PersonControllerTest {
                 Person updatedUser = new Person(1L, "user1", "1234", "NewName", "Test1", "new.email@example.com",
                                 List.of(Role.STUDENT), "8a");
                 // When
-                when(userService.updatePersonFields(eq(1L), any(Map.class))).thenReturn(updatedUser);
+                when(userService.updatePersonFields(eq(1L), org.mockito.ArgumentMatchers.<Map<String, Object>>any())).thenReturn(updatedUser);
                 // When/Then
                 mockMvc.perform(patch("/api/users/1").contentType(MediaType.APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(updateFields))
@@ -265,7 +265,7 @@ public class PersonControllerTest {
                 ).andExpect(status().isOk()).andExpect(jsonPath("$.firstName").value("NewName"))
                                 .andExpect(jsonPath("$.email").value("new.email@example.com"));
 
-                verify(userService, times(1)).updatePersonFields(eq(1L), any(Map.class));
+                verify(userService, times(1)).updatePersonFields(eq(1L), org.mockito.ArgumentMatchers.<Map<String, Object>>any());
         }
 
         @Test
