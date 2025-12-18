@@ -12,8 +12,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-// TODO: This was added in a tutorial I am not sure I would need it.
-// @Transactional
 @Service
 @Validated
 public class BookService {

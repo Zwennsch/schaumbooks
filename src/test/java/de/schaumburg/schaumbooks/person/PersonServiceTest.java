@@ -543,7 +543,7 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).save(users.get(0));
     }
     @Test
-    void shouldThrowInvaldPersonInputExceptionGivenStudentEntersWrongPassword(){
+    void shouldThrowInvalidPersonInputExceptionGivenStudentEntersWrongPassword(){
         // Arrange
         String oldPassword = "1234";
         String newPassword = "newPassword";
