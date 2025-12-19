@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 // import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 // import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +40,6 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
         Book savedBook = bookService.save(book);

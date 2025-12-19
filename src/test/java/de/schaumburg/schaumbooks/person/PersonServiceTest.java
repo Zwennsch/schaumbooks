@@ -45,7 +45,7 @@ public class PersonServiceTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private PersonService userService;
+    private PersonService personService;
 
     //  var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
     //             List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
@@ -91,7 +91,7 @@ public class PersonServiceTest {
                 List.of(Role.STUDENT), "9a");
         when(personRepository.save(student)).thenReturn(student);
 
-        Person savedStudent = userService.save(student);
+        Person savedStudent = personService.save(student);
         assertEquals(student, savedStudent);
         verify(personRepository).save(student);
     }
@@ -107,7 +107,7 @@ public class PersonServiceTest {
         // when repository saves, just return the entity passed in
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Person savedUser = userService.save(user);
+        Person savedUser = personService.save(user);
 
         // verify that the encoder was invoked and its result was set on the entity
         verify(passwordEncoder, times(1)).encode("plainPassword");
@@ -122,7 +122,7 @@ public class PersonServiceTest {
 
         when(personRepository.save(admin)).thenReturn(admin);
 
-        Person savedUser = userService.save(admin);
+        Person savedUser = personService.save(admin);
 
         assertNotNull(savedUser);
         assertNull(savedUser.getClassName());
@@ -135,7 +135,7 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.STUDENT),
                 null);
 
-        Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(studentNoClass));
+        Exception exception = assertThrows(InvalidPersonInputException.class, () -> personService.save(studentNoClass));
         verify(personRepository, times(0)).save(studentNoClass);
         assertEquals("Invalid user input: Student must have a className",
                 exception.getMessage());
@@ -147,7 +147,7 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.STUDENT),
                 "");
 
-        Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(studentNoClass));
+        Exception exception = assertThrows(InvalidPersonInputException.class, () -> personService.save(studentNoClass));
         verify(personRepository, times(0)).save(studentNoClass);
         assertEquals("Invalid user input: Student must have a className",
                 exception.getMessage());
@@ -159,7 +159,7 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.TEACHER),
                 "10a");
 
-        Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(teacherWithClass));
+        Exception exception = assertThrows(InvalidPersonInputException.class, () -> personService.save(teacherWithClass));
         verify(personRepository, times(0)).save(teacherWithClass);
         assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
     }
@@ -174,7 +174,7 @@ public class PersonServiceTest {
                 "10a");
         // When
         when(personRepository.save(any(Person.class))).thenReturn(returnedUser);
-        Person savedUser = userService.save(user);
+        Person savedUser = personService.save(user);
         // Then
         assertNotNull(savedUser);
         assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
@@ -191,25 +191,12 @@ public class PersonServiceTest {
                 "10a");
         // When
         when(personRepository.save(any(Person.class))).thenReturn(returnedUser);
-        Person savedUser = userService.save(user);
+        Person savedUser = personService.save(user);
         // Then
         assertNotNull(savedUser);
         assertEquals(List.of(Role.STUDENT), savedUser.getRoles());
         verify(personRepository).save(any(Person.class));
     }
-
-    // @Test
-    // void shouldNotOverrideExistingRoles() {
-    // // Given
-    // Person user = new Person(null, "hans", "12345", "hans", "meier",
-    // "hans@mail.com", List.of(Role.ADMIN), null);
-    // // When
-    // when(userRepository.save(any(Person.class))).thenReturn(user);
-    // Person savedUser = userService.save(user);
-    // // Then
-    // assertNotNull(savedUser);
-    // assertEquals(List.of(Role.ADMIN), savedUser.getRoles());
-    // }
 
     @Test
     void shouldThrowInvalidUserInputExceptionWhenUsernameIsAlreadyExisting() {
@@ -219,7 +206,7 @@ public class PersonServiceTest {
         when(personRepository.findByUsername("user1")).thenReturn(Optional.of(user));
 
         // When/Then
-        Exception exception = assertThrows(InvalidPersonInputException.class, () -> userService.save(user));
+        Exception exception = assertThrows(InvalidPersonInputException.class, () -> personService.save(user));
         verify(personRepository).findByUsername(user.getUsername());
         verify(personRepository, times(0)).save(any(Person.class));
         assertEquals("Invalid user input: Username already taken: user1",
@@ -231,7 +218,7 @@ public class PersonServiceTest {
     @Test
     void shouldReturnAllStudentsFromRepository() {
         when(personRepository.findAll()).thenReturn(users);
-        List<Person> allStudents = userService.findAll();
+        List<Person> allStudents = personService.findAll();
 
         assertEquals("student2", allStudents.get(1).getFirstName());
         verify(personRepository, times(1)).findAll();
@@ -241,7 +228,7 @@ public class PersonServiceTest {
     @Test
     void shouldFindStudentGivenValidId() {
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
-        Person student = userService.findPersonById(1L);
+        Person student = personService.findPersonById(1L);
 
         assertEquals(users.get(0), student);
         verify(personRepository).findById(1L);
@@ -251,7 +238,7 @@ public class PersonServiceTest {
     void shouldThrowPersonNotFoundExceptionWhenGivenInvalidId() {
         when(personRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(PersonNotFoundException.class, () -> userService.findPersonById(99L));
+        assertThrows(PersonNotFoundException.class, () -> personService.findPersonById(99L));
         verify(personRepository).findById(99L);
     }
 
@@ -263,7 +250,7 @@ public class PersonServiceTest {
         when(personRepository.findByUsername(username)).thenReturn(Optional.of(users.get(0)));
 
         // When
-        Person user = userService.findPersonByUsername("user1");
+        Person user = personService.findPersonByUsername("user1");
         // Then
         assertEquals(users.get(0), user);
         verify(personRepository, times(1)).findByUsername(username);
@@ -276,7 +263,7 @@ public class PersonServiceTest {
         when(personRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(PersonNotFoundException.class,
-                () -> userService.findPersonByUsername(username));
+                () -> personService.findPersonByUsername(username));
         assertEquals("Person not found with username: wrongUsername", exception.getMessage());
         verify(personRepository).findByUsername(username);
     }
@@ -299,7 +286,7 @@ public class PersonServiceTest {
         // Given
         when(personRepository.findById(99L)).thenReturn(Optional.empty());
         // when
-        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.getRentedBooks(99L));
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> personService.getRentedBooks(99L));
         assertEquals("Person not found with id: 99", exception.getMessage());
         verify(personRepository).findById(99L);
     }
@@ -310,7 +297,7 @@ public class PersonServiceTest {
         // Given
         when(personRepository.findById(99L)).thenReturn(Optional.empty());
         // when
-        Exception exception = assertThrows(PersonNotFoundException.class, () -> userService.hasRole(99L, Role.ADMIN));
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> personService.hasRole(99L, Role.ADMIN));
         assertEquals("Person not found with id: 99", exception.getMessage());
         verify(personRepository).findById(99L);
     }
@@ -320,7 +307,7 @@ public class PersonServiceTest {
         when(personRepository.findById(3L)).thenReturn(Optional.of(users.get(2)));
 
         // When
-        boolean hasRole = userService.hasRole(3L, Role.TEACHER);
+        boolean hasRole = personService.hasRole(3L, Role.TEACHER);
 
         // Then
         assertEquals(true, hasRole);
@@ -333,7 +320,7 @@ public class PersonServiceTest {
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
 
         // When
-        boolean hasRole = userService.hasRole(1L, Role.ADMIN);
+        boolean hasRole = personService.hasRole(1L, Role.ADMIN);
 
         // Then
         assertEquals(false, hasRole);
@@ -349,7 +336,7 @@ public class PersonServiceTest {
                 List.of(Role.STUDENT), "10b");
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(personRepository.save(any(Person.class))).thenReturn(updatedStudent);
-        Person result = userService.updatePerson(1L, updatedStudent);
+        Person result = personService.updatePerson(1L, updatedStudent);
         assertEquals(updatedStudent.getUsername(), result.getUsername());
         // save is called with the existing entity (updated via fields), not the
         // incoming instance
@@ -365,7 +352,7 @@ public class PersonServiceTest {
         // doNothing().when(users.get(0)).setPassword(anyString());
         when(passwordEncoder.encode("newPassword")).thenReturn("encryptedPassword");
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Person result = userService.updatePerson(1L, updatedStudent);
+        Person result = personService.updatePerson(1L, updatedStudent);
         // password should have been encoded and set on the returned entity
         assertEquals("encryptedPassword", result.getPassword());
         verify(passwordEncoder, times(1)).encode("newPassword");
@@ -377,7 +364,7 @@ public class PersonServiceTest {
                 "newLastName", "newMail@mail.com",
                 List.of(Role.STUDENT), "10a");
         when(personRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(PersonNotFoundException.class, () -> userService.updatePerson(99L, updatedStudent));
+        assertThrows(PersonNotFoundException.class, () -> personService.updatePerson(99L, updatedStudent));
     }
 
     // patch / partial update
@@ -393,7 +380,7 @@ public class PersonServiceTest {
         when(personRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
         when(personRepository.save(existingStudent)).thenReturn(updatedEmailStudent);
 
-        Person result = userService.updatePerson(1L, updatedEmailStudent);
+        Person result = personService.updatePerson(1L, updatedEmailStudent);
 
         assertEquals(updatedEmailStudent.getEmail(), result.getEmail());
         assertEquals(existingStudent.getFirstName(), result.getFirstName());
@@ -415,7 +402,7 @@ public class PersonServiceTest {
         updateFields.put("email", "new.email@example.com");
 
         // Act
-        Person updatedUser = userService.updatePersonFields(5L, updateFields);
+        Person updatedUser = personService.updatePersonFields(5L, updateFields);
 
         // Assert
         assertEquals("New Name", updatedUser.getFirstName());
@@ -435,7 +422,7 @@ public class PersonServiceTest {
         updateFields.put("invalidField", "value");
 
         // Act & Assert
-        assertThrows(InvalidPersonInputException.class, () -> userService.updatePersonFields(5L, updateFields));
+        assertThrows(InvalidPersonInputException.class, () -> personService.updatePersonFields(5L, updateFields));
     }
 
     @Test
@@ -447,7 +434,7 @@ public class PersonServiceTest {
 
         // When/Then
         when(personRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(PersonNotFoundException.class, () -> userService.updatePersonFields(id, updateFields));
+        assertThrows(PersonNotFoundException.class, () -> personService.updatePersonFields(id, updateFields));
     }
 
     @Test
@@ -466,8 +453,8 @@ public class PersonServiceTest {
         when(personRepository.findByUsername(takenUsername)).thenReturn(Optional.of(users.get(0)));
 
         // When/Then
-        assertThrows(InvalidPersonInputException.class, () -> userService.updatePerson(5L, userToUpdate));
-        assertThrows(InvalidPersonInputException.class, () -> userService.updatePersonFields(5L, fieldsToUpdate));
+        assertThrows(InvalidPersonInputException.class, () -> personService.updatePerson(5L, userToUpdate));
+        assertThrows(InvalidPersonInputException.class, () -> personService.updatePersonFields(5L, fieldsToUpdate));
         verify(personRepository, never()).save(any(Person.class));
     }
 
@@ -482,7 +469,7 @@ public class PersonServiceTest {
         when(personRepository.save(any(Person.class))).thenReturn(users.get(0));
 
         // Act
-        Person updatedUser = userService.updatePersonFields(1L, updates);
+        Person updatedUser = personService.updatePersonFields(1L, updates);
 
         // Assert
         assertEquals("newemail@example.com", updatedUser.getEmail());
@@ -499,7 +486,7 @@ public class PersonServiceTest {
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         // Act
-        Person updatedUser = userService.updatePersonFields(1L, updates);
+        Person updatedUser = personService.updatePersonFields(1L, updates);
 
         // Assert
         assertEquals("encryptedNewPassword", updatedUser.getPassword());
@@ -517,7 +504,7 @@ public class PersonServiceTest {
         // set an authentication with ADMIN role so service logic treats this as admin
         SecurityContextHolder.getContext().setAuthentication(adminAuth);
         // Act
-        userService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
+        personService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
         // Assert
         verify(passwordEncoder, times(1)).encode(newPassword);
         verify(personRepository, times(1)).save(users.get(0));
@@ -534,9 +521,12 @@ public class PersonServiceTest {
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
         // set authentication for the student principal
-        SecurityContextHolder.getContext().setAuthentication(studentAuth);
+        // authenticate as user with id 1L by using CustomPersonDetails as principal
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(new CustomPersonDetails(users.get(0)), "pw",
+                List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
         // Act
-        userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
+        personService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
         // Assert
         verify(passwordEncoder, times(1)).matches(oldPassword, oldPassword);
         verify(passwordEncoder, times(1)).encode(newPassword);
@@ -553,8 +543,21 @@ public class PersonServiceTest {
         // Act
         // userService.patchPassword(1l, new ChangePasswordRequest(oldPassword, newPassword));
         // Act/Verify
-        assertThrows(InvalidPersonInputException.class, () -> userService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword)));
+        assertThrows(InvalidPersonInputException.class, () -> personService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword)));
         verify(passwordEncoder, times(1)).matches(oldPassword, users.get(0).getPassword());
+        verify(personRepository, times(0)).save(any(Person.class));
+        verify(passwordEncoder, times(0)).encode(newPassword);
+    }
+    @Test
+    void shouldThrowUnauthorizedExceptionWhenPatchingPasswordForUserWithDifferentId(){
+        // Arrange
+        String oldPassword = "1234";
+        String newPassword = "newPassword";
+        SecurityContextHolder.getContext().setAuthentication(studentAuth);
+        when(personRepository.findById(2L)).thenReturn(Optional.of(users.get(1)));
+        // Act/Verify
+        assertThrows(PersonUnauthorizedException.class, () -> personService.patchPassword(2L, new ChangePasswordRequest(oldPassword, newPassword)));
+        verify(passwordEncoder, times(0)).matches(oldPassword, users.get(1).getPassword());
         verify(personRepository, times(0)).save(any(Person.class));
         verify(passwordEncoder, times(0)).encode(newPassword);
     }
@@ -566,7 +569,7 @@ public class PersonServiceTest {
     void shouldDeleteStudentGivenValidId() {
         when(personRepository.findById(1l)).thenReturn(Optional.of(users.get(0)));
 
-        userService.deletePersonById(1l);
+        personService.deletePersonById(1l);
 
         verify(personRepository).deleteById(1l);
     }
@@ -575,7 +578,7 @@ public class PersonServiceTest {
     void shouldThrowStudentNotFoundExceptionGivenNoStudentWithIdFOund() {
         when(personRepository.findById(99l)).thenReturn(Optional.empty());
 
-        assertThrows(PersonNotFoundException.class, () -> userService.deletePersonById(99l));
+        assertThrows(PersonNotFoundException.class, () -> personService.deletePersonById(99l));
 
         verify(personRepository, never()).deleteById(99l);
     }
@@ -585,7 +588,7 @@ public class PersonServiceTest {
         Person studentNoPassword = new Person(null, "noPassword", null, "Hans", "Flick", "nopasssw@mail.com", null,
                 "10a");
         Exception exception = assertThrows(InvalidPersonInputException.class,
-                () -> userService.save(studentNoPassword));
+                () -> personService.save(studentNoPassword));
         verify(personRepository, times(0)).save(studentNoPassword);
         assertEquals("Invalid user input: Password must not be empty",
                 exception.getMessage());

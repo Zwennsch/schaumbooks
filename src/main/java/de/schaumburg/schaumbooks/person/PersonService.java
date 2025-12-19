@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -141,7 +142,7 @@ public class PersonService {
         return personRepository.save(person);
 
     }
-// TODO: add security
+    @PreAuthorize("#userId == authentication.principal.id")
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // logger.info("logged in authorities:"+auth.getAuthorities().toString());

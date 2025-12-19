@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import de.schaumburg.schaumbooks.book.BookNotFoundException;
 import de.schaumburg.schaumbooks.person.InvalidPersonInputException;
 import de.schaumburg.schaumbooks.person.PersonNotFoundException;
+import de.schaumburg.schaumbooks.person.PersonUnauthorizedException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,6 +38,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorObject> handleInvalidUserInputException(InvalidPersonInputException exception) {
         ErrorObject errorObject = new ErrorObject(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PersonUnauthorizedException.class)
+    public ResponseEntity<ErrorObject> handlePersonUnauthorizedException(PersonUnauthorizedException exception) {
+        ErrorObject errorObject = new ErrorObject(HttpStatus.FORBIDDEN.value(), exception.getMessage(), new Date());
+        return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
