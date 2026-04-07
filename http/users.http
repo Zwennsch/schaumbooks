@@ -108,7 +108,7 @@ Authorization: Basic sven:1234
 
 ### PATCH
 ### should patch first name and email for user with id2
-PATCH http://localhost:8080/api/users/2
+PATCH http://localhost:8080/api/users/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Basic sven:1234
 
@@ -118,12 +118,12 @@ Authorization: Basic sven:1234
 }
 
 ### should patch email
-PATCH http://localhost:8080/api/users/2
+PATCH http://localhost:8080/api/users/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Basic sven:1234
 
 {
-    "password" : "newpwd"
+    "email" : "newMail@mail.com"
 }
 
 
@@ -138,18 +138,20 @@ Authorization: Basic arvid8:12342
     "username" : "nonAdminUser"
 }
 
+
+### Password PATCH
 ### should patch password for user with id 4 when logged in as admin user
-PATCH http://localhost:8080/api/users/4/password
+PATCH http://localhost:8080/api/users/4/password HTTP/1.1
 Content-Type: application/json
 Authorization: Basic sven:1234
 
 {
     "oldPassword" : null,
-    "newPassword" : "newPwd"
+    "newPassword" : "newPwd2"
 }
 
 ### should change password for user with id 2 when logged in as user id2 and presenting the correct password:
-PATCH http://localhost:8080/api/users/2/password
+PATCH http://localhost:8080/api/users/2/password HTTP/1.1
 Content-Type: application/json
 Authorization: Basic mohammed123 12341
 
@@ -159,7 +161,7 @@ Authorization: Basic mohammed123 12341
 }
 
 ### should not  change password for user with id 3 when logged in as user id3 and presenting the false password:
-PATCH http://localhost:8080/api/users/3/password
+PATCH http://localhost:8080/api/users/3/password HTTP/1.1
 Content-Type: application/json
 Authorization: Basic arvid8 12342
 

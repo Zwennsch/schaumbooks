@@ -142,10 +142,10 @@ public class PersonService {
         return personRepository.save(person);
 
     }
-    @PreAuthorize("#userId == authentication.principal.id")
+    // @PreAuthorize("#userId == authentication.principal.id")
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // logger.info("logged in authorities:"+auth.getAuthorities().toString());
+        logger.info("logged in authorities:"+auth.getAuthorities().toString());
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         // Check if user has no ADMIN role
