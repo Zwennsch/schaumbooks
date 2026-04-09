@@ -2,7 +2,7 @@ package de.schaumburg.schaumbooks.person;
 
 public class PersonUnauthorizedException extends RuntimeException {
     public PersonUnauthorizedException(Long id) {
-        super("Person with id " + id + " is not authorized to perfom action");
+        super("Person with id " + id + " is not authorized to perform action");
     }
 }
 

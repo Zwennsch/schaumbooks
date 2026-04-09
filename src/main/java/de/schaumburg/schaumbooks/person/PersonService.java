@@ -145,11 +145,17 @@ public class PersonService {
     // @PreAuthorize("#userId == authentication.principal.id")
     public void patchPassword(Long personId, ChangePasswordRequest req) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        logger.info("logged in authorities:"+auth.getAuthorities().toString());
+        // logger.info("logged in authorities:"+auth.getAuthorities().toString());
+        Long loggedInUserId = ((CustomPersonDetails) auth.getPrincipal()).getId();
+        // logger.info("logged in user id:"+loggedInUserId);
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         // Check if user has no ADMIN role
         if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            // Throw PersonUnauthorizedException if userId of 
+            if (!loggedInUserId.equals(personId)) {
+                throw new PersonUnauthorizedException(loggedInUserId);
+            }
             //  - if so, do  old password check
             logger.info("logged in as non-admin user");
             if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {

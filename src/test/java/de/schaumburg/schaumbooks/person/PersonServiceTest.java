@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -47,13 +48,13 @@ public class PersonServiceTest {
     @InjectMocks
     private PersonService personService;
 
-    //  var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
-    //             List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    // var auth = new UsernamePasswordAuthenticationToken("admin", "pw",
+    // List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
     private List<Person> users;
     private List<Book> rentedBooksForStudentId1;
-    private UsernamePasswordAuthenticationToken adminAuth;
-    private UsernamePasswordAuthenticationToken studentAuth;
+    private Authentication adminAuth;
+    private Authentication studentAuth;
 
     @BeforeEach
     void setup() {
@@ -82,7 +83,7 @@ public class PersonServiceTest {
     void tearDown() {
         SecurityContextHolder.clearContext();
     }
-    
+
     // CREATE
     @Test
     void shouldAddNewStudentGivenValidInput() {
@@ -159,7 +160,8 @@ public class PersonServiceTest {
                 "hans@mail.com", List.of(Role.TEACHER),
                 "10a");
 
-        Exception exception = assertThrows(InvalidPersonInputException.class, () -> personService.save(teacherWithClass));
+        Exception exception = assertThrows(InvalidPersonInputException.class,
+                () -> personService.save(teacherWithClass));
         verify(personRepository, times(0)).save(teacherWithClass);
         assertEquals("Invalid user input: Non-Student roles must not have a className", exception.getMessage());
     }
@@ -224,6 +226,7 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).findAll();
 
     }
+
     // findById
     @Test
     void shouldFindStudentGivenValidId() {
@@ -290,7 +293,7 @@ public class PersonServiceTest {
         assertEquals("Person not found with id: 99", exception.getMessage());
         verify(personRepository).findById(99L);
     }
-    
+
     // hasRole
     @Test
     void shouldThrowUserNotFoundExceptionWhenGivenInvalidIdWhenCheckingForRole() {
@@ -301,6 +304,7 @@ public class PersonServiceTest {
         assertEquals("Person not found with id: 99", exception.getMessage());
         verify(personRepository).findById(99L);
     }
+
     @Test
     void shouldCheckForRoleGivenValidId() {
         // Given
@@ -326,7 +330,6 @@ public class PersonServiceTest {
         assertEquals(false, hasRole);
         verify(personRepository).findById(1L);
     }
-
 
     // UPDATE
     @Test
@@ -495,14 +498,18 @@ public class PersonServiceTest {
     }
 
     @Test
-    void shouldPatchPasswordCorrectlyWhenCalledAsAdminWithoutPassword(){
+    void shouldPatchPasswordCorrectlyWhenCalledAsAdminWithoutPassword() {
         // Arrange
         String newPassword = "newPassword";
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(personRepository.save(any(Person.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(passwordEncoder.encode(newPassword)).thenReturn("encryptedNewPassword");
         // set an authentication with ADMIN role so service logic treats this as admin
-        SecurityContextHolder.getContext().setAuthentication(adminAuth);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        new CustomPersonDetails(users.get(0)),
+                        "pw",
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
         // Act
         personService.patchPassword(1L, new ChangePasswordRequest(null, newPassword));
         // Assert
@@ -510,8 +517,9 @@ public class PersonServiceTest {
         verify(personRepository, times(1)).save(users.get(0));
 
     }
+
     @Test
-    void shouldPatchPasswordCorrectlyWhenCalledAsUserWithOldPassword(){
+    void shouldPatchPasswordCorrectlyWhenCalledAsUserWithOldPassword() {
         // Arrange
         String oldPassword = "1234";
         String newPassword = "newPassword";
@@ -523,8 +531,8 @@ public class PersonServiceTest {
         // set authentication for the student principal
         // authenticate as user with id 1L by using CustomPersonDetails as principal
         SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken(new CustomPersonDetails(users.get(0)), "pw",
-                List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
+                new UsernamePasswordAuthenticationToken(new CustomPersonDetails(users.get(0)), "pw",
+                        List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
         // Act
         personService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword));
         // Assert
@@ -532,37 +540,45 @@ public class PersonServiceTest {
         verify(passwordEncoder, times(1)).encode(newPassword);
         verify(personRepository, times(1)).save(users.get(0));
     }
+
     @Test
-    void shouldThrowInvalidPersonInputExceptionGivenStudentEntersWrongPassword(){
+    void shouldThrowInvalidPersonInputExceptionGivenStudentEntersWrongPassword() {
         // Arrange
         String oldPassword = "1234";
         String newPassword = "newPassword";
-        SecurityContextHolder.getContext().setAuthentication(studentAuth);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        new CustomPersonDetails(users.get(0)),
+                        "pw",
+                        List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
         when(personRepository.findById(1L)).thenReturn(Optional.of(users.get(0)));
         when(passwordEncoder.matches(oldPassword, users.get(0).getPassword())).thenReturn(false);
         // Act
-        // userService.patchPassword(1l, new ChangePasswordRequest(oldPassword, newPassword));
-        // Act/Verify
-        assertThrows(InvalidPersonInputException.class, () -> personService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword)));
+        assertThrows(InvalidPersonInputException.class,
+                () -> personService.patchPassword(1L, new ChangePasswordRequest(oldPassword, newPassword)));
         verify(passwordEncoder, times(1)).matches(oldPassword, users.get(0).getPassword());
         verify(personRepository, times(0)).save(any(Person.class));
         verify(passwordEncoder, times(0)).encode(newPassword);
     }
+
     @Test
-    void shouldThrowUnauthorizedExceptionWhenPatchingPasswordForUserWithDifferentId(){
+    void shouldThrowUnauthorizedExceptionWhenPatchingPasswordForUserWithDifferentId() {
         // Arrange
         String oldPassword = "1234";
         String newPassword = "newPassword";
-        SecurityContextHolder.getContext().setAuthentication(studentAuth);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        new CustomPersonDetails(users.get(0)),
+                        "pw",
+                        List.of(new SimpleGrantedAuthority("ROLE_STUDENT"))));
         when(personRepository.findById(2L)).thenReturn(Optional.of(users.get(1)));
         // Act/Verify
-        assertThrows(PersonUnauthorizedException.class, () -> personService.patchPassword(2L, new ChangePasswordRequest(oldPassword, newPassword)));
+        assertThrows(PersonUnauthorizedException.class,
+                () -> personService.patchPassword(2L, new ChangePasswordRequest(oldPassword, newPassword)));
         verify(passwordEncoder, times(0)).matches(oldPassword, users.get(1).getPassword());
         verify(personRepository, times(0)).save(any(Person.class));
         verify(passwordEncoder, times(0)).encode(newPassword);
     }
-
-
 
     // DELETE
     @Test
