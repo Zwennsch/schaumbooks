@@ -76,6 +76,8 @@ public class PersonService {
         return personRepository.findByUsername(username).isPresent();
     }
 
+    // TODO: only admin and the user itself should be able to access this endpoint, currently any logged in user can access it
+    // @PreAuthorize("hasRole('ADMIN') or #personId == authentication.principal.id")
     public List<Book> getRentedBooks(Long personId) {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
