@@ -1,6 +1,7 @@
 package de.schaumburg.schaumbooks.book;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -29,18 +30,20 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Book findById(Long id) {
+    public Book findById(long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @Transactional
-    public Book save(@Valid Book book) {
+    public Book save(@NotNull @Valid Book book) {
+        Objects.requireNonNull(book);
         return bookRepository.save(book);
     }
 
     @Transactional
-    public Book updateBook(@NotNull @Min(1) Long id, @Valid Book updatedBook) {
+    public Book updateBook(@Min(1) long id, @NotNull @Valid Book updatedBook) {
+        Objects.requireNonNull(updatedBook);
         Optional<Book> optionalBook = bookRepository.findById(id);
 
         return optionalBook.map(existingBook -> {
@@ -53,7 +56,7 @@ public class BookService {
         }).orElseThrow(() -> new BookNotFoundException(id));
     }
 
-    public void deleteBookById(Long id) {
+    public void deleteBookById(long id) {
         Optional<Book> book = bookRepository.findById(id);
         if (book.isPresent()) {
             bookRepository.deleteById(id);

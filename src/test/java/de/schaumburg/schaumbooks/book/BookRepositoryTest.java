@@ -26,6 +26,7 @@ class BookRepositoryTest {
     private Person student;
     private Book book1, book2;
 
+    @SuppressWarnings("null")
     @BeforeEach
     void setUp() {
         // create user without pre-set id and persist it, assigning the managed instance

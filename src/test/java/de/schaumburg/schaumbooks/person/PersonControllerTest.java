@@ -44,6 +44,7 @@ import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookStatus;
 import de.schaumburg.schaumbooks.configuration.SecurityConfig;
 
+@SuppressWarnings("null")
 @WebMvcTest(PersonController.class)
 @Import(SecurityConfig.class)
 public class PersonControllerTest {

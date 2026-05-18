@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import de.schaumburg.schaumbooks.person.InvalidPersonInputException;
 
+@SuppressWarnings("null")
 @ExtendWith(MockitoExtension.class)
 public class GlobalExceptionHandlerTest {
 

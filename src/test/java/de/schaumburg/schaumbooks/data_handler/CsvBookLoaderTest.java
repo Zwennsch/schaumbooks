@@ -21,6 +21,7 @@ import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
 import de.schaumburg.schaumbooks.book.BookStatus;
 
+@SuppressWarnings("null")
 class CsvBookLoaderTest {
 
     @Mock

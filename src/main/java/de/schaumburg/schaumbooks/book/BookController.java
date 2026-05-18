@@ -35,7 +35,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> findBookById(@PathVariable Long id) {
+    public ResponseEntity<Book> findBookById(@PathVariable long id) {
         Book book = bookService.findById(id);
         return ResponseEntity.ok(book);
     }
@@ -47,21 +47,20 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
+    public ResponseEntity<Book> updateBook(@PathVariable long id, @RequestBody @Valid Book book) {
         Book updatedBook = bookService.updateBook(id, book);
         return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBookById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBookById(@PathVariable long id) {
         bookService.deleteBookById(id);
         return ResponseEntity.noContent().build();
     }
 
     // @GetMapping("/csrf-token")
     // public CsrfToken getCsrfToken(HttpServletRequest request){
-    //     return (CsrfToken) request.getAttribute("_csrf");
+    // return (CsrfToken) request.getAttribute("_csrf");
     // }
-
 
 }

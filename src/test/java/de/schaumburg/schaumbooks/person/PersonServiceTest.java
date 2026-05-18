@@ -34,6 +34,7 @@ import de.schaumburg.schaumbooks.book.BookStatus;
 
 // import com.fasterxml.jackson.core.JsonProcessingException;
 
+@SuppressWarnings("null")
 public class PersonServiceTest {
 
     @Mock

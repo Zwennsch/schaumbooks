@@ -47,6 +47,7 @@ public class BookServiceTest {
         books = List.of(book1, book2);
     }
 
+    @SuppressWarnings("null")
     @Test
     void testUpdateBookWithValidData() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));

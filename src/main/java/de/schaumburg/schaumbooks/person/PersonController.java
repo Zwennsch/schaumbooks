@@ -53,47 +53,43 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Person> findPersonById(@PathVariable Long id) {
+    public ResponseEntity<Person> findPersonById(@PathVariable long id) {
         return ResponseEntity.ok(personService.findPersonById(id));
     }
 
     @PreAuthorize("hasRole('TEACHER') or #id == authentication.principal.id")
     @GetMapping("/{id}/books")
-    public ResponseEntity<List<Book>> getRentedBooks(@PathVariable Long id) {
+    public ResponseEntity<List<Book>> getRentedBooks(@PathVariable long id) {
         return ResponseEntity.ok(personService.getRentedBooks(id));
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
+    public ResponseEntity<Person> updatePerson(@PathVariable long id, @RequestBody @Valid Person person) {
         Person updatedPerson = personService.updatePerson(id, person);
         return ResponseEntity.ok(updatedPerson);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Person> updatePersonFields(@PathVariable Long id,
+    public ResponseEntity<Person> updatePersonFields(@PathVariable long id,
             @RequestBody Map<String, Object> fieldsToPatch) {
         Person updatedPerson = personService.updatePersonFields(id, fieldsToPatch);
         return ResponseEntity.ok(updatedPerson);
     }
 
-
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PatchMapping("{id}/password")
-    public ResponseEntity<?> patchPassword(@PathVariable Long id, @RequestBody ChangePasswordRequest reqPwds){
+    public ResponseEntity<?> patchPassword(@PathVariable long id, @RequestBody ChangePasswordRequest reqPwds) {
         // boolean isAdmin = personService.hasRole(id, Role.ADMIN);
         personService.patchPassword(id, reqPwds);
         return ResponseEntity.noContent().build();
     }
 
-
     // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePersonById(@PathVariable Long id) {
+    public ResponseEntity<?> deletePersonById(@PathVariable long id) {
         personService.deletePersonById(id);
         return ResponseEntity.noContent().build();
     }
 
 }
-
-

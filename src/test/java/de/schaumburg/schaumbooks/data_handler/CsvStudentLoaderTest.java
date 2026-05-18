@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import de.schaumburg.schaumbooks.person.PersonRepository;
 
+@SuppressWarnings("null")
 public class CsvStudentLoaderTest {
 
     @Mock

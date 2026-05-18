@@ -3,11 +3,11 @@ package de.schaumburg.schaumbooks.person;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +17,7 @@ import org.springframework.util.ReflectionUtils;
 
 import de.schaumburg.schaumbooks.book.Book;
 import de.schaumburg.schaumbooks.book.BookRepository;
+import jakarta.validation.constraints.NotNull;
 
 @Service
 public class PersonService {
@@ -35,7 +36,8 @@ public class PersonService {
 
     // CREATE
     @Transactional
-    public Person save(Person person) {
+    public Person save(@NotNull Person person) {
+        Objects.requireNonNull(person);
         if (person.getRoles() == null || person.getRoles().isEmpty()) {
             person.setRoles(List.of(Role.STUDENT));
         }
@@ -62,30 +64,34 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public Person findPersonById(Long id) {
+    public Person findPersonById(long id) {
         return personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
     }
 
-    public Person findPersonByUsername(String username) {
+    public Person findPersonByUsername(@NotNull String username) {
+        Objects.requireNonNull(username);
         return personRepository.findByUsername(username)
                 .orElseThrow(() -> new PersonNotFoundException(username));
     }
 
-    boolean usernameExistsInDB(String username) {
+    boolean usernameExistsInDB(@NotNull String username) {
+        Objects.requireNonNull(username);
         return personRepository.findByUsername(username).isPresent();
     }
 
-    // TODO: only admin and the user itself should be able to access this endpoint, currently any logged in user can access it
+    // TODO: only admin and the user itself should be able to access this endpoint,
+    // currently any logged in user can access it
     // @PreAuthorize("hasRole('ADMIN') or #personId == authentication.principal.id")
-    public List<Book> getRentedBooks(Long personId) {
+    public List<Book> getRentedBooks(long personId) {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
 
         return bookRepository.findByPerson(person);
     }
 
-    public boolean hasRole(Long personId, Role role) {
+    public boolean hasRole(long personId, @NotNull Role role) {
+        Objects.requireNonNull(role);
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         return person.getRoles().contains(role);
@@ -115,12 +121,13 @@ public class PersonService {
     }
 
     @Transactional
-    public Person updatePersonFields(Long personId, Map<String, Object> fieldsToPatch) {
+    public Person updatePersonFields(long personId, @NotNull Map<String, Object> fieldsToPatch) {
+        Objects.requireNonNull(fieldsToPatch);
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
 
         for (Map.Entry<String, Object> e : fieldsToPatch.entrySet()) {
-            String key = e.getKey();
+            String key = Objects.requireNonNull(e.getKey());
             Object value = e.getValue();
 
             Field field = ReflectionUtils.findField(Person.class, key);
@@ -141,11 +148,14 @@ public class PersonService {
             ReflectionUtils.setField(field, person, value);
         }
 
+        Objects.requireNonNull(person);
         return personRepository.save(person);
 
     }
+
     // @PreAuthorize("#userId == authentication.principal.id")
-    public void patchPassword(Long personId, ChangePasswordRequest req) {
+    public void patchPassword(long personId, @NotNull ChangePasswordRequest req) {
+        Objects.requireNonNull(req);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // logger.info("logged in authorities:"+auth.getAuthorities().toString());
         Long loggedInUserId = ((CustomPersonDetails) auth.getPrincipal()).getId();
@@ -154,25 +164,26 @@ public class PersonService {
                 .orElseThrow(() -> new PersonNotFoundException(personId));
         // Check if user has no ADMIN role
         if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            // Throw PersonUnauthorizedException if userId of 
+            // Throw PersonUnauthorizedException if userId of
             if (!loggedInUserId.equals(personId)) {
                 throw new PersonUnauthorizedException(loggedInUserId);
             }
-            //  - if so, do  old password check
+            // - if so, do old password check
             logger.info("logged in as non-admin user");
             if (!passwordEncoder.matches(req.oldPassword(), person.getPassword())) {
                 throw new InvalidPersonInputException("Old password is incorrect");
             }
-        } 
+        }
         person.setPassword(passwordEncoder.encode(req.newPassword()));
         personRepository.save(person);
     }
 
     // DELETE
     @Transactional
-    public void deletePersonById(Long id) {
+    public void deletePersonById(long id) {
         Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
-        personRepository.deleteById(person.getId());
+        long personId = Objects.requireNonNull(person.getId());
+        personRepository.deleteById(personId);
 
     }
 
